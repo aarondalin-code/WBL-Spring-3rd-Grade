@@ -20,8 +20,7 @@ window.TEAM_INFO = {
     coachName: "Aaron Dalin",
     coachEmail: "aarondalin@gmail.com",
     coachPhone: "(917) 922-9847",
-    gcName: "GameChanger - Westfield 9U Blue",
-    gcUrl: "https://web.gc.com/teams/6SioN5qtszsQ/2026-spring-westfield-9u-blue"
+    
 
   },
   "branchburg": {
@@ -30,8 +29,7 @@ window.TEAM_INFO = {
     coachName: "Tom Sharples",
     coachEmail: "trsjr12@gmail.com",
     coachPhone: "(908) 361-6332",
-    gcName: "GameChanger - Branchburg Bulldogs 9U",
-  gcUrl: "https://web.gc.com/teams/7ViI77aKKYJ6"
+   
    
   },
   "ridge": {
@@ -40,8 +38,7 @@ window.TEAM_INFO = {
     coachName: "Greg Brunner",
     coachEmail: "gregbrunner@ridgebaseballclub.com",
     coachPhone: "(267) 475-9516",
-    gcName: "GameChanger - Ridge Green 9U",
-  gcUrl: "https://web.gc.com/teams/OtUd6NiDC2Ws"
+  
    
   },
   "scotch-plains-fanwood": {
@@ -50,8 +47,7 @@ window.TEAM_INFO = {
     coachName: "Ross Alpert",
     coachEmail: "ross.alpert2@gmail.com",
     coachPhone: "(732) 535-1077",
-    gcName: "GameChanger - SPF Raiders Futures 9U",
-    gcUrl: "https://web.gc.com/teams/PLqSPuzC0m2l"
+    
   
   },
   "hillsborough": {
@@ -60,8 +56,7 @@ window.TEAM_INFO = {
     coachName: "Blair Dameron",
     coachEmail: "blaird@hillsboroughbaseball.org",
     coachPhone: "(215) 593-5207",
-    gcName: "GameChanger - Hillsborough Raiders 9U",
-  gcUrl: "https://web.gc.com/teams/36CaB2E3yedN"
+    
     
   },
   "westfield-white": {
@@ -70,8 +65,7 @@ window.TEAM_INFO = {
     coachName: "Danny Lallis",
     coachEmail: "danny.lallis@gmail.com",
     coachPhone: "(898) 698-3012",
-    gcName: "GameChanger - Westfield 9U White",
-  gcUrl: "https://web.gc.com/teams/kkw80OKjld3E"
+   
 
   },
   "south-orange-maplewood": {
@@ -80,8 +74,7 @@ window.TEAM_INFO = {
     coachName: "Jeremy Wintroub",
     coachEmail: "jwintroub@gmail.com",
     coachPhone: "(215) 370-8975",
-    gcName: "GameChanger - SOM Cougars Red 9U",
-  gcUrl: "https://web.gc.com/teams/EnOFUckyQlzR"
+    
     
   },
   "watchung-hills": {
@@ -90,8 +83,7 @@ window.TEAM_INFO = {
     coachName: "Steven Freitas",
     coachEmail: "freitas.steven@gmail.com",
     coachPhone: "(201) 744-6063",
-    gcName: "GameChanger - Watchung Hills Blue 9U",
-  gcUrl: "https://web.gc.com/teams/TXT5ecToGD1h"
+   
    
   }
 };
