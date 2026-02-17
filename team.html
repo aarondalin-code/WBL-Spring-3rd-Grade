@@ -1,1 +1,381 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team Roster • WBL 3rd Grade 2026</title>
+  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+</head>
+
+<body class="watermarkPage teamPage hasHamburger">
+<header class="siteHeader">
+  <div class="navWrap">
+    <button
+      class="navToggle"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="siteNav"
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="navOverlay" aria-hidden="true"></div>
+
+    <nav class="nav" id="siteNav">
+      <a href="./">Home</a>
+      <a href="./schedule.html">Schedule/Scores</a>
+      <a href="./standings.html">Standings</a>
+      <!-- Add Playoffs later when we build playoffs.html -->
+      <a href="./teams.html">Teams</a>
+      <a href="./rules.html">Rules</a>
+      <a href="./contacts.html">Contacts</a>
+      <a href="./gallery.html">Gallery</a>
+      <a href="./uploads.html">Uploads</a>
+    </nav>
+  </div>
+
+  <div class="brandCenter">
+    <img src="./logo.png" alt="WBL Logo" class="logoImage">
+    <h1>WBL 3rd Grade 2026</h1>
+    <div class="tagline">Team Roster</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Team header block -->
+  <section class="card" style="margin-top:12px;">
+    <div class="cardBody">
+      <div class="teamHeaderBlock">
+        <div class="teamHeaderLeft">
+          <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo">
+          <div>
+            <div class="muted small">Team</div>
+            <h2 id="teamName" style="margin:0;">Team</h2>
+            <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <div class="teamHeaderRight">
+          <div class="coachCard">
+            <div class="coachTitleCenter">
+              <div class="coachLabel">Head Coach</div>
+              <div class="coachName" id="coachName">TBD</div>
+            </div>
+
+            <div class="coachLinks">
+              <a id="coachEmail" class="coachLink" href="#" style="display:none;"></a>
+              <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Roster -->
+  <section class="card" style="margin-top:14px;">
+    <div class="cardBody">
+      <div class="rosterTopRow">
+        <h3 style="margin:0;">Roster</h3>
+        <a class="btnSecondary" href="./teams.html">← Back to Teams</a>
+      </div>
+
+      <div id="rosterGrid" class="rosterGrid" style="margin-top:12px;"></div>
+      <p id="rosterMsg" class="muted small" style="margin-top:12px;"></p>
+    </div>
+  </section>
+</main>
+
+<!-- Player modal -->
+<div id="modalOverlay" class="modalOverlay" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modalClose" id="modalCloseBtn" type="button">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script src="./data.js"></script>
+
+<script>
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+  function safe(v){ return String(v ?? "").trim(); }
+
+  function getParam(name){
+    return new URLSearchParams(window.location.search).get(name) || "";
+  }
+
+  function normalizePhoneForTel(phone) {
+    return safe(phone).replace(/[^\d+]/g, "");
+  }
+
+  async function fetchCsv(url) {
+    if (!url) throw new Error("Missing CSV URL in data.js");
+    const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+    const res = await fetch(url + bust, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
+    return await res.text();
+  }
+
+  // Robust CSV parser (quoted commas safe)
+  function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
+
+      if (ch === '"') {
+        if (inQuotes && next === '"') { cur += '"'; i++; }
+        else inQuotes = !inQuotes;
+        continue;
+      }
+
+      if (!inQuotes && ch === ",") { row.push(cur); cur = ""; continue; }
+
+      if (!inQuotes && (ch === "\n" || ch === "\r")) {
+        if (ch === "\r" && next === "\n") i++;
+        row.push(cur); cur = "";
+        if (row.some(v => safe(v) !== "")) rows.push(row);
+        row = [];
+        continue;
+      }
+
+      cur += ch;
+    }
+
+    row.push(cur);
+    if (row.some(v => safe(v) !== "")) rows.push(row);
+
+    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g, ""));
+    return rows
+      .filter(r => r.some(x => safe(x) !== ""))
+      .map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => obj[h] = safe(r[idx]));
+        return obj;
+      });
+  }
+
+  // -----------------------------
+  // Modal
+  // -----------------------------
+  const overlay = document.getElementById("modalOverlay");
+  const modalContent = document.getElementById("modalContent");
+  const closeBtn = document.getElementById("modalCloseBtn");
+
+  function openModal(html){
+    modalContent.innerHTML = html;
+    overlay.classList.add("open");
+    document.body.classList.add("noScroll");
+    overlay.setAttribute("aria-hidden", "false");
+  }
+
+  function closeModal(){
+    overlay.classList.remove("open");
+    document.body.classList.remove("noScroll");
+    overlay.setAttribute("aria-hidden", "true");
+    modalContent.innerHTML = "";
+  }
+
+  closeBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+  // -----------------------------
+  // Render: Team header + coach
+  // -----------------------------
+  function setHeaderFromTeamRow(teamRow){
+    const teamNameEl = document.getElementById("teamName");
+    const logoEl = document.getElementById("teamLogo");
+    const subEl = document.getElementById("teamSubtitle");
+
+    const coachNameEl = document.getElementById("coachName");
+    const coachEmailEl = document.getElementById("coachEmail");
+    const coachPhoneEl = document.getElementById("coachPhone");
+
+    const name = safe(teamRow.TeamName) || "Team";
+    const logo = safe(teamRow.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png");
+
+    teamNameEl.textContent = name;
+    document.title = `${name} • WBL 3rd Grade 2026`;
+
+    logoEl.src = logo;
+    logoEl.onerror = () => { logoEl.src = window.DEFAULT_TEAM_LOGO || "./logo.png"; };
+
+    subEl.textContent = ""; // reserved
+
+    const coachName = safe(teamRow.CoachName);
+    const coachEmail = safe(teamRow.CoachEmail);
+    const coachPhone = safe(teamRow.CoachPhone);
+
+    coachNameEl.textContent = coachName && coachName.toLowerCase() !== "tbd" ? coachName : "TBD";
+
+    if (coachEmail && coachEmail.toLowerCase() !== "tbd") {
+      coachEmailEl.style.display = "inline-flex";
+      coachEmailEl.textContent = coachEmail;
+      coachEmailEl.href = `mailto:${coachEmail}`;
+    } else {
+      coachEmailEl.style.display = "none";
+    }
+
+    if (coachPhone && coachPhone.toLowerCase() !== "tbd") {
+      coachPhoneEl.style.display = "inline-flex";
+      coachPhoneEl.textContent = coachPhone;
+      coachPhoneEl.href = `tel:${normalizePhoneForTel(coachPhone)}`;
+    } else {
+      coachPhoneEl.style.display = "none";
+    }
+  }
+
+  // -----------------------------
+  // Roster render
+  // -----------------------------
+  function getPhotoSrc(player){
+    const url = safe(player.PhotoURL);
+    return url ? url : "./logo.png";
+  }
+
+  function line(label, value){
+    return `
+      <div class="profileLine">
+        <span class="profileKey">${label}</span>
+        <span class="profileVal">${value}</span>
+      </div>
+    `;
+  }
+
+  function renderPlayerModal(player, teamDisplayName){
+    const name = safe(player.PlayerName || player.Name || "Player");
+    const num = safe(player.Number);
+    const pos = safe(player.Position);
+    const bats = safe(player.Bats);
+    const throws = safe(player.Throws);
+    const fav = safe(player.FavoriteTeam);
+    const fun = safe(player.FunFact);
+    const photo = getPhotoSrc(player);
+
+    const lines = [];
+    if (num) lines.push(line("Number", `#${num}`));
+    if (pos) lines.push(line("Position", pos));
+    if (bats) lines.push(line("Bats", bats));
+    if (throws) lines.push(line("Throws", throws));
+    if (fav) lines.push(line("Favorite MLB Team", fav));
+    if (fun) lines.push(line("Fun Fact", fun));
+
+    openModal(`
+      <div class="profileHeader">
+        <div class="profilePhoto">
+          <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='./logo.png';">
+        </div>
+        <div>
+          <h3 id="modalTitle" class="profileName">${name}</h3>
+          <div class="muted">${teamDisplayName}${num ? ` • #${num}` : ""}</div>
+          <div class="profileLines" style="margin-top:12px;">
+            ${lines.length ? lines.join("") : `<div class="muted small">No additional details yet.</div>`}
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  function buildRosterGrid(players, teamDisplayName){
+    const grid = document.getElementById("rosterGrid");
+    const msg = document.getElementById("rosterMsg");
+    grid.innerHTML = "";
+
+    if (!players.length){
+      msg.textContent = "No roster entries found for this team yet.";
+      return;
+    }
+    msg.textContent = "";
+
+    players.sort((a,b) => {
+      const na = Number(safe(a.Number));
+      const nb = Number(safe(b.Number));
+      const aHas = Number.isFinite(na);
+      const bHas = Number.isFinite(nb);
+      if (aHas && bHas && na !== nb) return na - nb;
+      if (aHas && !bHas) return -1;
+      if (!aHas && bHas) return 1;
+      return safe(a.PlayerName || a.Name).localeCompare(safe(b.PlayerName || b.Name));
+    });
+
+    for (const p of players){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "playerCardBtn";
+
+      const name = safe(p.PlayerName || p.Name || "Player");
+      const num = safe(p.Number);
+      const pos = safe(p.Position);
+      const photo = getPhotoSrc(p);
+
+      btn.innerHTML = `
+        <div class="playerCardRow">
+          <div class="playerThumb">
+            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='./logo.png';">
+          </div>
+          <div class="playerText">
+            <div class="playerNameLine">${name}${num ? ` <span class="muted">#${num}</span>` : ""}</div>
+            <div class="muted small">${pos || ""}</div>
+          </div>
+          <div class="playerChevron">›</div>
+        </div>
+      `;
+
+      btn.addEventListener("click", () => renderPlayerModal(p, teamDisplayName));
+      grid.appendChild(btn);
+    }
+  }
+
+  // -----------------------------
+  // Init
+  // -----------------------------
+  (async function init(){
+    const slug = safe(getParam("team"));
+    if (!slug) {
+      alert("Missing team parameter.");
+      window.location.href = "./teams.html";
+      return;
+    }
+
+    try {
+      // Load teams CSV and locate this team
+      const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+      const teamRows = parseCsv(teamsCsv);
+
+      const teamRow = teamRows.find(r => safe(r.TeamSlug) === slug);
+      if (!teamRow) {
+        alert("Team not found. Check TeamSlug in your Teams tab.");
+        window.location.href = "./teams.html";
+        return;
+      }
+
+      setHeaderFromTeamRow(teamRow);
+      const teamDisplayName = safe(teamRow.TeamName) || slug;
+
+      // Load roster CSV and filter by TeamSlug
+      const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
+      const rosterRows = parseCsv(rosterCsv);
+
+      const players = rosterRows.filter(r => safe(r.TeamSlug) === slug);
+      buildRosterGrid(players, teamDisplayName);
+
+    } catch (err) {
+      console.error(err);
+      alert("Team page error: check TEAMS_CSV_URL / ROSTER_CSV_URL in data.js and confirm your CSV headers.");
+    }
+  })();
+</script>
+
+<script src="./nav.js"></script>
+</body>
+</html>
