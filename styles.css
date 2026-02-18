@@ -583,3 +583,29 @@ a:hover{ opacity:.9; }
   color: #1d4ed8;
 }
 
+/* ===== Contacts page tile sizing (override) ===== */
+.contactsPage .teamsGrid{
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); /* wider cards */
+  gap: 14px;
+}
+
+.contactsPage .teamTile{
+  padding: 16px;
+  border-radius: 16px;     /* less “pill/round”, more rectangular */
+}
+
+.contactsPage .teamTileLogoWrap{
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+}
+
+.contactsPage .teamTileLogo{
+  width: 52px;
+  height: 52px;
+}
+
+.contactsPage .teamName{
+  font-size: 18px;
+}
+
