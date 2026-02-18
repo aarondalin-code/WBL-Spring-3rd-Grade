@@ -3,466 +3,472 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Home • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+  <title>WBL 3rd Grade 2026</title>
+  <link rel="stylesheet" href="./styles.css?v=wbl-home-1" />
 </head>
 
-<body class="watermarkPage homePage hasHamburger">
-<header class="siteHeader">
-  <div class="navWrap">
-    <button
-      class="navToggle"
-      type="button"
-      aria-label="Open menu"
-      aria-expanded="false"
-      aria-controls="siteNav"
-    >
-      <span></span><span></span><span></span>
-    </button>
+<body class="watermarkPage hasHamburger">
+  <header class="siteHeader">
+    <div class="navWrap">
+      <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+        <span></span><span></span><span></span>
+      </button>
 
-    <div class="navOverlay" aria-hidden="true"></div>
+      <div class="navOverlay" aria-hidden="true"></div>
 
-    <nav class="nav" id="siteNav">
-      <a href="./" class="active">Home</a>
-      <a href="./schedule.html">Schedule/Scores</a>
-      <a href="./standings.html">Standings</a>
-      <a href="./playoffs.html">Playoffs</a>
-      <a href="./teams.html">Teams</a>
-      <a href="./rules.html">Rules</a>
-      <a href="./contacts.html">Contacts</a>
-      <a href="./gallery.html">Gallery</a>
-      <a href="./uploads.html">Uploads</a>
-    </nav>
-  </div>
-
-  <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
-    <h1>WBL 3rd Grade 2026</h1>
-    <div class="tagline">Spring Season</div>
-  </div>
-</header>
-
-<main class="wrap">
-  <section class="docSection">
-
-    <!-- Welcome / Season Snapshot -->
-    <div class="standingsHeaderCard">
-      <div class="standingsHeaderTitle">Welcome</div>
-      <div class="standingsHeaderSub muted">
-        10 teams • Round-robin regular season • Playoffs + Consolation
-      </div>
-      <div class="standingsHeaderMeta muted small" id="homeUpdated"></div>
+      <nav class="nav" id="siteNav">
+        <a href="./" class="active">Home</a>
+        <a href="./schedule.html">Schedule/Scores</a>
+        <a href="./standings.html">Standings</a>
+        <a href="./playoffs.html">Playoffs</a>
+        <a href="./teams.html">Teams</a>
+        <a href="./rules.html">Rules</a>
+        <a href="./contacts.html">Contacts</a>
+        <a href="./gallery.html">Gallery</a>
+        <a href="./uploads.html">Uploads</a>
+      </nav>
     </div>
 
-    <!-- This Week + Last Week -->
-    <div class="card" style="margin-top:14px;">
-      <div class="cardBody">
-        <h2 style="margin:0 0 8px 0;">This Week</h2>
-        <div id="thisWeekGames"></div>
-        <p id="thisWeekMsg" class="muted small" style="margin-top:10px;"></p>
-      </div>
+    <div class="brandCenter">
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+      <h1>WBL 3rd Grade 2026</h1>
+      <div class="tagline">Spring League Central</div>
     </div>
+  </header>
 
-    <div class="card" style="margin-top:14px;">
-      <div class="cardBody">
-        <h2 style="margin:0 0 8px 0;">Last Week Results</h2>
-        <div id="lastWeekFinals"></div>
-        <p id="lastWeekMsg" class="muted small" style="margin-top:10px;"></p>
+  <main class="wrap">
+
+    <!-- Quick links / Hero -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeHeroRow">
+            <div>
+              <div class="muted small">Welcome</div>
+              <h2 style="margin:6px 0 8px;">Weekly schedule, standings, highlights & Players of the Week</h2>
+              <div class="muted">
+                Games Saturdays at <strong>10:00 AM</strong> and <strong>12:15 PM</strong> on fields <strong>T3, T4, T5</strong>.
+              </div>
+            </div>
+
+            <div class="homeHeroBtns">
+              <a class="btnPrimary" href="./schedule.html">This Week’s Games</a>
+              <a class="btnSecondary" href="./standings.html">Standings</a>
+              <a class="btnSecondary" href="./uploads.html">Upload Photos/Videos</a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- This week + last week -->
+    <section class="docSection">
+      <div class="homeTwoCol">
+        <div class="card">
+          <div class="cardBody">
+            <div class="homeSectionHead">
+              <h3 style="margin:0;">This Week</h3>
+              <a class="linkPill" href="./schedule.html">Full Schedule →</a>
+            </div>
+            <div id="thisWeekGames" class="muted small">Loading…</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardBody">
+            <div class="homeSectionHead">
+              <h3 style="margin:0;">Last Week (Finals)</h3>
+              <a class="linkPill" href="./schedule.html">Scores →</a>
+            </div>
+            <div id="lastWeekFinals" class="muted small">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Standings snapshot -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeSectionHead">
+            <h3 style="margin:0;">Standings Snapshot (Top 4)</h3>
+            <a class="linkPill" href="./standings.html">View Full Standings →</a>
+          </div>
+
+          <div class="tableScroll" style="margin-top:10px;">
+            <table class="standingsTable" id="standingsMini">
+              <thead>
+                <tr>
+                  <th class="num">#</th>
+                  <th>Team</th>
+                  <th class="num">W</th>
+                  <th class="num">L</th>
+                  <th class="num">T</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <p id="standingsMiniMsg" class="muted small" style="margin-top:10px;"></p>
+        </div>
+      </div>
+    </section>
 
     <!-- Players of the Week -->
-    <div class="card" style="margin-top:14px;">
-      <div class="cardBody">
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
-          <h2 style="margin:0;">Players of the Week</h2>
-          <div class="muted small" id="powWeekLabel"></div>
-        </div>
-        <div id="powGrid" style="margin-top:10px;"></div>
-        <p id="powMsg" class="muted small" style="margin-top:10px;"></p>
-      </div>
-    </div>
-
-    <!-- Team Links -->
-    <div class="card" style="margin-top:14px;">
-      <div class="cardBody">
-        <h2 style="margin:0 0 8px 0;">Teams</h2>
-        <div id="teamGrid"></div>
-      </div>
-    </div>
-
-    <!-- Park Map -->
-    <div class="card" style="margin-top:14px;">
-      <div class="cardBody">
-        <h2 style="margin:0 0 8px 0;">Park Map (T3, T4, T5)</h2>
-        <p class="muted small" style="margin:0 0 10px 0;">
-          Save this map — it helps on game days.
-        </p>
-        <img
-          src="./park-map.jpg"
-          alt="Park map showing fields T3, T4, T5"
-          style="width:100%; max-width:900px; border-radius:12px;"
-          onerror="this.style.display='none';"
-        />
-        <p class="muted small" id="mapMsg" style="margin-top:10px;"></p>
-      </div>
-    </div>
-
-    <p id="homeMsg" class="muted small" style="margin-top:12px;"></p>
-  </section>
-</main>
-
-<script src="./data.js"></script>
-
-<script>
-  const homeUpdated = document.getElementById("homeUpdated");
-  const homeMsg = document.getElementById("homeMsg");
-
-  const thisWeekGamesEl = document.getElementById("thisWeekGames");
-  const thisWeekMsgEl = document.getElementById("thisWeekMsg");
-
-  const lastWeekFinalsEl = document.getElementById("lastWeekFinals");
-  const lastWeekMsgEl = document.getElementById("lastWeekMsg");
-
-  const powGridEl = document.getElementById("powGrid");
-  const powMsgEl = document.getElementById("powMsg");
-  const powWeekLabelEl = document.getElementById("powWeekLabel");
-
-  const teamGridEl = document.getElementById("teamGrid");
-  const mapMsgEl = document.getElementById("mapMsg");
-
-  function safe(v){ return String(v ?? "").trim(); }
-  function normalizeKey(s){ return safe(s).toLowerCase(); }
-
-  function isFinal(status){
-    const s = safe(status).toLowerCase();
-    return s === "final" || s.startsWith("final");
-  }
-
-  function toNum(x){
-    const n = Number(safe(x));
-    return Number.isFinite(n) ? n : null;
-  }
-
-  async function fetchCsv(url) {
-    if (!url) throw new Error("Missing CSV URL in data.js");
-    const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(url + bust, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
-    return await res.text();
-  }
-
-  // Robust CSV parser (quoted commas safe) + BOM strip
-  function parseCsv(text) {
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      const next = text[i + 1];
-
-      if (ch === '"') {
-        if (inQuotes && next === '"') { cur += '"'; i++; }
-        else inQuotes = !inQuotes;
-        continue;
-      }
-
-      if (!inQuotes && ch === ",") { row.push(cur); cur = ""; continue; }
-
-      if (!inQuotes && (ch === "\n" || ch === "\r")) {
-        if (ch === "\r" && next === "\n") i++;
-        row.push(cur); cur = "";
-        if (row.some(v => safe(v) !== "")) rows.push(row);
-        row = [];
-        continue;
-      }
-
-      cur += ch;
-    }
-
-    row.push(cur);
-    if (row.some(v => safe(v) !== "")) rows.push(row);
-
-    const headers = (rows.shift() || []).map((h) => {
-      let key = safe(h).replace(/\s+/g, "");
-      key = key.replace(/^\uFEFF/, "");
-      return key;
-    });
-
-    return rows
-      .filter(r => r.some(x => safe(x) !== ""))
-      .map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => obj[h] = safe(r[idx]));
-        return obj;
-      });
-  }
-
-  // Date helpers: your sheet likely uses YYYY-MM-DD which sorts correctly as a string
-  function isISODate(s){ return /^\d{4}-\d{2}-\d{2}$/.test(safe(s)); }
-  function todayISO(){
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const dd = String(d.getDate()).padStart(2,"0");
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  function teamLink(teamName, teamNameToSlug){
-    const name = safe(teamName) || "TBD";
-    const slug = teamNameToSlug.get(normalizeKey(name));
-    if (!slug) return `<span>${name}</span>`;
-    return `<a class="teamLinkInline" href="./team.html?team=${encodeURIComponent(slug)}">${name}</a>`;
-  }
-
-  function gameRowCard(g, teamNameToSlug){
-    const date = safe(g.Date);
-    const time = safe(g.Time);
-    const field = safe(g.Field);
-    const aName = safe(g.TeamA);
-    const bName = safe(g.TeamB);
-
-    const final = isFinal(g.Status);
-    const sA = toNum(g.ScoreA);
-    const sB = toNum(g.ScoreB);
-    const score = (final && sA !== null && sB !== null) ? `${sA}-${sB}` : "";
-
-    const metaParts = [];
-    if (time) metaParts.push(time);
-    if (field) metaParts.push(field);
-
-    return `
-      <div class="card" style="margin-top:10px;">
+    <section class="docSection">
+      <div class="card">
         <div class="cardBody">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+          <div class="homeSectionHead">
             <div>
-              <div style="font-weight:900;">
-                ${teamLink(aName, teamNameToSlug)}
-                <span class="vsSep">vs</span>
-                ${teamLink(bName, teamNameToSlug)}
-              </div>
-              <div class="muted small" style="margin-top:4px;">${metaParts.join(" • ")}</div>
+              <h3 style="margin:0;">Players of the Week</h3>
+              <div class="muted small">Updated weekly — one player per team.</div>
             </div>
-            <div style="text-align:right;">
-              <div class="muted small">${final ? "Final" : (safe(g.Status) || "Scheduled")}</div>
-              <div style="font-weight:900; font-size:18px; margin-top:2px;">${score}</div>
-            </div>
+          </div>
+
+          <div id="potwGrid" class="potwGrid" style="margin-top:12px;"></div>
+          <p id="potwMsg" class="muted small" style="margin-top:10px;"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Teams (compact) -->
+    <section class="docSection">
+      <h2 style="margin-bottom:10px;">Teams</h2>
+      <div class="card">
+        <div class="cardBody">
+          <div id="teamsGridHome" class="teamsGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Park map -->
+    <section class="docSection">
+      <h2 style="margin-bottom:10px;">Park Map</h2>
+      <div class="card">
+        <div class="cardBody">
+          <div class="muted small">Fields: T3, T4, T5</div>
+          <div class="homeMapWrap" style="margin-top:10px;">
+            <img id="parkMapImg" alt="Park Map" />
           </div>
         </div>
       </div>
-    `;
-  }
+    </section>
 
-  function renderTeamGrid(teams){
-    // Simple grid without relying on new CSS
-    const items = teams.map(t => {
-      const logo = safe(t.TeamLogo) || window.DEFAULT_TEAM_LOGO || "./logo.png";
+  </main>
+
+  <!-- Modal (reused for Players of Week) -->
+  <div id="modalOverlay" class="modalOverlay" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modalClose" id="modalCloseBtn" type="button">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script>
+    function safe(v){ return String(v ?? "").trim(); }
+    function isFinal(status){ return safe(status).toLowerCase() === "final"; }
+
+    function parseDateLoose(s){
+      s = safe(s);
+      if (!s) return null;
+      // Try native first
+      const d1 = new Date(s);
+      if (!isNaN(d1.getTime())) return d1;
+
+      // Try M/D/YYYY
+      const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (m){
+        const mm = Number(m[1]) - 1, dd = Number(m[2]), yy = Number(m[3]);
+        const d2 = new Date(yy, mm, dd);
+        return isNaN(d2.getTime()) ? null : d2;
+      }
+      return null;
+    }
+
+    async function fetchCsv(url){
+      if (!url) throw new Error("Missing CSV URL in data.js");
+      const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+      const res = await fetch(url + bust, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
+      return await res.text();
+    }
+
+    function parseCsv(text){
+      const rows = [];
+      let row = [], cur = "", inQuotes = false;
+
+      for (let i=0;i<text.length;i++){
+        const ch = text[i], next = text[i+1];
+        if (ch === '"'){
+          if (inQuotes && next === '"'){ cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+          continue;
+        }
+        if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
+        if (!inQuotes && (ch === "\n" || ch === "\r")){
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cur); cur="";
+          if (row.some(v => safe(v)!=="")) rows.push(row);
+          row=[]; continue;
+        }
+        cur += ch;
+      }
+      row.push(cur);
+      if (row.some(v => safe(v)!=="")) rows.push(row);
+
+      const headers = (rows.shift()||[]).map(h => safe(h).replace(/\s+/g,""));
+      return rows.map(r => {
+        const o = {};
+        headers.forEach((h,idx)=> o[h]=safe(r[idx]));
+        return o;
+      });
+    }
+
+    // Modal
+    const overlay = document.getElementById("modalOverlay");
+    const modalContent = document.getElementById("modalContent");
+    const closeBtn = document.getElementById("modalCloseBtn");
+
+    function openModal(html){
+      modalContent.innerHTML = html;
+      overlay.classList.add("open");
+      document.body.classList.add("noScroll");
+      overlay.setAttribute("aria-hidden","false");
+    }
+    function closeModal(){
+      overlay.classList.remove("open");
+      document.body.classList.remove("noScroll");
+      overlay.setAttribute("aria-hidden","true");
+      modalContent.innerHTML = "";
+    }
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", (e)=>{ if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeModal(); });
+
+    function renderPlayerModal(player){
+      const name = safe(player.PlayerName || player.Name || "Player");
+      const team = safe(player.Team || player.TeamName || "");
+      const num  = safe(player.Number);
+      const photo = safe(player.PhotoURL) || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
+      const blurb = safe(player.Blurb || player.Why || player.Reason || player.Notes || "");
+
+      const lines = [];
+      if (team) lines.push(`<div class="profileLine"><span class="profileKey">Team</span><span class="profileVal">${team}</span></div>`);
+      if (num)  lines.push(`<div class="profileLine"><span class="profileKey">Number</span><span class="profileVal">#${num}</span></div>`);
+
+      openModal(`
+        <div class="profileHeader">
+          <div class="profilePhoto">
+            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
+          </div>
+          <div>
+            <h3 id="modalTitle" class="profileName">${name}</h3>
+            ${lines.length ? `<div class="profileLines" style="margin-top:12px;">${lines.join("")}</div>` : ""}
+            ${blurb ? `<div class="card" style="margin-top:12px;"><div class="cardBody"><div class="muted small">Coach’s Note</div><div style="margin-top:6px;">${blurb}</div></div></div>` : ""}
+          </div>
+        </div>
+      `);
+    }
+
+    function fmtGameRow(g){
+      const date = safe(g.Date);
+      const time = safe(g.Time);
+      const field = safe(g.Field);
+      const a = safe(g.TeamA);
+      const b = safe(g.TeamB);
+      const sa = safe(g.ScoreA);
+      const sb = safe(g.ScoreB);
+      const status = safe(g.Status);
+
+      const score = isFinal(status) ? `<strong>${sa}-${sb}</strong>` : "";
+      const statusTxt = isFinal(status) ? `<span class="pillFinal">Final</span>` : `<span class="muted small">Scheduled</span>`;
       return `
-        <a href="./team.html?team=${encodeURIComponent(t.TeamSlug)}"
-           style="display:flex; gap:10px; align-items:center; padding:10px; border-radius:12px; text-decoration:none;">
-          <img src="${logo}" alt="${t.TeamName} logo"
-               style="width:42px; height:42px; object-fit:cover; border-radius:10px;"
-               onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-          <div style="font-weight:900;">${t.TeamName}</div>
-        </a>
+        <div class="homeGameRow">
+          <div class="homeGameMeta muted small">${date}${time ? " • " + time : ""}${field ? " • " + field : ""}</div>
+          <div class="homeGameMain">
+            <div class="homeGameTeams">${a} <span class="muted">vs</span> ${b}</div>
+            <div class="homeGameRight">${score} ${statusTxt}</div>
+          </div>
+        </div>
       `;
-    }).join("");
-
-    teamGridEl.innerHTML = `
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
-        ${items}
-      </div>
-      <p class="muted small" style="margin-top:10px;">
-        Or view the full <a href="./teams.html">Teams page</a>.
-      </p>
-    `;
-  }
-
-  function renderPlayersOfWeek(rows, rosterByKey, teamNameToSlug, weekLabel){
-    powWeekLabelEl.textContent = weekLabel ? weekLabel : "";
-
-    if (!rows.length) {
-      powGridEl.innerHTML = "";
-      powMsgEl.textContent = "No Players of the Week posted yet.";
-      return;
     }
 
-    // Ensure one per team (latest wins if duplicates)
-    const byTeam = new Map();
-    for (const r of rows) {
-      const tn = safe(r.TeamName);
-      if (!tn) continue;
-      byTeam.set(normalizeKey(tn), r);
+    function startOfWeekSatAnchor(){
+      // Anchor by Saturday of current week (or next Saturday if earlier in week)
+      const now = new Date();
+      const day = now.getDay(); // 0 Sun ... 6 Sat
+      const daysUntilSat = (6 - day + 7) % 7;
+      const sat = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSat);
+      sat.setHours(0,0,0,0);
+      return sat;
     }
 
-    const cards = Array.from(byTeam.values()).map(r => {
-      const teamName = safe(r.TeamName);
-      const slug = teamNameToSlug.get(normalizeKey(teamName));
-      const playerId = safe(r.PlayerID);
-      const blurb = safe(r.Blurb);
-      const coach = safe(r.CoachName);
+    async function initHome(){
+      // Park map
+      const mapEl = document.getElementById("parkMapImg");
+      mapEl.src = window.PARK_MAP_IMG || "./park-map.jpg";
+      mapEl.onerror = () => { mapEl.style.display = "none"; };
 
-      const rosterKey = `${slug || ""}__${playerId}`;
-      const roster = rosterByKey.get(rosterKey);
+      // Teams grid (from Teams CSV)
+      try{
+        const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+        const teams = parseCsv(teamsCsv);
+        const grid = document.getElementById("teamsGridHome");
+        grid.innerHTML = "";
+        teams
+          .map(t => ({ name: safe(t.TeamName || t.Team), slug: safe(t.TeamSlug || t.Slug) }))
+          .filter(t => t.name && t.slug)
+          .sort((a,b)=> a.name.localeCompare(b.name))
+          .forEach(t=>{
+            const a = document.createElement("a");
+            a.className = "teamTile";
+            a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
+            a.textContent = t.name;
+            grid.appendChild(a);
+          });
+      } catch(e){
+        // ok to fail silently-ish
+        console.error(e);
+      }
 
-      const playerName = roster ? safe(roster.Name) : "(Player not found)";
-      const photo = roster ? safe(roster.PhotoURL) : "";
-      const imgSrc = photo || window.DEFAULT_PLAYER_PHOTO || "./logo.png";
+      // Games (This week + Last week + Standings mini)
+      const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
+      const games = parseCsv(gamesCsv);
 
-      return `
-        <div style="border-radius:14px; padding:12px; border:1px solid rgba(0,0,0,0.08);">
-          <div style="display:flex; gap:12px; align-items:flex-start;">
-            <img src="${imgSrc}" alt="${playerName}"
-                 style="width:72px; height:72px; object-fit:cover; border-radius:12px;"
+      // Partition games by date around “this Saturday”
+      const thisSat = startOfWeekSatAnchor();
+      const lastSat = new Date(thisSat.getFullYear(), thisSat.getMonth(), thisSat.getDate() - 7);
+
+      const thisWeek = [];
+      const lastWeekFinals = [];
+
+      for (const g of games){
+        const d = parseDateLoose(g.Date);
+        if (!d) continue;
+        d.setHours(0,0,0,0);
+
+        if (d.getTime() === thisSat.getTime()){
+          thisWeek.push(g);
+        }
+        if (d.getTime() === lastSat.getTime() && isFinal(g.Status)){
+          lastWeekFinals.push(g);
+        }
+      }
+
+      const thisEl = document.getElementById("thisWeekGames");
+      thisEl.innerHTML = thisWeek.length ? thisWeek.map(fmtGameRow).join("") : `<div class="muted small">No games found for this Saturday yet.</div>`;
+
+      const lastEl = document.getElementById("lastWeekFinals");
+      lastEl.innerHTML = lastWeekFinals.length ? lastWeekFinals.map(fmtGameRow).join("") : `<div class="muted small">No final games from last Saturday yet.</div>`;
+
+      // Standings snapshot from Final games
+      const teamsSet = new Set();
+      games.forEach(g => { if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA)); if (safe(g.TeamB)) teamsSet.add(safe(g.TeamB)); });
+
+      const table = new Map();
+      for (const t of teamsSet) table.set(t, { team:t, W:0, L:0, T:0 });
+
+      function toNum(x){
+        const n = Number(safe(x));
+        return Number.isFinite(n) ? n : null;
+      }
+
+      let finalsCount = 0;
+      for (const g of games){
+        if (!isFinal(g.Status)) continue;
+        const a = safe(g.TeamA), b = safe(g.TeamB);
+        const sa = toNum(g.ScoreA), sb = toNum(g.ScoreB);
+        if (!a || !b || sa===null || sb===null) continue;
+
+        if (!table.has(a)) table.set(a,{team:a,W:0,L:0,T:0});
+        if (!table.has(b)) table.set(b,{team:b,W:0,L:0,T:0});
+
+        if (sa > sb){ table.get(a).W++; table.get(b).L++; }
+        else if (sb > sa){ table.get(b).W++; table.get(a).L++; }
+        else { table.get(a).T++; table.get(b).T++; }
+
+        finalsCount++;
+      }
+
+      const rows = Array.from(table.values()).sort((x,y)=>{
+        if (y.W !== x.W) return y.W - x.W;
+        if (x.L !== y.L) return x.L - y.L;
+        if (y.T !== x.T) return y.T - x.T;
+        return x.team.localeCompare(y.team);
+      });
+
+      const miniBody = document.querySelector("#standingsMini tbody");
+      miniBody.innerHTML = "";
+      rows.slice(0,4).forEach((r,idx)=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="num">${idx+1}</td>
+          <td>${r.team}</td>
+          <td class="num">${r.W}</td>
+          <td class="num">${r.L}</td>
+          <td class="num">${r.T}</td>
+        `;
+        miniBody.appendChild(tr);
+      });
+
+      document.getElementById("standingsMiniMsg").textContent =
+        finalsCount ? `Based on ${finalsCount} final game(s).` : `No final games yet — standings will appear once games are marked Final.`;
+
+      // Players of the Week (2 rows of 5)
+      const potwGrid = document.getElementById("potwGrid");
+      const potwMsg = document.getElementById("potwMsg");
+      potwGrid.innerHTML = "";
+
+      try{
+        const potwCsv = await fetchCsv(window.SHEET?.PLAYERS_OF_WEEK_CSV_URL);
+        const potw = parseCsv(potwCsv);
+
+        // Expect columns like: Team, PlayerID, Name/PlayerName, Blurb/Why, PhotoURL (optional)
+        const players = potw
+          .map(r => ({
+            Team: safe(r.Team),
+            PlayerID: safe(r.PlayerID),
+            PlayerName: safe(r.PlayerName || r.Name),
+            PhotoURL: safe(r.PhotoURL),
+            Blurb: safe(r.Blurb || r.Why || r.Reason || r.Notes)
+          }))
+          .filter(p => p.Team && p.PlayerName);
+
+        // If your sheet includes all 10, this will show 10 (2x5).
+        players.slice(0,10).forEach(p=>{
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "potwCardBtn";
+
+          const photo = p.PhotoURL || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
+
+          btn.innerHTML = `
+            <img class="potwPhoto" src="${photo}" alt="${p.PlayerName}"
                  onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
-            <div style="flex:1;">
-              <div style="font-weight:900;">${playerName}</div>
-              <div class="muted small" style="margin-top:2px;">
-                ${slug ? `<a href="./team.html?team=${encodeURIComponent(slug)}">${teamName}</a>` : teamName}
-              </div>
+            <div class="potwText">
+              <div class="potwName">${p.PlayerName}</div>
+              <div class="potwTeam muted small">${p.Team}</div>
+              <div class="potwLink">View →</div>
             </div>
-          </div>
-          <div style="margin-top:10px;">${blurb ? blurb : "<span class='muted'>Blurb coming soon.</span>"}</div>
-          ${coach ? `<div class="muted small" style="margin-top:8px;">— ${coach}</div>` : ""}
-        </div>
-      `;
-    }).join("");
+          `;
 
-    powGridEl.innerHTML = `
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-top:8px;">
-        ${cards}
-      </div>
-    `;
+          btn.addEventListener("click", ()=> renderPlayerModal(p));
+          potwGrid.appendChild(btn);
+        });
 
-    powMsgEl.textContent = "";
-  }
-
-  async function init(){
-    homeUpdated.textContent = `Last updated: ${new Date().toLocaleString()}`;
-    homeMsg.textContent = "";
-    mapMsgEl.textContent = "";
-
-    // Load Teams
-    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-    const teamRows = parseCsv(teamsCsv);
-
-    const teams = teamRows
-      .map(r => ({
-        TeamName: safe(r.TeamName),
-        TeamSlug: safe(r.TeamSlug),
-        TeamLogo: safe(r.TeamLogo)
-      }))
-      .filter(t => t.TeamName && t.TeamSlug);
-
-    const teamNameToSlug = new Map();
-    for (const t of teams) teamNameToSlug.set(normalizeKey(t.TeamName), t.TeamSlug);
-
-    renderTeamGrid(teams);
-
-    // Load Games
-    const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
-    const gameRows = parseCsv(gamesCsv);
-
-    // Upcoming: next date >= today (ISO string compare works if Date is YYYY-MM-DD)
-    const today = todayISO();
-    const datedGames = gameRows.filter(g => isISODate(g.Date));
-    const futureGames = datedGames.filter(g => safe(g.Date) >= today);
-
-    let nextDate = null;
-    if (futureGames.length) {
-      nextDate = futureGames.map(g => safe(g.Date)).sort()[0];
+        potwMsg.textContent = players.length ? "" : "No Players of the Week yet.";
+      } catch(e){
+        console.error(e);
+        potwMsg.textContent = "Players of the Week unavailable right now.";
+      }
     }
 
-    if (nextDate) {
-      const thisWeeks = futureGames.filter(g => safe(g.Date) === nextDate);
-      // Sort by Time, then Field
-      thisWeeks.sort((a,b) => safe(a.Time).localeCompare(safe(b.Time)) || safe(a.Field).localeCompare(safe(b.Field)));
-      thisWeekGamesEl.innerHTML = `<div class="muted small" style="margin-bottom:6px;">${nextDate}</div>` +
-        thisWeeks.map(g => gameRowCard(g, teamNameToSlug)).join("");
-      thisWeekMsgEl.textContent = "";
-    } else {
-      thisWeekGamesEl.innerHTML = "";
-      thisWeekMsgEl.textContent = "No upcoming games found.";
-    }
+    initHome().catch(err => console.error(err));
+  </script>
 
-    // Last week finals: most recent date that has any Final games
-    const finals = datedGames.filter(g => isFinal(g.Status));
-    let lastFinalDate = null;
-    if (finals.length) {
-      lastFinalDate = finals.map(g => safe(g.Date)).sort().slice(-1)[0];
-    }
-
-    if (lastFinalDate) {
-      const lastFinals = finals.filter(g => safe(g.Date) === lastFinalDate);
-      lastFinals.sort((a,b) => safe(a.Time).localeCompare(safe(b.Time)) || safe(a.Field).localeCompare(safe(b.Field)));
-      lastWeekFinalsEl.innerHTML = `<div class="muted small" style="margin-bottom:6px;">${lastFinalDate}</div>` +
-        lastFinals.map(g => gameRowCard(g, teamNameToSlug)).join("");
-      lastWeekMsgEl.textContent = "";
-    } else {
-      lastWeekFinalsEl.innerHTML = "";
-      lastWeekMsgEl.textContent = "No final scores yet.";
-    }
-
-    // Load Roster (for Player cards)
-    const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
-    const rosterRows = parseCsv(rosterCsv);
-
-    // Build roster map by (TeamSlug + PlayerID)
-    const rosterByKey = new Map();
-    for (const r of rosterRows) {
-      const teamSlug = safe(r.TeamSlug);
-      const playerId = safe(r.PlayerID);
-      if (!teamSlug || !playerId) continue;
-      rosterByKey.set(`${teamSlug}__${playerId}`, r);
-    }
-
-    // Load Players of Week
-    const powUrl = window.SHEET?.PLAYERS_OF_WEEK_CSV_URL;
-    if (!powUrl || powUrl.includes("PASTE_GID_HERE")) {
-      powMsgEl.textContent = "Players of the Week feed not connected yet (missing gid in data.js).";
-      return;
-    }
-
-    const powCsv = await fetchCsv(powUrl);
-    const powRowsAll = parseCsv(powCsv);
-
-    // Determine latest week by WeekDate (preferred); fallback to Week text
-    const withDates = powRowsAll.filter(r => isISODate(r.WeekDate));
-    let latestDate = null;
-
-    if (withDates.length) {
-      latestDate = withDates.map(r => safe(r.WeekDate)).sort().slice(-1)[0];
-    }
-
-    let powRows = [];
-    let weekLabel = "";
-
-    if (latestDate) {
-      powRows = withDates.filter(r => safe(r.WeekDate) === latestDate);
-      const weekText = safe(powRows[0]?.Week);
-      weekLabel = weekText ? `${weekText} • ${latestDate}` : latestDate;
-    } else {
-      // Fallback: choose the last non-empty Week value lexicographically
-      const weeks = powRowsAll.map(r => safe(r.Week)).filter(Boolean).sort();
-      const latestWeek = weeks.length ? weeks[weeks.length - 1] : "";
-      powRows = latestWeek ? powRowsAll.filter(r => safe(r.Week) === latestWeek) : [];
-      weekLabel = latestWeek;
-    }
-
-    renderPlayersOfWeek(powRows, rosterByKey, teamNameToSlug, weekLabel);
-
-    // Park map note if missing
-    mapMsgEl.textContent = "If the map image does not appear, add park-map.jpg to the repo root (or update the path).";
-  }
-
-  init().catch(err => {
-    console.error(err);
-    homeMsg.textContent = "Home page error: " + err.message;
-  });
-</script>
-
-<script src="./nav.js"></script>
+  <script src="./nav.js"></script>
 </body>
 </html>
+
