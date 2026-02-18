@@ -14,3 +14,5 @@ window.DEFAULT_TEAM_LOGO = "./logo.png";
 
 // Default player photo (used when a roster PhotoURL is blank/broken)
 window.DEFAULT_PLAYER_PHOTO = "./player-placeholder.png";
+
+window.UPLOADS_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeJFsS_cdkuAXXtcJsszJ3OP3Xgv01gSacziNK-Bxfl0nHVQQ/viewform?usp=publish-editor";
