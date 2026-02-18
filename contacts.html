@@ -10,13 +10,7 @@
 <body class="watermarkPage contactsPage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-    <button
-      class="navToggle"
-      type="button"
-      aria-label="Open menu"
-      aria-expanded="false"
-      aria-controls="siteNav"
-    >
+    <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
       <span></span><span></span><span></span>
     </button>
 
@@ -45,7 +39,7 @@
 <main class="wrap">
   <section class="docSection">
     <h2>Coach Directory</h2>
-    <p class="muted">Tap a team to view its roster. Use the links to email or call a coach.</p>
+    <p class="muted">Tap a team to view its roster.</p>
 
     <div class="card">
       <div class="cardBody">
@@ -117,13 +111,7 @@
       });
   }
 
-  function mailto(email){
-    const e = safe(email);
-    return e ? `mailto:${encodeURIComponent(e)}` : "";
-  }
-
-  function tel(phone){
-    // Make a simple tel link by stripping non-digits (keeps leading +)
+  function telHref(phone){
     const raw = safe(phone);
     if (!raw) return "";
     const cleaned = raw.replace(/[^\d+]/g, "");
@@ -151,13 +139,20 @@
 
     for (const t of teams) {
       const logoUrl = t.logo || (window.DEFAULT_TEAM_LOGO || "./logo.png");
+      const email = t.coachEmail || "—";
+      const phone = t.coachPhone || "—";
+
+      const emailLink = t.coachEmail
+        ? `<a href="mailto:${encodeURIComponent(t.coachEmail)}" onclick="event.stopPropagation();">${email}</a>`
+        : email;
+
+      const phoneLink = t.coachPhone && telHref(t.coachPhone)
+        ? `<a href="${telHref(t.coachPhone)}" onclick="event.stopPropagation();">${phone}</a>`
+        : phone;
 
       const a = document.createElement("a");
       a.className = "teamTile";
       a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
-
-      const emailHref = mailto(t.coachEmail);
-      const phoneHref = tel(t.coachPhone);
 
       a.innerHTML = `
         <span class="teamAccent" aria-hidden="true"></span>
@@ -175,11 +170,15 @@
               <strong>Coach:</strong> ${t.coachName || "—"}
             </div>
 
-            <div class="contactLinks" style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
-              ${emailHref ? `<a class="btnSecondary" href="${emailHref}" onclick="event.stopPropagation();">Email</a>` : ``}
-              ${phoneHref ? `<a class="btnSecondary" href="${phoneHref}" onclick="event.stopPropagation();">Call/Text</a>` : ``}
-              <span class="teamCta" style="margin-left:auto;">View roster →</span>
+            <div class="muted small" style="margin-top:6px;">
+              <strong>Email:</strong> ${emailLink}
             </div>
+
+            <div class="muted small" style="margin-top:6px;">
+              <strong>Phone:</strong> ${phoneLink}
+            </div>
+
+            <div class="teamCta" style="margin-top:8px;">View roster →</div>
           </div>
         </div>
       `;
@@ -192,7 +191,6 @@
       return;
     }
 
-    // Helpful QA message for missing coach fields
     const missingCoach = teams.filter(t => !t.coachName || (!t.coachEmail && !t.coachPhone));
     if (missingCoach.length) {
       msg.textContent = `Note: ${missingCoach.length} team(s) are missing coach contact info in the Teams sheet.`;
