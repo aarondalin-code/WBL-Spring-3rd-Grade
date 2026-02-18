@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +10,6 @@
 <body class="watermarkPage contactsPage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-
-    <!-- Mobile Hamburger -->
     <button
       class="navToggle"
       type="button"
@@ -23,16 +20,14 @@
       <span></span><span></span><span></span>
     </button>
 
-    <!-- Overlay -->
     <div class="navOverlay" aria-hidden="true"></div>
 
-    <!-- Navigation -->
     <nav class="nav" id="siteNav">
       <a href="./">Home</a>
       <a href="./schedule.html">Schedule/Scores</a>
       <a href="./standings.html">Standings</a>
-      <!-- Add Playoffs later when we build playoffs.html -->
       <a href="./teams.html">Teams</a>
+      <a href="./playoffs.html">Playoffs</a>
       <a href="./rules.html">Rules</a>
       <a href="./contacts.html" class="active">Contacts</a>
       <a href="./gallery.html">Gallery</a>
@@ -41,7 +36,7 @@
   </div>
 
   <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage">
+    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
     <h1>WBL 3rd Grade 2026</h1>
     <div class="tagline">Contacts</div>
   </div>
@@ -49,15 +44,18 @@
 
 <main class="wrap">
   <section class="docSection">
-    <h2>Contacts</h2>
-    <p class="muted">Head coaches + contact info.</p>
+    <h2>Coach Directory</h2>
+    <p class="muted">Tap a team to view its roster. Use the links to email or call a coach.</p>
 
     <div class="card">
       <div class="cardBody">
-        <div id="contactsGrid" class="contactsGrid"></div>
+        <div id="contactsGrid" class="teamsGrid"></div>
+
         <p class="muted small" style="margin-top:12px;">
-          Tip: Team names link to rosters.
+          This page pulls team + coach info from your Google Sheet “Teams” CSV.
+          Required columns: <strong>TeamName, TeamSlug, TeamLogo, CoachName, CoachEmail, CoachPhone</strong>.
         </p>
+        <p id="contactsMsg" class="muted small" style="margin-top:6px;"></p>
       </div>
     </div>
   </section>
@@ -66,20 +64,13 @@
 <script src="./data.js"></script>
 
 <script>
-  // -----------------------------
-  // Helpers
-  // -----------------------------
   function safe(v){ return String(v ?? "").trim(); }
 
-  function phoneDigits(phone){
-    return safe(phone).replace(/\D/g, "");
-  }
-
-  async function fetchCsv(url){
+  async function fetchCsv(url) {
     if (!url) throw new Error("Missing TEAMS_CSV_URL in data.js");
     const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
     const res = await fetch(url + bust, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch teams CSV (${res.status})`);
+    if (!res.ok) throw new Error("Failed to fetch teams CSV");
     return await res.text();
   }
 
@@ -126,82 +117,95 @@
       });
   }
 
-  function buildCard(team){
-    const teamName = safe(team.TeamName);
-    const slug = safe(team.TeamSlug);
+  function mailto(email){
+    const e = safe(email);
+    return e ? `mailto:${encodeURIComponent(e)}` : "";
+  }
 
-    const teamHref = `./team.html?team=${encodeURIComponent(slug)}`;
+  function tel(phone){
+    // Make a simple tel link by stripping non-digits (keeps leading +)
+    const raw = safe(phone);
+    if (!raw) return "";
+    const cleaned = raw.replace(/[^\d+]/g, "");
+    return cleaned ? `tel:${cleaned}` : "";
+  }
 
-    const coachName  = safe(team.CoachName);
-    const coachEmail = safe(team.CoachEmail);
-    const coachPhone = safe(team.CoachPhone);
+  function renderContacts(teamRows) {
+    const grid = document.getElementById("contactsGrid");
+    const msg = document.getElementById("contactsMsg");
+    grid.innerHTML = "";
+    msg.textContent = "";
 
-    const logo = safe(team.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png");
+    const teams = teamRows
+      .map(r => ({
+        name: safe(r.TeamName),
+        slug: safe(r.TeamSlug),
+        logo: safe(r.TeamLogo),
+        coachName: safe(r.CoachName),
+        coachEmail: safe(r.CoachEmail),
+        coachPhone: safe(r.CoachPhone),
+      }))
+      .filter(t => t.name && t.slug);
 
-    const el = document.createElement("div");
-    el.className = "contactTile";
+    teams.sort((a,b) => a.name.localeCompare(b.name));
 
-    el.innerHTML = `
-      <span class="contactAccent" aria-hidden="true"></span>
+    for (const t of teams) {
+      const logoUrl = t.logo || (window.DEFAULT_TEAM_LOGO || "./logo.png");
 
-      <div class="contactTop">
-        <img class="contactLogo" src="${logo}" alt="${teamName} logo"
-             onerror="this.onerror=null; this.src='./logo.png';">
-        <div class="contactTopText">
-          <a class="contactTeamLink" href="${teamHref}">${teamName}</a>
-          <div class="contactSub muted small">Head Coach</div>
+      const a = document.createElement("a");
+      a.className = "teamTile";
+      a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
+
+      const emailHref = mailto(t.coachEmail);
+      const phoneHref = tel(t.coachPhone);
+
+      a.innerHTML = `
+        <span class="teamAccent" aria-hidden="true"></span>
+
+        <div class="teamTileRow">
+          <div class="teamTileLogoWrap">
+            <img class="teamTileLogo" src="${logoUrl}" alt="${t.name} logo"
+                 onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+          </div>
+
+          <div class="teamTileText">
+            <div class="teamName">${t.name}</div>
+
+            <div class="muted small" style="margin-top:6px;">
+              <strong>Coach:</strong> ${t.coachName || "—"}
+            </div>
+
+            <div class="contactLinks" style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
+              ${emailHref ? `<a class="btnSecondary" href="${emailHref}" onclick="event.stopPropagation();">Email</a>` : ``}
+              ${phoneHref ? `<a class="btnSecondary" href="${phoneHref}" onclick="event.stopPropagation();">Call/Text</a>` : ``}
+              <span class="teamCta" style="margin-left:auto;">View roster →</span>
+            </div>
+          </div>
         </div>
-      </div>
+      `;
 
-      <div class="contactBody">
-        <div class="contactCoachName">${coachName && coachName.toLowerCase() !== "tbd" ? coachName : "TBD"}</div>
+      grid.appendChild(a);
+    }
 
-        <div class="contactLinks">
-          ${coachPhone && coachPhone.toLowerCase() !== "tbd"
-            ? `<a class="contactLink" href="tel:${phoneDigits(coachPhone)}">${coachPhone}</a>`
-            : ""
-          }
-          ${coachEmail && coachEmail.toLowerCase() !== "tbd"
-            ? `<a class="contactLink" href="mailto:${coachEmail}">${coachEmail}</a>`
-            : ""
-          }
-        </div>
-      </div>
-    `;
+    if (!teams.length) {
+      grid.innerHTML = `<p class="muted">No teams found. Check your Teams CSV headers.</p>`;
+      return;
+    }
 
-    return el;
+    // Helpful QA message for missing coach fields
+    const missingCoach = teams.filter(t => !t.coachName || (!t.coachEmail && !t.coachPhone));
+    if (missingCoach.length) {
+      msg.textContent = `Note: ${missingCoach.length} team(s) are missing coach contact info in the Teams sheet.`;
+    }
   }
 
   (async function init(){
-    const grid = document.getElementById("contactsGrid");
-    grid.innerHTML = "";
-
     try {
       const csv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
       const rows = parseCsv(csv);
-
-      const teams = rows
-        .map(r => ({
-          TeamName: safe(r.TeamName),
-          TeamSlug: safe(r.TeamSlug),
-          TeamLogo: safe(r.TeamLogo),
-          CoachName: safe(r.CoachName),
-          CoachEmail: safe(r.CoachEmail),
-          CoachPhone: safe(r.CoachPhone),
-        }))
-        .filter(t => t.TeamName && t.TeamSlug)
-        .sort((a,b) => a.TeamName.localeCompare(b.TeamName));
-
-      for (const t of teams){
-        grid.appendChild(buildCard(t));
-      }
-
-      if (!teams.length){
-        grid.innerHTML = `<div class="muted">No teams found. Check your Teams CSV headers (TeamName, TeamSlug, TeamLogo, CoachName, CoachEmail, CoachPhone).</div>`;
-      }
+      renderContacts(rows);
     } catch (err) {
       console.error(err);
-      grid.innerHTML = `<div class="muted">Contacts page error: check TEAMS_CSV_URL and your Teams tab headers.</div>`;
       alert("Contacts page error: check TEAMS_CSV_URL in data.js and make sure the Teams tab is published to CSV.");
     }
   })();
@@ -210,3 +214,4 @@
 <script src="./nav.js"></script>
 </body>
 </html>
+
