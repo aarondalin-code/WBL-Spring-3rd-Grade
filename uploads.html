@@ -19,8 +19,8 @@
       <a href="./">Home</a>
       <a href="./schedule.html">Schedule/Scores</a>
       <a href="./standings.html">Standings</a>
+      <a href="./playoffs.html">Playoffs</a>
       <a href="./teams.html">Teams</a>
-       <a href="./playoffs.html">Playoffs</a> 
       <a href="./rules.html">Rules</a>
       <a href="./contacts.html">Contacts</a>
       <a href="./gallery.html">Gallery</a>
@@ -39,37 +39,46 @@
   <section class="docSection">
     <h2>Share Photos & Videos</h2>
     <p class="muted">
-      Help us keep the site fun each week — send your best game-day moments, team photos, and celebrations.
+      Coaches and families: please upload your best photos and short clips. We’ll feature highlights in the Gallery each week.
     </p>
 
-    <div class="card">
+    <div class="card" style="margin-top:12px;">
       <div class="cardBody" style="text-align:center;">
-        <a id="uploadBtn" class="btnPrimary" href="#" target="_blank" rel="noopener"
+        <a id="uploadBtn"
+           href="#"
+           target="_blank"
+           rel="noopener"
            style="display:none; padding:14px 22px; font-weight:900; border-radius:999px; text-decoration:none;">
           Upload Media
         </a>
 
         <div id="uploadFallback" style="text-align:left;">
-          <p><strong>Upload link coming soon.</strong></p>
+          <p><strong>Upload link not configured yet.</strong></p>
           <p class="muted small" style="margin-top:6px;">
-            For now, please send photos/videos to the league coordinator or your coach, and we’ll add them to the Gallery.
-          </p>
-          <p class="muted small">
-            Tip: If possible, include the team name and date (example: “Orioles – 2026-04-18”).
+            Add <code>window.UPLOADS_FORM_URL</code> to <code>data.js</code> to enable uploads.
           </p>
         </div>
+
+        <div class="muted small" style="margin-top:12px; text-align:left;">
+          <strong>Tips:</strong>
+          <ul style="margin-top:6px;">
+            <li>Please include team name and date in the description.</li>
+            <li>Avoid posting close-ups of kids from other teams without permission.</li>
+            <li>Shorter videos load faster and are easier to feature.</li>
+          </ul>
+        </div>
+
       </div>
     </div>
 
     <p class="muted small" style="margin-top:12px;">
-      Gallery items are posted on the <a href="./gallery.html">Gallery</a> page.
+      Uploaded items will appear on the <a href="./gallery.html">Gallery</a> page after they’re reviewed.
     </p>
   </section>
 </main>
 
 <script src="./data.js"></script>
 <script>
-  // Optional: if you add window.UPLOADS_FORM_URL in data.js, this button becomes active
   const btn = document.getElementById("uploadBtn");
   const fallback = document.getElementById("uploadFallback");
 
