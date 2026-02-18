@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Uploads • WBL 3rd Grade 2026</title>
+  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+</head>
+
+<body class="watermarkPage uploadsPage hasHamburger">
+<header class="siteHeader">
+  <div class="navWrap">
+    <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="navOverlay" aria-hidden="true"></div>
+
+    <nav class="nav" id="siteNav">
+      <a href="./">Home</a>
+      <a href="./schedule.html">Schedule/Scores</a>
+      <a href="./standings.html">Standings</a>
+      <a href="./teams.html">Teams</a>
+       <a href="./playoffs.html">Playoffs</a> 
+      <a href="./rules.html">Rules</a>
+      <a href="./contacts.html">Contacts</a>
+      <a href="./gallery.html">Gallery</a>
+      <a href="./uploads.html" class="active">Uploads</a>
+    </nav>
+  </div>
+
+  <div class="brandCenter">
+    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+    <h1>WBL 3rd Grade 2026</h1>
+    <div class="tagline">Uploads</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="docSection">
+    <h2>Share Photos & Videos</h2>
+    <p class="muted">
+      Help us keep the site fun each week — send your best game-day moments, team photos, and celebrations.
+    </p>
+
+    <div class="card">
+      <div class="cardBody" style="text-align:center;">
+        <a id="uploadBtn" class="btnPrimary" href="#" target="_blank" rel="noopener"
+           style="display:none; padding:14px 22px; font-weight:900; border-radius:999px; text-decoration:none;">
+          Upload Media
+        </a>
+
+        <div id="uploadFallback" style="text-align:left;">
+          <p><strong>Upload link coming soon.</strong></p>
+          <p class="muted small" style="margin-top:6px;">
+            For now, please send photos/videos to the league coordinator or your coach, and we’ll add them to the Gallery.
+          </p>
+          <p class="muted small">
+            Tip: If possible, include the team name and date (example: “Orioles – 2026-04-18”).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="muted small" style="margin-top:12px;">
+      Gallery items are posted on the <a href="./gallery.html">Gallery</a> page.
+    </p>
+  </section>
+</main>
+
+<script src="./data.js"></script>
+<script>
+  // Optional: if you add window.UPLOADS_FORM_URL in data.js, this button becomes active
+  const btn = document.getElementById("uploadBtn");
+  const fallback = document.getElementById("uploadFallback");
+
+  const url = (window.UPLOADS_FORM_URL || "").trim();
+  if (url) {
+    btn.href = url;
+    btn.style.display = "inline-block";
+    fallback.style.display = "none";
+  }
+</script>
+
+<script src="./nav.js"></script>
+</body>
+</html>
 
