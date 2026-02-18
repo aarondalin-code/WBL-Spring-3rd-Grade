@@ -70,6 +70,7 @@
     return await res.text();
   }
 
+  // Robust CSV parser (quoted commas safe) + BOM strip
   function parseCsv(text) {
     const rows = [];
     let row = [];
@@ -104,7 +105,7 @@
 
     const headers = (rows.shift() || []).map((h) => {
       let key = safe(h).replace(/\s+/g,"");
-      key = key.replace(/^\uFEFF/, ""); // BOM strip
+      key = key.replace(/^\uFEFF/, "");
       return key;
     });
 
@@ -138,6 +139,24 @@
     return "";
   }
 
+  function buildCaption(it){
+    const parts = [];
+
+    const title = safe(it.Title);
+    if (title) parts.push(title);
+
+    const team = safe(it.Team);
+    const player = safe(it.Player);
+    if (team && player) parts.push(`${team} • ${player}`);
+    else if (team) parts.push(team);
+    else if (player) parts.push(player);
+
+    const credit = safe(it.Credit);
+    if (credit) parts.push(`Credit: ${credit}`);
+
+    return parts.join(" — ");
+  }
+
   function render(items){
     grid.innerHTML = "";
 
@@ -150,11 +169,11 @@
     countEl.textContent = `${items.length} item(s)`;
 
     const html = items.map(it => {
-      const title = safe(it.Title) || safe(it.Caption) || "";
-      const url = safe(it.URL || it.Link || it.MediaURL);
-      const type = normalizeType(it.Type) || (isImageUrl(url) ? "photo" : "");
-
+      const url = safe(it.MediaURL);
       if (!url) return "";
+
+      const type = normalizeType(it.Type) || (isImageUrl(url) ? "photo" : "");
+      const caption = buildCaption(it);
 
       if (type === "video") {
         const yt = youtubeEmbed(url);
@@ -162,34 +181,32 @@
           return `
             <div class="galleryItem">
               <div class="galleryMedia">
-                <iframe src="${yt}" title="${title}" frameborder="0"
+                <iframe src="${yt}" title="${caption}" frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen></iframe>
               </div>
-              ${title ? `<div class="galleryCaption">${title}</div>` : ""}
+              ${caption ? `<div class="galleryCaption">${caption}</div>` : ""}
             </div>
           `;
         }
-        // Non-YouTube: show as link
         return `
           <div class="galleryItem">
             <div class="galleryMedia" style="display:flex; align-items:center; justify-content:center; padding:18px;">
               <a href="${url}" target="_blank" rel="noopener">Open video</a>
             </div>
-            ${title ? `<div class="galleryCaption">${title}</div>` : ""}
+            ${caption ? `<div class="galleryCaption">${caption}</div>` : ""}
           </div>
         `;
       }
 
-      // Default: photo/image
       return `
         <div class="galleryItem">
           <div class="galleryMedia">
             <a href="${url}" target="_blank" rel="noopener">
-              <img src="${url}" alt="${title}" loading="lazy" />
+              <img src="${url}" alt="${caption}" loading="lazy" />
             </a>
           </div>
-          ${title ? `<div class="galleryCaption">${title}</div>` : ""}
+          ${caption ? `<div class="galleryCaption">${caption}</div>` : ""}
         </div>
       `;
     }).join("");
@@ -205,8 +222,7 @@
     const csv = await fetchCsv(window.SHEET?.GALLERY_CSV_URL);
     const rows = parseCsv(csv);
 
-    // Keep rows with a URL
-    const items = rows.filter(r => safe(r.URL || r.Link || r.MediaURL));
+    const items = rows.filter(r => safe(r.MediaURL));
     render(items);
   }
 
@@ -219,4 +235,5 @@
 <script src="./nav.js"></script>
 </body>
 </html>
+
 
