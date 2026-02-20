@@ -1074,3 +1074,14 @@ body.watermarkPage::before{
   font-variant-numeric: tabular-nums;
   font-weight: 900;
 }
+/* Standings header: align "Team" with logo + name cells */
+.standingsTeamHeader{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.standingsTeamHeaderSpacer{
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+}
