@@ -643,3 +643,64 @@ a:hover{ opacity:.9; }
   background: white;
   padding: 6px;            /* gives “sticker” look + prevents cropping */
 }
+
+/* ===== Coach card (professional info box) ===== */
+.coachCard{
+  height: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  background: linear-gradient(180deg, rgba(37,99,235,0.10), rgba(37,99,235,0.04));
+  padding: 14px;
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+}
+
+.coachTitleCenter{
+  text-align: center;
+  padding: 4px 0 10px;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+.coachLabel{
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.coachName{
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 950;
+  color: #0f172a;
+}
+
+.coachLinks{
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Coach links look like pills but show the full email/phone */
+.coachLink{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(37,99,235,0.20);
+  color: #1d4ed8;
+  overflow-wrap: anywhere;      /* long emails */
+  word-break: break-word;
+}
+
+.coachLink:hover{
+  border-color: rgba(37,99,235,0.38);
+  background: #fff;
+}
