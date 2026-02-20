@@ -6,6 +6,10 @@
   --border: #e2e8f0;
   --bg: #f4f6fa;
   --card: #ffffff;
+
+  /* Watermark */
+  --watermarkUrl: url("./watermark.png"); /* <-- add this file to your repo */
+  --watermarkOpacity: 0.06;
 }
 
 /* =========================
@@ -33,7 +37,35 @@ a:hover{ opacity:.9; }
 .small{ font-size: 12px; }
 
 /* =========================
-   Header / Branding
+   Watermark page background
+   (Apply by using class="watermarkPage" on <body>)
+========================= */
+body.watermarkPage{
+  position: relative;
+}
+body.watermarkPage::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image: var(--watermarkUrl);
+  background-repeat: no-repeat;
+  background-position: center 180px;
+  background-size: min(720px, 80vw);
+  opacity: var(--watermarkOpacity);
+  filter: grayscale(100%);
+}
+.siteHeader,
+.wrap,
+.modalOverlay{
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================
+   Header / Branding (compact)
 ========================= */
 .siteHeader{
   position: sticky;
@@ -45,27 +77,27 @@ a:hover{ opacity:.9; }
 
 .brandCenter{
   text-align: center;
-  padding: 10px 16px 14px;
+  padding: 6px 16px 8px;   /* compact */
 }
 
 .logoImage{
-  width: 68px;
-  height: 68px;
-  border-radius: 14px;
+  width: 52px;             /* compact */
+  height: 52px;
+  border-radius: 12px;
   object-fit: cover;
   border: 1px solid var(--border);
   background: #fff;
 }
 
 .brandCenter h1{
-  margin: 8px 0 2px;
-  font-size: 26px;
+  margin: 6px 0 2px;
+  font-size: 22px;         /* compact */
   letter-spacing: -.02em;
 }
 
 .tagline{
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* =========================
@@ -94,16 +126,14 @@ a:hover{ opacity:.9; }
   border-radius:2px;
 }
 
-.navOverlay{
-  display:none;
-}
+.navOverlay{ display:none; }
 
 .nav{
   display:flex;
   gap:14px;
   flex-wrap:wrap;
   justify-content:center;
-  padding: 10px 0 0;
+  padding: 8px 0 0; /* compact */
 }
 
 .nav a{
@@ -139,6 +169,7 @@ a:hover{ opacity:.9; }
     gap: 8px;
   }
   .nav a{ display:block; text-align:left; }
+
   html.navOpen .nav,
   body.navOpen .nav{
     display: flex;
@@ -219,29 +250,205 @@ a:hover{ opacity:.9; }
 .num{ text-align:right; }
 
 /* =========================
-   Teams + Roster Cards
+   Teams Tiles (single source of truth)
 ========================= */
 .teamsGrid{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .teamTile{
+  position: relative;
   display:block;
-  padding: 12px;
-  border-radius: 14px;
+  padding: 14px;
+  border-radius: 18px;
   border: 1px solid var(--border);
-  text-decoration:none;
-  font-weight: 900;
+  text-decoration: none;
   color: #0f172a;
-  background: #f8fafc;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15,23,42,.06);
+  overflow:hidden;
 }
 
 .teamTile:hover{
-  border-color: rgba(37,99,235,.45);
+  transform: translateY(-2px);
+  border-color: rgba(37,99,235,.35);
+  box-shadow: 0 18px 44px rgba(15,23,42,.10);
 }
 
+.teamAccent{
+  position:absolute;
+  inset:0;
+  background: radial-gradient(900px 220px at 20% -30%, rgba(37,99,235,.12), transparent 60%);
+  pointer-events:none;
+}
+
+.teamTileRow{
+  display:flex;
+  gap: 12px;
+  align-items:center;
+}
+
+.teamTileLogoWrap{
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: #fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex: 0 0 auto;
+  overflow:hidden;
+}
+
+.teamTileLogo{
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  display:block;
+}
+
+.teamTileText{ min-width: 0; }
+
+.teamName{
+  font-weight: 950;
+  font-size: 16px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.teamCta{
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 900;
+  color: #1d4ed8;
+}
+
+/* Contacts page: wider rectangular tiles */
+.contactsPage .teamsGrid{
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 14px;
+}
+
+.contactsPage .teamTile{
+  padding: 16px;
+  border-radius: 16px;
+}
+
+.contactsPage .teamTileLogoWrap{
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+}
+
+.contactsPage .teamTileLogo{
+  width: 52px;
+  height: 52px;
+}
+
+.contactsPage .teamName{
+  font-size: 18px;
+}
+
+/* =========================
+   Team Page Header (compact + balanced)
+   Uses teamHeaderBlock/teamHeaderLogo + coachCard
+========================= */
+.teamHeaderBlock{
+  display: grid;
+  grid-template-columns: 1fr 300px; /* balanced; less bulky */
+  gap: 12px;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+@media (max-width: 760px){
+  .teamHeaderBlock{ grid-template-columns: 1fr; }
+}
+
+.teamHeaderLeft{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.teamHeaderLogo{
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  background: white;
+  padding: 6px;
+}
+
+/* Coach card (blue-ish box) */
+.coachCard{
+  border-radius: 16px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  background: linear-gradient(180deg, rgba(37,99,235,0.10), rgba(37,99,235,0.04));
+  padding: 12px;
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+}
+
+.coachTitleCenter{
+  text-align: center;
+  padding: 2px 0 8px;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+.coachLabel{
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.coachName{
+  margin-top: 6px;
+  font-size: 16px; /* slightly smaller for balance */
+  font-weight: 950;
+  color: #0f172a;
+}
+
+.coachLinks{
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.coachLink{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 13px;
+  padding: 9px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(37,99,235,0.20);
+  color: #1d4ed8;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.coachLink:hover{
+  border-color: rgba(37,99,235,0.38);
+  background: #fff;
+}
+
+/* =========================
+   Roster Cards
+========================= */
 .rosterGrid{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -277,11 +484,6 @@ a:hover{ opacity:.9; }
   border: 1px solid var(--border);
   background: #fff;
 }
-
-.playerName{ font-weight: 900; }
-.playerNum{ font-weight: 900; color:#1d4ed8; }
-.playerMeta{ color: var(--muted); font-size: 12px; margin-top: 4px; }
-.playerLink{ margin-top: 6px; font-size: 12px; font-weight: 900; color:#1d4ed8; }
 
 /* =========================
    Modal
@@ -405,11 +607,8 @@ a:hover{ opacity:.9; }
 }
 
 /* =========================
-   WBL 3rd Grade 2026 — Add-ons (Home + POTW)
-   Appended to tournament baseline to avoid churn.
+   Home + POTW Add-ons
 ========================= */
-
-/* Home layout helpers (used by new index.html) */
 .homeTwoCol{
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -441,7 +640,6 @@ a:hover{ opacity:.9; }
   flex-wrap:wrap;
 }
 
-/* Small “Final” pill */
 .pillFinal{
   display:inline-block;
   font-size:10px;
@@ -453,7 +651,6 @@ a:hover{ opacity:.9; }
   color: #065f46;
 }
 
-/* Players of the Week (2 rows of 5 on desktop) */
 .potwGrid{
   display:grid;
   grid-template-columns: repeat(5, 1fr);
@@ -505,7 +702,6 @@ a:hover{ opacity:.9; }
   color: var(--royal);
 }
 
-/* Park map on home page */
 .homeMapWrap img{
   width:100%;
   max-height:520px;
@@ -513,201 +709,4 @@ a:hover{ opacity:.9; }
   border-radius:14px;
   border:1px solid var(--border);
   background:white;
-}
-
-/* ===== Teams tiles (WBL) ===== */
-.teamTile{
-  position: relative;
-  display:block;
-  padding: 14px;
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  text-decoration: none;
-  color: #0f172a;
-  background: #ffffff;
-  box-shadow: 0 10px 28px rgba(15,23,42,.06);
-  overflow:hidden;
-}
-
-.teamTile:hover{
-  transform: translateY(-2px);
-  border-color: rgba(37,99,235,.35);
-  box-shadow: 0 18px 44px rgba(15,23,42,.10);
-}
-
-.teamAccent{
-  position:absolute;
-  inset:0;
-  background: radial-gradient(900px 220px at 20% -30%, rgba(37,99,235,.12), transparent 60%);
-  pointer-events:none;
-}
-
-.teamTileRow{
-  display:flex;
-  gap: 12px;
-  align-items:center;
-}
-
-.teamTileLogoWrap{
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: #fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex: 0 0 auto;
-  overflow:hidden;
-}
-
-.teamTileLogo{
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  display:block;
-}
-
-.teamTileText{ min-width: 0; }
-.teamName{
-  font-weight: 950;
-  font-size: 16px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.teamCta{
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 900;
-  color: #1d4ed8;
-}
-
-/* ===== Contacts page tile sizing (override) ===== */
-.contactsPage .teamsGrid{
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); /* wider cards */
-  gap: 14px;
-}
-
-.contactsPage .teamTile{
-  padding: 16px;
-  border-radius: 16px;     /* less “pill/round”, more rectangular */
-}
-
-.contactsPage .teamTileLogoWrap{
-  width: 64px;
-  height: 64px;
-  border-radius: 14px;
-}
-
-.contactsPage .teamTileLogo{
-  width: 52px;
-  height: 52px;
-}
-
-.contactsPage .teamName{
-  font-size: 18px;
-}
-
-/* =========================================================
-   TEAM PAGE: compatibility patch (HTML uses teamHeaderBlock/teamHeaderLogo)
-   ========================================================= */
-
-.teamHeaderBlock{
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 12px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
-}
-
-@media (max-width: 760px){
-  .teamHeaderBlock{ grid-template-columns: 1fr; }
-}
-
-.teamHeaderLeft{
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-/* This is the key: make your Team page logo match the intended styling */
-.teamHeaderLogo{
-  width: 72px;
-  height: 72px;
-  border-radius: 14px;
-  object-fit: contain;     /* better for MLB logos than cover */
-  border: 1px solid var(--border);
-  background: white;
-  padding: 6px;            /* gives “sticker” look + prevents cropping */
-}
-
-/* ===== Coach card (professional info box) ===== */
-.coachCard{
-  height: 100%;
-  border-radius: 16px;
-  border: 1px solid rgba(37, 99, 235, 0.18);
-  background: linear-gradient(180deg, rgba(37,99,235,0.10), rgba(37,99,235,0.04));
-  padding: 14px;
-  box-shadow: 0 10px 26px rgba(15,23,42,.06);
-}
-
-.coachTitleCenter{
-  text-align: center;
-  padding: 4px 0 10px;
-  border-bottom: 1px solid rgba(37, 99, 235, 0.14);
-}
-
-.coachLabel{
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.coachName{
-  margin-top: 6px;
-  font-size: 18px;
-  font-weight: 950;
-  color: #0f172a;
-}
-
-.coachLinks{
-  display:flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-/* Coach links look like pills but show the full email/phone */
-.coachLink{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 8px;
-  text-decoration: none;
-  font-weight: 900;
-  font-size: 13px;
-  padding: 10px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.9);
-  border: 1px solid rgba(37,99,235,0.20);
-  color: #1d4ed8;
-  overflow-wrap: anywhere;      /* long emails */
-  word-break: break-word;
-}
-
-.coachLink:hover{
-  border-color: rgba(37,99,235,0.38);
-  background: #fff;
-}
-
-/* ===== WBL: Team header overrides (minimal) ===== */
-.teamLogo{
-  object-fit: contain;      /* MLB logos */
-  background: #fff;         /* cleaner than dark background */
-  padding: 8px;             /* prevents SVG looking cramped */
 }
