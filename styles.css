@@ -867,3 +867,108 @@ body.watermarkPage::before{
   background: rgba(37,99,235,.10);
   color:#1d4ed8;
 }
+
+ /* =========================
+   Standings: modern table + alignment + team logo/color links
+========================= */
+
+.standingsTopBar{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom: 12px;
+}
+
+.standingsTitle{
+  font-size: 20px;
+  font-weight: 950;
+  margin: 0;
+}
+
+.standingsTableScroll{
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden; /* rounds the table corners */
+  background: #fff;
+}
+
+.standingsTableModern{
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px; /* keeps columns aligned on desktop */
+}
+
+.standingsTableModern thead th{
+  background: linear-gradient(180deg, rgba(37,99,235,0.08), rgba(37,99,235,0.02));
+  border-bottom: 1px solid var(--border);
+  padding: 12px 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+  font-weight: 950;
+}
+
+.standingsTableModern tbody td{
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.standingsTableModern tbody tr:nth-child(even){
+  background: rgba(15,23,42,0.02);
+}
+
+.standingsTableModern tbody tr:hover{
+  background: rgba(37,99,235,0.06);
+}
+
+.standingsTableModern .colTeam{ width: 40%; }
+.standingsTableModern .colNum{
+  width: 10%;
+  text-align: right;     /* fixes alignment */
+  font-variant-numeric: tabular-nums;
+}
+.standingsTableModern .colRd{
+  font-weight: 950;
+}
+
+/* Team cell: logo + link */
+.standingsTeamCell{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.standingsTeamLogo{
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.standingsTeamLink{
+  font-weight: 950;
+  text-decoration: none;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.standingsTeamLink:hover{
+  color: var(--royal);
+}
+
+/* Cosmetic: highlight top 2 */
+.standingsTop1{
+  outline: 2px solid rgba(37,99,235,0.22);
+  outline-offset: -2px;
+}
+.standingsTop2{
+  outline: 2px solid rgba(37,99,235,0.14);
+  outline-offset: -2px;
+}
