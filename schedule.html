@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Schedule/Scores • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule4" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule-toggle1" />
 </head>
 
 <body class="watermarkPage schedulePage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-    <button class="navToggle" type="button">
+    <button class="navToggle" type="button" aria-label="Open menu">
       <span></span><span></span><span></span>
     </button>
     <div class="navOverlay"></div>
 
-    <nav class="nav">
+    <nav class="nav" id="siteNav">
       <a href="./">Home</a>
       <a href="./schedule.html" class="active">Schedule/Scores</a>
       <a href="./standings.html">Standings</a>
@@ -36,31 +36,37 @@
 </header>
 
 <main class="wrap">
-<section class="docSection">
+  <section class="docSection">
+    <div class="card">
+      <div class="cardBody">
 
-<div class="card">
-  <div class="cardBody">
+        <!-- Filters -->
+        <div class="scheduleFilters">
+          <select id="teamFilter">
+            <option value="">All Teams</option>
+          </select>
 
-    <!-- Filters -->
-    <div class="scheduleFilters">
-      <select id="teamFilter">
-        <option value="">All Teams</option>
-      </select>
+          <select id="dateFilter">
+            <option value="">All Dates</option>
+          </select>
 
-      <select id="dateFilter">
-        <option value="">All Dates</option>
-      </select>
+          <button id="clearFilters" class="btnSecondary" type="button">Clear</button>
+        </div>
 
-      <button id="clearFilters" class="btnSecondary">Clear</button>
+        <!-- Toggle -->
+        <div class="scheduleToggle" role="tablist" aria-label="Schedule filter">
+          <button id="toggleAll" class="toggleBtn active" type="button">All</button>
+          <button id="toggleUpcoming" class="toggleBtn" type="button">Upcoming</button>
+          <button id="toggleCompleted" class="toggleBtn" type="button">Completed</button>
+        </div>
+
+        <!-- Render target -->
+        <div id="scheduleContainer"></div>
+
+        <p id="scheduleMsg" class="muted small" style="margin-top:12px;"></p>
+      </div>
     </div>
-
-    <div id="scheduleContainer"></div>
-
-    <p id="scheduleMsg" class="muted small" style="margin-top:12px;"></p>
-  </div>
-</div>
-
-</section>
+  </section>
 </main>
 
 <script src="./data.js"></script>
@@ -68,12 +74,20 @@
 <script>
   const container = document.getElementById("scheduleContainer");
   const msgEl = document.getElementById("scheduleMsg");
+
   const teamFilter = document.getElementById("teamFilter");
   const dateFilter = document.getElementById("dateFilter");
   const clearBtn = document.getElementById("clearFilters");
 
+  const toggleAll = document.getElementById("toggleAll");
+  const toggleUpcoming = document.getElementById("toggleUpcoming");
+  const toggleCompleted = document.getElementById("toggleCompleted");
+
   let allGames = [];
-  // teamMeta: key = normalized TeamName, value = { slug, logo, color }
+  let statusMode = "all"; // "all" | "upcoming" | "completed"
+
+  // Teams meta from Teams CSV:
+  // key: normalized TeamName -> { slug, logo, color }
   const teamMeta = new Map();
 
   function safe(v){ return String(v ?? "").trim(); }
@@ -84,38 +98,47 @@
     if (!url) throw new Error("Missing CSV URL in data.js");
     const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
     const res = await fetch(url + bust, { cache:"no-store" });
-    if (!res.ok) throw new Error("Failed to fetch CSV");
+    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
     return await res.text();
   }
 
+  // Robust CSV parser (quoted commas safe)
   function parseCsv(text){
-    const rows=[], row=[];
-    let cur="", inQuotes=false, r=[];
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
 
-    for(let i=0;i<text.length;i++){
-      const ch=text[i], next=text[i+1];
-      if(ch === '"'){
-        if(inQuotes && next === '"'){ cur+='"'; i++; }
-        else inQuotes=!inQuotes;
+    for (let i=0; i<text.length; i++){
+      const ch = text[i];
+      const next = text[i+1];
+
+      if (ch === '"'){
+        if (inQuotes && next === '"'){ cur += '"'; i++; }
+        else inQuotes = !inQuotes;
         continue;
       }
-      if(!inQuotes && ch === ","){ r.push(cur); cur=""; continue; }
-      if(!inQuotes && (ch === "\n" || ch === "\r")){
-        if(ch === "\r" && next === "\n") i++;
-        r.push(cur); cur="";
-        if(r.some(v=>safe(v)!=="")) rows.push(r);
-        r=[];
+
+      if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
+
+      if (!inQuotes && (ch === "\n" || ch === "\r")){
+        if (ch === "\r" && next === "\n") i++;
+        row.push(cur); cur="";
+        if (row.some(v => safe(v) !== "")) rows.push(row);
+        row = [];
         continue;
       }
+
       cur += ch;
     }
-    r.push(cur);
-    if(r.some(v=>safe(v)!=="")) rows.push(r);
+
+    row.push(cur);
+    if (row.some(v => safe(v) !== "")) rows.push(row);
 
     const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
-    return rows.map(arr => {
-      const o={};
-      headers.forEach((h,idx)=> o[h]=safe(arr[idx]));
+    return rows.map(r => {
+      const o = {};
+      headers.forEach((h, idx) => o[h] = safe(r[idx]));
       return o;
     }).filter(o => Object.values(o).some(v => safe(v) !== ""));
   }
@@ -130,7 +153,7 @@
     const m = new Map();
     for (const g of games){
       const d = safe(g.Date) || "TBD";
-      if(!m.has(d)) m.set(d, []);
+      if (!m.has(d)) m.set(d, []);
       m.get(d).push(g);
     }
     return m;
@@ -146,72 +169,95 @@
   }
 
   function teamAnchor(teamName){
-    const m = getMeta(teamName);
+    const name = safe(teamName) || "TBD";
+    const m = getMeta(name);
+
     const href = m.slug ? `./team.html?team=${encodeURIComponent(m.slug)}` : "#";
     const style = m.color ? `style="color:${m.color}"` : "";
-    return `<a class="scheduleTeamLink" ${style} href="${href}">${safe(teamName) || "TBD"}</a>`;
+
+    return `<a class="scheduleTeamLink" ${style} href="${href}">${name}</a>`;
+  }
+
+  function setActiveToggle(btn){
+    [toggleAll, toggleUpcoming, toggleCompleted].forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
   }
 
   function render(){
     container.innerHTML = "";
+    msgEl.textContent = "";
 
     let filtered = [...allGames];
 
-    if (teamFilter.value){
+    // Toggle filter
+    if (statusMode === "upcoming") {
+      filtered = filtered.filter(g => !isFinal(g.Status));
+    } else if (statusMode === "completed") {
+      filtered = filtered.filter(g => isFinal(g.Status));
+    }
+
+    // Team filter
+    if (teamFilter.value) {
       filtered = filtered.filter(g =>
         norm(g.TeamA) === norm(teamFilter.value) ||
         norm(g.TeamB) === norm(teamFilter.value)
       );
     }
 
-    if (dateFilter.value){
+    // Date filter
+    if (dateFilter.value) {
       filtered = filtered.filter(g => safe(g.Date) === dateFilter.value);
     }
 
     filtered.sort(sortGames);
+
+    if (!filtered.length) {
+      msgEl.textContent = "No games match your filters.";
+      return;
+    }
 
     const grouped = groupByDate(filtered);
 
     for (const [date, games] of grouped){
       const section = document.createElement("div");
       section.className = "scheduleDateSection";
-
       section.innerHTML = `<div class="scheduleDateHeader">${date}</div>`;
 
       for (const g of games){
-        const a = safe(g.TeamA);
-        const b = safe(g.TeamB);
-        const aMeta = getMeta(a);
-        const bMeta = getMeta(b);
+        const aName = safe(g.TeamA);
+        const bName = safe(g.TeamB);
+        const aMeta = getMeta(aName);
+        const bMeta = getMeta(bName);
 
         const final = isFinal(g.Status);
-        const score = (final && safe(g.ScoreA) && safe(g.ScoreB)) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "";
+        const hasScores = safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "";
+        const scoreText = (final && hasScores) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "";
 
         const card = document.createElement("div");
         card.className = "scheduleGameCard";
-        if(final) card.classList.add("finalGame");
+        if (final) card.classList.add("finalGame");
 
         card.innerHTML = `
           <div class="scheduleGameMeta">
-            <div class="metaTop">${safe(g.Time) || ""}</div>
-            <div class="metaBottom">${safe(g.Field) || ""}</div>
+            <div>${safe(g.Time) || ""}</div>
+            <div>${safe(g.Field) || ""}</div>
           </div>
 
           <div class="scheduleMatchupGrid">
             <div class="scheduleTeam sideLeft">
-              <span class="teamText">${teamAnchor(a)}</span>
-              <img class="teamLogo" src="${aMeta.logo}" alt="${a} logo"
+              <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
                    onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+              ${teamAnchor(aName)}
             </div>
 
             <div class="scheduleScore">
-              ${score || `<span class="vsLabel">vs</span>`}
+              ${scoreText || `<span class="vsLabel">vs</span>`}
             </div>
 
             <div class="scheduleTeam sideRight">
-              <img class="teamLogo" src="${bMeta.logo}" alt="${b} logo"
+              <img class="teamLogo" src="${bMeta.logo}" alt="${bName} logo"
                    onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-              <span class="teamText">${teamAnchor(b)}</span>
+              ${teamAnchor(bName)}
             </div>
           </div>
 
@@ -225,24 +271,21 @@
 
       container.appendChild(section);
     }
-
-    msgEl.textContent = filtered.length ? "" : "No games match selected filters.";
   }
 
   async function init(){
-    // Load teams first (for logo + color)
+    // Load teams for slug/logo/color
     const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
     const teamRows = parseCsv(teamsCsv);
 
-    // Expect: TeamName, TeamSlug, TeamLogo, (optional) TeamColor
     for (const r of teamRows){
       const name = safe(r.TeamName);
-      if(!name) continue;
+      if (!name) continue;
 
       teamMeta.set(norm(name), {
         slug: safe(r.TeamSlug),
         logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
-        color: safe(r.TeamColor) // optional hex like #DF4601
+        color: safe(r.TeamColor) // optional
       });
     }
 
@@ -250,7 +293,7 @@
     const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
     allGames = parseCsv(gamesCsv);
 
-    // Populate Team filter from *teams sheet* (canonical list)
+    // Populate team filter from Teams tab
     const teamNames = teamRows.map(r => safe(r.TeamName)).filter(Boolean).sort();
     teamNames.forEach(t => {
       const opt = document.createElement("option");
@@ -259,7 +302,7 @@
       teamFilter.appendChild(opt);
     });
 
-    // Populate Date filter from games
+    // Populate date filter from games
     const dateSet = new Set(allGames.map(g => safe(g.Date)).filter(Boolean));
     [...dateSet].sort().forEach(d => {
       const opt = document.createElement("option");
@@ -268,11 +311,30 @@
       dateFilter.appendChild(opt);
     });
 
+    // Listeners
     teamFilter.addEventListener("change", render);
     dateFilter.addEventListener("change", render);
     clearBtn.addEventListener("click", () => {
       teamFilter.value = "";
       dateFilter.value = "";
+      render();
+    });
+
+    toggleAll.addEventListener("click", () => {
+      statusMode = "all";
+      setActiveToggle(toggleAll);
+      render();
+    });
+
+    toggleUpcoming.addEventListener("click", () => {
+      statusMode = "upcoming";
+      setActiveToggle(toggleUpcoming);
+      render();
+    });
+
+    toggleCompleted.addEventListener("click", () => {
+      statusMode = "completed";
+      setActiveToggle(toggleCompleted);
       render();
     });
 
