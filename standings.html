@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Standings • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-standings4" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-standings5" />
 </head>
 
 <body class="watermarkPage standingsPage hasHamburger">
@@ -56,7 +56,15 @@
             <thead>
               <tr>
                 <th class="colRank sortTh" data-sort="RANK">#</th>
-                 <th class="colTeam">Team</th>
+
+                <!-- Team header aligned with logo + name column -->
+                <th class="colTeam">
+                  <div class="standingsTeamHeader">
+                    <span class="standingsTeamHeaderSpacer" aria-hidden="true"></span>
+                    <span>Team</span>
+                  </div>
+                </th>
+
                 <th class="colNum sortTh" data-sort="W">W</th>
                 <th class="colNum sortTh" data-sort="L">L</th>
                 <th class="colNum sortTh" data-sort="T">T</th>
@@ -91,6 +99,9 @@
 
   const PLAYOFF_CUTOFF = 6;
 
+  // Show playoff cut line only after every team has played at least this many games.
+  const SHOW_CUTLINE_AFTER_MIN_GP = 6;
+
   // Teams meta from Teams CSV:
   // key: normalized TeamName -> { slug, logo, color }
   const teamMeta = new Map();
@@ -102,6 +113,9 @@
   // Cached base standings rows
   let baseRows = [];
   let clinchedSet = new Set();
+
+  // Will be computed at init:
+  let showCutLine = false;
 
   function safe(v){ return String(v ?? "").trim(); }
   function norm(v){ return safe(v).toLowerCase(); }
@@ -260,27 +274,20 @@
 
   // Conservative clinch logic:
   // A team is clinched if fewer than 6 OTHER teams can still reach (>=) its current points.
-  // - current "min points" = current points (assuming it loses remaining)
-  // - other teams "max points" = current points + remaining games (assuming wins)
   function computeClinched(rows){
     const set = new Set();
-
     for (const x of rows){
-      const xMin = x.PTS; // already current points
-
+      const xMin = x.PTS; // current points
       let threatCount = 0;
       for (const o of rows){
         if (o.team === x.team) continue;
         if (o.MAX_PTS >= xMin) threatCount += 1;
       }
-
       if (threatCount < PLAYOFF_CUTOFF) set.add(x.team);
     }
-
     return set;
   }
 
-  // Default standings compare
   function defaultCompare(a, b){
     if (b.PCT !== a.PCT) return b.PCT - a.PCT;
     if (a.L !== b.L) return a.L - b.L;
@@ -290,10 +297,7 @@
   }
 
   function compareByKey(a, b){
-    if (sortKey === "RANK"){
-      // rank is derived from default order; keep stable
-      return defaultCompare(a,b);
-    }
+    if (sortKey === "RANK") return defaultCompare(a,b);
 
     if (sortKey === "STREAK") {
       const rank = (s) => {
@@ -341,12 +345,11 @@
     sortedRows.forEach((r, idx) => {
       const tr = document.createElement("tr");
 
-      // Top two outline still ok if sorted by default; keep subtle always
       if (idx === 0) tr.classList.add("standingsTop1");
       if (idx === 1) tr.classList.add("standingsTop2");
 
-      // Playoff shading based on *current visible order* (rank)
-      if (idx < PLAYOFF_CUTOFF) tr.classList.add("playoffRow");
+      // Only highlight top 6 after week 6 (min GP >= 6)
+      if (showCutLine && idx < PLAYOFF_CUTOFF) tr.classList.add("playoffRow");
 
       tr.innerHTML = `
         <td class="colRank">${idx + 1}</td>
@@ -367,8 +370,8 @@
       `;
       tbody.appendChild(tr);
 
-      // Cut line after #6
-      if (idx === PLAYOFF_CUTOFF - 1){
+      // Only show cut line after week 6 threshold
+      if (showCutLine && idx === PLAYOFF_CUTOFF - 1){
         const cut = document.createElement("tr");
         cut.className = "cutLineRow";
         cut.innerHTML = `<td colspan="11"><span class="cutLineLabel">Playoff Cut Line</span></td>`;
@@ -422,7 +425,7 @@
       }
     }
 
-    // Build standings rows
+    // Build standings
     const standings = new Map();
     for (const name of teamNames){
       standings.set(name, {
@@ -462,7 +465,6 @@
       counted += 1;
     }
 
-    // Derived fields (GP, PCT, RD, PTS, REM, MAX_PTS)
     for (const v of standings.values()){
       v.GP = v.W + v.L + v.T;
       v.RD = v.RF - v.RA;
@@ -474,7 +476,7 @@
       const finalsPlayed = finalsPlayedByTeam.get(v.team) || 0;
       v.REM = Math.max(0, total - finalsPlayed);
 
-      v.MAX_PTS = v.PTS + v.REM; // assume wins in remaining
+      v.MAX_PTS = v.PTS + v.REM;
     }
 
     // Streaks
@@ -486,12 +488,16 @@
 
     baseRows = Array.from(standings.values());
 
-    // Default standings (Win%)
+    // Gate playoff cut line until week 6 threshold is met (min GP across teams)
+    const minGamesPlayed = baseRows.reduce((m, r) => Math.min(m, r.GP), Infinity);
+    showCutLine = (minGamesPlayed >= SHOW_CUTLINE_AFTER_MIN_GP);
+
+    // Default sort: Win%
     sortKey = "PCT";
     sortDir = "desc";
     setSortHeaderState();
 
-    // Compute clinched using default order rows (doesn't depend on UI sort)
+    // Clinched set (does not depend on cut line)
     clinchedSet = computeClinched(baseRows);
 
     const sorted = applySort(baseRows);
