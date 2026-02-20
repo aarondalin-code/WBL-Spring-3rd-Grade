@@ -830,3 +830,78 @@ body.watermarkPage::before{
   font-weight:900;
   color:#065f46;
 }
+/* =========================
+   Modern Schedule Layout
+========================= */
+
+.scheduleDateSection{
+  margin-bottom:28px;
+}
+
+.scheduleDateHeader{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:12px;
+  padding-bottom:6px;
+  border-bottom:2px solid var(--border);
+}
+
+.scheduleGameCard{
+  display:grid;
+  grid-template-columns:140px 1fr 100px;
+  align-items:center;
+  gap:16px;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.scheduleGameMeta{
+  font-weight:700;
+  color:var(--muted);
+}
+
+.scheduleMatchup{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+}
+
+.scheduleTeam{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:900;
+}
+
+.scheduleTeam img{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+}
+
+.scheduleScore{
+  font-size:18px;
+  font-weight:900;
+  min-width:60px;
+  text-align:center;
+}
+
+.scheduleStatus{
+  text-align:right;
+  font-weight:700;
+  color:var(--muted);
+}
+
+.finalGame{
+  background:rgba(37,99,235,.05);
+}
+
+.scheduleTeamLink{
+  text-decoration:none;
+  color:#0f172a;
+}
+
+.scheduleTeamLink:hover{
+  color:var(--royal);
+}
