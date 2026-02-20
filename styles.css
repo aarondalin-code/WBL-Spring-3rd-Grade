@@ -1085,3 +1085,183 @@ body.watermarkPage::before{
   height: 28px;
   flex: 0 0 auto;
 }
+/* =========================
+   Rules Page — Elite Accordion (Tournament-style)
+   Requires: rules.html uses .rulesHeroElite, .rulesAcc, .rulesAccSummary, .ruleCardElite, etc.
+========================= */
+
+.rulesHeroElite{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  position:relative;
+  overflow:hidden;
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+}
+.rulesHeroElite::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(90deg, rgba(37,99,235,0.10), rgba(37,99,235,0));
+  pointer-events:none;
+}
+.centeredRulesHero{
+  text-align:center;
+  font-size:20px;
+  font-weight:950;
+  letter-spacing:.3px;
+  padding:18px 12px;
+  position:relative;
+  z-index:1;
+}
+.centeredRulesHero .rulesHeroLine2{
+  display:block;
+  margin-top:6px;
+  font-size:13px;
+  font-weight:800;
+  color:var(--muted);
+  letter-spacing:.2px;
+}
+
+/* Accordions wrapper */
+.rulesAccordions{
+  display:grid;
+  gap:12px;
+}
+
+/* <details> container */
+.rulesAcc{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+}
+
+/* <summary> row */
+.rulesAccSummary{
+  list-style:none;
+  cursor:pointer;
+  display:grid;
+  grid-template-columns: 44px 1fr 22px;
+  gap:10px;
+  align-items:center;
+  padding:12px 12px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border-bottom:1px solid var(--border);
+}
+.rulesAccSummary::-webkit-details-marker{ display:none; }
+
+/* Left icon */
+.rulesAccIcon{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background: rgba(37,99,235,0.10);
+  border: 1px solid rgba(37,99,235,0.18);
+  font-size:16px;
+}
+
+/* Title + sub */
+.rulesAccText{ min-width:0; }
+.rulesAccTitle{
+  display:block;
+  font-weight:950;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  color:#0f172a;
+}
+.rulesAccSub{
+  display:block;
+  margin-top:2px;
+  font-size:12px;
+}
+
+/* Chevron */
+.rulesAccChevron{
+  font-weight:950;
+  opacity:.55;
+  transition: transform .15s ease;
+  text-align:right;
+}
+.rulesAcc[open] .rulesAccChevron{
+  transform: rotate(180deg);
+}
+
+/* Body */
+.rulesAccBody{
+  padding:12px;
+  display:grid;
+  gap:10px;
+  position:relative;
+}
+
+/* Left accent bar */
+.rulesAccBody::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:12px;
+  bottom:12px;
+  width:4px;
+  background: var(--royal);
+  border-radius:999px;
+  opacity:.85;
+}
+
+/* Elite rule cards */
+.ruleCardElite{
+  border:1px solid var(--border);
+  background:#f8fafc;
+  border-radius:12px;
+  padding:10px 12px;
+  margin-left:10px; /* clears accent bar */
+}
+
+.ruleImportantElite{
+  background: rgba(37,99,235,0.08);
+  border-color: rgba(37,99,235,0.25);
+}
+
+.ruleTitleElite{
+  font-weight:950;
+  font-size:13px;
+  margin-bottom:6px;
+  color:#0f172a;
+}
+
+.ruleBodyElite{
+  font-size:13px;
+  line-height:1.45;
+  color:#0f172a;
+}
+
+/* Footer note inside an accordion */
+.rulesFooterNoteElite{
+  margin-left:10px;
+  margin-top:6px;
+}
+.rulesFooterLineElite{
+  height:1px;
+  background:var(--border);
+  margin:10px 0;
+}
+
+/* If you still have any <ul> inside rules bodies, tighten them up */
+.rulesAccBody ul{
+  margin: 6px 0 0 22px;
+}
+.rulesAccBody li{
+  margin: 6px 0;
+}
+
+/* Mobile polish */
+@media (max-width: 520px){
+  .centeredRulesHero{ font-size:18px; }
+  .rulesAccSummary{ grid-template-columns: 42px 1fr 20px; padding: 11px; }
+  .rulesAccIcon{ width:32px; height:32px; }
+}
