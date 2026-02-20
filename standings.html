@@ -4,19 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Standings • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-standings2" />
 </head>
 
 <body class="watermarkPage standingsPage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-    <button
-      class="navToggle"
-      type="button"
-      aria-label="Open menu"
-      aria-expanded="false"
-      aria-controls="siteNav"
-    >
+    <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
       <span></span><span></span><span></span>
     </button>
 
@@ -45,27 +39,30 @@
 <main class="wrap">
   <section class="docSection">
 
-    <div class="standingsHeaderCard">
-      <div class="standingsHeaderTitle">Standings</div>
-      <div class="standingsHeaderSub muted">
-        Auto-calculated from games marked <strong>Final</strong> in the Google Sheet.
-      </div>
-      <div class="standingsHeaderMeta muted small" id="standingsUpdated"></div>
-    </div>
-
     <div class="card">
       <div class="cardBody">
-        <div class="tableScroll">
-          <table id="standingsTable" class="standingsTable">
+
+        <div class="standingsTopBar">
+          <div>
+            <div class="standingsTitle">Standings</div>
+            <div class="muted small">
+              Auto-calculated from games marked <strong>Final</strong> in your Google Sheet.
+            </div>
+          </div>
+          <div class="standingsMeta muted small" id="standingsUpdated"></div>
+        </div>
+
+        <div class="tableScroll standingsTableScroll">
+          <table id="standingsTable" class="standingsTableModern">
             <thead>
               <tr>
-                <th>Team</th>
-                <th class="num">Wins</th>
-                <th class="num">Losses</th>
-                <th class="num">Ties</th>
-                <th class="num">Runs For</th>
-                <th class="num">Runs Against</th>
-                <th class="num">Run Diff</th>
+                <th class="colTeam">Team</th>
+                <th class="colNum">W</th>
+                <th class="colNum">L</th>
+                <th class="colNum">T</th>
+                <th class="colNum">RF</th>
+                <th class="colNum">RA</th>
+                <th class="colNum colRd">RD</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -73,8 +70,10 @@
         </div>
 
         <p id="standingsMsg" class="muted small" style="margin-top:12px;"></p>
+
       </div>
     </div>
+
   </section>
 </main>
 
@@ -85,27 +84,17 @@
   const msgEl = document.getElementById("standingsMsg");
   const updatedEl = document.getElementById("standingsUpdated");
 
-  function safe(v){ return String(v ?? "").trim(); }
+  // Teams meta from Teams CSV:
+  // key: normalized TeamName -> { slug, logo, color }
+  const teamMeta = new Map();
 
-  // Accept "Final" or "Final ..." variants
-  function isFinal(status){
-    const s = safe(status).toLowerCase();
-    return s === "final" || s.startsWith("final");
-  }
+  function safe(v){ return String(v ?? "").trim(); }
+  function norm(v){ return safe(v).toLowerCase(); }
+  function isFinal(status){ return norm(status) === "final"; }
 
   function toNum(x){
     const n = Number(safe(x));
     return Number.isFinite(n) ? n : null;
-  }
-
-  function normalizeKey(s){ return safe(s).toLowerCase(); }
-
-  function slugifyTeamName(name) {
-    return safe(name)
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
   }
 
   async function fetchCsv(url) {
@@ -116,7 +105,7 @@
     return await res.text();
   }
 
-  // Robust CSV parser (quoted commas safe) + BOM strip
+  // Robust CSV parser (quoted commas safe)
   function parseCsv(text) {
     const rows = [];
     let row = [];
@@ -149,22 +138,42 @@
     row.push(cur);
     if (row.some(v => safe(v) !== "")) rows.push(row);
 
-    const headers = (rows.shift() || []).map((h) => {
-      let key = safe(h).replace(/\s+/g, "");
-      key = key.replace(/^\uFEFF/, ""); // strip BOM
-      return key;
-    });
-
-    return rows
-      .filter(r => r.some(x => safe(x) !== ""))
-      .map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => obj[h] = safe(r[idx]));
-        return obj;
-      });
+    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
+    return rows.map(r => {
+      const obj = {};
+      headers.forEach((h, idx) => obj[h] = safe(r[idx]));
+      return obj;
+    }).filter(o => Object.values(o).some(v => safe(v) !== ""));
   }
 
-  function buildStandings(teamNames){
+  function getMeta(teamName){
+    const m = teamMeta.get(norm(teamName));
+    return m || {
+      slug: "",
+      logo: window.DEFAULT_TEAM_LOGO || "./logo.png",
+      color: ""
+    };
+  }
+
+  function teamCellHtml(teamName){
+    const name = safe(teamName) || "TBD";
+    const meta = getMeta(name);
+
+    const href = meta.slug ? `./team.html?team=${encodeURIComponent(meta.slug)}` : "#";
+    const style = meta.color ? `style="color:${meta.color}"` : "";
+    const logo = meta.logo || (window.DEFAULT_TEAM_LOGO || "./logo.png");
+    const fallback = window.DEFAULT_TEAM_LOGO || "./logo.png";
+
+    return `
+      <div class="standingsTeamCell">
+        <img class="standingsTeamLogo" src="${logo}" alt="${name} logo"
+             onerror="this.onerror=null; this.src='${fallback}';">
+        <a class="standingsTeamLink" ${style} href="${href}">${name}</a>
+      </div>
+    `;
+  }
+
+  function buildStandings(teamNames) {
     const map = new Map();
     for (const name of teamNames) {
       if (!name) continue;
@@ -174,7 +183,7 @@
   }
 
   function sortStandings(a, b) {
-    // W desc, L asc, RD desc, RF desc, team asc
+    // W desc, L asc, RD desc, RF desc, team name asc
     if (b.W !== a.W) return b.W - a.W;
     if (a.L !== b.L) return a.L - b.L;
     if (b.RD !== a.RD) return b.RD - a.RD;
@@ -182,7 +191,7 @@
     return a.team.localeCompare(b.team);
   }
 
-  function renderRows(rows, teamNameToSlug){
+  function renderRows(rows) {
     tbody.innerHTML = "";
 
     rows.forEach((r, idx) => {
@@ -190,88 +199,84 @@
       if (idx === 0) tr.classList.add("standingsTop1");
       if (idx === 1) tr.classList.add("standingsTop2");
 
-      const slug = teamNameToSlug.get(normalizeKey(r.team)) || slugifyTeamName(r.team);
-
-      const tdTeam = document.createElement("td");
-      tdTeam.innerHTML = `<a class="teamLink" href="./team.html?team=${encodeURIComponent(slug)}">${r.team}</a>`;
-      tr.appendChild(tdTeam);
-
-      const cells = [
-        { v: r.W, cls: "num" },
-        { v: r.L, cls: "num" },
-        { v: r.T, cls: "num" },
-        { v: r.RF, cls: "num" },
-        { v: r.RA, cls: "num" },
-        { v: (r.RD > 0 ? "+" : "") + r.RD, cls: "num rd" }
-      ];
-
-      for (const c of cells) {
-        const td = document.createElement("td");
-        td.className = c.cls;
-        td.textContent = c.v;
-        tr.appendChild(td);
-      }
-
+      tr.innerHTML = `
+        <td class="colTeam">${teamCellHtml(r.team)}</td>
+        <td class="colNum">${r.W}</td>
+        <td class="colNum">${r.L}</td>
+        <td class="colNum">${r.T}</td>
+        <td class="colNum">${r.RF}</td>
+        <td class="colNum">${r.RA}</td>
+        <td class="colNum colRd">${r.RD > 0 ? "+" : ""}${r.RD}</td>
+      `;
       tbody.appendChild(tr);
     });
   }
 
-  async function init(){
+  async function init() {
     msgEl.textContent = "";
-    updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
+    updatedEl.textContent = "";
 
-    // Load teams for (a) complete list and (b) name->slug link mapping
+    // Load Teams CSV for logo/color/slug AND to ensure all teams appear even before finals.
     const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
     const teamRows = parseCsv(teamsCsv);
 
-    const teamNames = teamRows.map(r => safe(r.TeamName)).filter(Boolean);
-
-    const teamNameToSlug = new Map();
-    for (const r of teamRows) {
+    const teamNames = [];
+    for (const r of teamRows){
       const name = safe(r.TeamName);
-      const slug = safe(r.TeamSlug);
-      if (name && slug) teamNameToSlug.set(normalizeKey(name), slug);
+      if (!name) continue;
+
+      teamNames.push(name);
+
+      teamMeta.set(norm(name), {
+        slug: safe(r.TeamSlug),
+        logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
+        color: safe(r.TeamColor) // optional
+      });
     }
 
     const standings = buildStandings(teamNames);
 
-    // Load games
+    // Load Games CSV
     const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
     const gameRows = parseCsv(gamesCsv);
 
-    // Count final games where TeamA/TeamB are plain team names
     const finalGames = gameRows.filter(g => isFinal(g.Status));
     let counted = 0;
 
     for (const g of finalGames) {
       const aName = safe(g.TeamA);
       const bName = safe(g.TeamB);
+      if (!aName || !bName) continue;
+
       const scoreA = toNum(g.ScoreA);
       const scoreB = toNum(g.ScoreB);
-
-      if (!aName || !bName || scoreA === null || scoreB === null) continue;
+      if (scoreA === null || scoreB === null) continue;
 
       if (!standings.has(aName)) standings.set(aName, { team: aName, W:0, L:0, T:0, RF:0, RA:0, RD:0 });
       if (!standings.has(bName)) standings.set(bName, { team: bName, W:0, L:0, T:0, RF:0, RA:0, RD:0 });
 
-      const A = standings.get(aName);
-      const B = standings.get(bName);
+      const a = standings.get(aName);
+      const b = standings.get(bName);
 
-      A.RF += scoreA; A.RA += scoreB;
-      B.RF += scoreB; B.RA += scoreA;
+      // Runs
+      a.RF += scoreA; a.RA += scoreB;
+      b.RF += scoreB; b.RA += scoreA;
 
-      if (scoreA > scoreB) { A.W++; B.L++; }
-      else if (scoreB > scoreA) { B.W++; A.L++; }
-      else { A.T++; B.T++; }
+      // W/L/T
+      if (scoreA > scoreB) { a.W += 1; b.L += 1; }
+      else if (scoreB > scoreA) { b.W += 1; a.L += 1; }
+      else { a.T += 1; b.T += 1; }
 
-      counted++;
+      counted += 1;
     }
 
+    // RD
     for (const v of standings.values()) v.RD = v.RF - v.RA;
 
     const rows = Array.from(standings.values()).sort(sortStandings);
-    renderRows(rows, teamNameToSlug);
+    renderRows(rows);
 
+    updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
     msgEl.textContent = counted
       ? `Standings based on ${counted} final game(s).`
       : `No final games yet — standings will populate once games are marked Final.`;
