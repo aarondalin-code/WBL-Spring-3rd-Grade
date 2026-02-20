@@ -704,3 +704,10 @@ a:hover{ opacity:.9; }
   border-color: rgba(37,99,235,0.38);
   background: #fff;
 }
+
+/* ===== WBL: Team header overrides (minimal) ===== */
+.teamLogo{
+  object-fit: contain;      /* MLB logos */
+  background: #fff;         /* cleaner than dark background */
+  padding: 8px;             /* prevents SVG looking cramped */
+}
