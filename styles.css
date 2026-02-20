@@ -710,3 +710,48 @@ body.watermarkPage::before{
   border:1px solid var(--border);
   background:white;
 }
+
+/* ===== Header condense (WBL) ===== */
+.brandCenter{
+  padding: 6px 16px 8px;   /* smaller than 10/14 */
+}
+
+.logoImage{
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.brandCenter h1{
+  margin: 6px 0 2px;
+  font-size: 22px;
+}
+
+.tagline{
+  font-size: 12px;
+}
+
+.navWrap{
+  padding: 8px 16px 0;
+}
+
+.nav{
+  padding-top: 6px;
+}
+
+/* ===== Team page header block condense ===== */
+.teamHeaderBlock{
+  padding: 10px;
+  grid-template-columns: 1fr 280px;
+  align-items: center;
+}
+
+.teamHeaderLogo{
+  width: 64px;
+  height: 64px;
+  padding: 5px;
+}
+
+.coachCard{ padding: 10px; }
+.coachName{ font-size: 15px; }
+.coachLink{ padding: 8px 10px; font-size: 12px; }
