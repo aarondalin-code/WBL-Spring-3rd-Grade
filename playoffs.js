@@ -2,7 +2,7 @@
    - Always renders bracket structure
    - Seeds computed from regular season Games marked Final
    - Team refs in Playoffs tab: S3, S6, W146, L147, etc.
-   - Championship: 146-150
+   - Championship: 146-150 (with explicit BYEs for S1/S2)
    - Consolation: 151-155
 */
 
@@ -80,7 +80,7 @@
       });
   }
 
-  // ---------- Standings -> Seeds (same tie logic you used elsewhere) ----------
+  // ---------- Standings -> Seeds ----------
   function buildStandings(teamNames){
     const map = new Map();
     for (const name of teamNames) {
@@ -132,7 +132,7 @@
     return { ordered, bySeed };
   }
 
-  // ---------- Team lookup (slug/logo/color) ----------
+  // ---------- Team lookup ----------
   function slugifyTeamName(name) {
     return safe(name)
       .toLowerCase()
@@ -193,13 +193,13 @@
 
     const up = raw.toUpperCase();
 
-    // S3
+    // Seed ref S3
     if (/^S\d+$/.test(up)) {
       const n = Number(up.slice(1));
       return seedsByNum.get(n) || null;
     }
 
-    // W146 / L147
+    // Winner/Loser ref W146 / L147
     if (/^[WL]\d+$/.test(up)) {
       const type = up[0];
       const gid = Number(up.slice(1));
@@ -215,90 +215,136 @@
     return null;
   }
 
-  // ---------- Bracket rendering ----------
-  function gameBoxHTML(game, teamNameToRow){
-    const id = safe(game.GameID);
-    const date = safe(game.Date);
-    const time = safe(game.Time);
-    const field = safe(game.Field);
+  // ---------- Box render helpers ----------
+  function scoreSpan(val){
+    const n = toNum(val);
+    if (n === null) return "";
+    return `<span class="brTeamScore">${n}</span>`;
+  }
 
-    const metaBits = [];
-    if (id) metaBits.push(`Game ${id}`);
-    const dtBits = [];
-    if (date) dtBits.push(date);
-    if (time) dtBits.push(time);
-    if (field) dtBits.push(field);
+  function byeBoxHTML(seedNum, teamName, teamNameToRow){
+    const label = `S${seedNum}`;
+    const name = teamName || "TBD";
 
-    const metaTop = metaBits.join(" • ");
-    const metaBottom = dtBits.join(" • ");
-
-    const A = safe(game.TeamAResolved) || "TBD";
-    const B = safe(game.TeamBResolved) || "TBD";
-
-    const final = isFinal(game.Status);
-    const sA = toNum(game.ScoreA);
-    const sB = toNum(game.ScoreB);
-    const score = (final && sA !== null && sB !== null) ? `${sA}-${sB}` : (final ? "Final" : "");
-
-    const Ameta = A !== "TBD" ? teamMeta(A, teamNameToRow) : null;
-    const Bmeta = B !== "TBD" ? teamMeta(B, teamNameToRow) : null;
+    const logoHtml = teamName
+      ? (() => {
+          const meta = teamMeta(teamName, teamNameToRow);
+          return `<img class="brLogo" src="${meta.logo}" alt="${meta.name} logo"
+                    onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">`;
+        })()
+      : `<span class="brLogoBlank"></span>`;
 
     return `
-      <div class="brGame ${final ? "brFinal" : ""}">
+      <div class="brGame brBye">
         <div class="brMeta">
-          <div class="brMetaTop">${metaTop || ""}</div>
-          <div class="brMetaBottom">${metaBottom || ""}</div>
+          <div class="brMetaTop">${label} • Bye</div>
+          <div class="brMetaBottom muted">First-round bye</div>
         </div>
 
         <div class="brTeams">
           <div class="brTeamRow">
-            ${Ameta ? `<img class="brLogo" src="${Ameta.logo}" alt="${Ameta.name} logo" onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">` : `<span class="brLogoBlank"></span>`}
-            ${teamLinkHTML(A, teamNameToRow)}
-          </div>
-
-          <div class="brTeamRow">
-            ${Bmeta ? `<img class="brLogo" src="${Bmeta.logo}" alt="${Bmeta.name} logo" onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">` : `<span class="brLogoBlank"></span>`}
-            ${teamLinkHTML(B, teamNameToRow)}
+            ${logoHtml}
+            <div class="brTeamMain">
+              ${teamLinkHTML(name === "TBD" ? "TBD" : name, teamNameToRow)}
+            </div>
           </div>
         </div>
-
-        <div class="brScore">${score}</div>
       </div>
     `;
   }
 
-  function renderBracket(container, titleCols){
-    // titleCols: [{title:"Round 1", ids:[146,147]}, ...]
-    const html = titleCols.map(col => {
+  function gameBoxHTML(game, teamNameToRow){
+    const date = safe(game.Date);
+    const time = safe(game.Time);
+    const field = safe(game.Field);
+    const status = safe(game.Status) || "Scheduled";
+
+    const A = safe(game.TeamAResolved) || "TBD";
+    const B = safe(game.TeamBResolved) || "TBD";
+
+    const final = isFinal(status);
+    const sA = final ? scoreSpan(game.ScoreA) : "";
+    const sB = final ? scoreSpan(game.ScoreB) : "";
+
+    const Ameta = (A !== "TBD") ? teamMeta(A, teamNameToRow) : null;
+    const Bmeta = (B !== "TBD") ? teamMeta(B, teamNameToRow) : null;
+
+    const metaParts = [];
+    if (date) metaParts.push(date);
+    if (time) metaParts.push(time);
+    if (field) metaParts.push(field);
+    const meta = metaParts.join(" • ");
+
+    return `
+      <div class="brGame ${final ? "brFinal" : ""}">
+        <div class="brMeta">
+          <div class="brMetaTop">${final ? "Final" : status}</div>
+          <div class="brMetaBottom">${meta}</div>
+        </div>
+
+        <div class="brTeams">
+          <div class="brTeamRow">
+            ${Ameta ? `<img class="brLogo" src="${Ameta.logo}" alt="${Ameta.name} logo"
+                      onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">` : `<span class="brLogoBlank"></span>`}
+            <div class="brTeamMain">
+              ${teamLinkHTML(A, teamNameToRow)}
+            </div>
+            ${sA}
+          </div>
+
+          <div class="brTeamRow">
+            ${Bmeta ? `<img class="brLogo" src="${Bmeta.logo}" alt="${Bmeta.name} logo"
+                      onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">` : `<span class="brLogoBlank"></span>`}
+            <div class="brTeamMain">
+              ${teamLinkHTML(B, teamNameToRow)}
+            </div>
+            ${sB}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ---------- Bracket layout ----------
+  function renderBracket(container, cols){
+    const html = cols.map(col => {
       return `
-        <div class="brCol">
+        <div class="brCol ${col.colClass || ""}">
           <div class="brColTitle">${col.title}</div>
-          <div class="brColBody" data-ids="${col.ids.join(",")}"></div>
+          <div class="brColBody" data-key="${col.key}"></div>
         </div>
       `;
     }).join("");
     container.innerHTML = html;
   }
 
-  function fillBracket(container, cols, playoffsById, teamNameToRow){
+  function fillBracket(container, cols, playoffsById, teamNameToRow, seedsByNum){
     for (const col of cols) {
-      const body = container.querySelector(`.brColBody[data-ids="${col.ids.join(",")}"]`);
+      const body = container.querySelector(`.brColBody[data-key="${col.key}"]`);
       if (!body) continue;
-      body.innerHTML = col.ids.map(id => {
+
+      body.innerHTML = col.items.map(item => {
+        // BYE items
+        if (item.type === "bye") {
+          const team = seedsByNum.get(item.seed) || null;
+          return byeBoxHTML(item.seed, team, teamNameToRow);
+        }
+
+        // GAME items
+        const id = item.id;
         const g = playoffsById.get(id);
         if (!g) {
-          // still render empty placeholder if row missing
+          // placeholder if row missing
           return `
             <div class="brGame brMissing">
               <div class="brMeta">
-                <div class="brMetaTop">Game ${id}</div>
-                <div class="brMetaBottom muted">Missing row in Playoffs tab</div>
+                <div class="brMetaTop muted">Scheduled</div>
+                <div class="brMetaBottom muted">Missing Playoffs row (GameID ${id})</div>
               </div>
               <div class="brTeams">
                 <div class="brTeamRow"><span class="brLogoBlank"></span><span class="brTeamName muted">TBD</span></div>
                 <div class="brTeamRow"><span class="brLogoBlank"></span><span class="brTeamName muted">TBD</span></div>
               </div>
-              <div class="brScore"></div>
             </div>
           `;
         }
@@ -311,7 +357,7 @@
     msgEl.textContent = "";
     updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
 
-    // --- Teams ---
+    // Teams
     const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
     const teamRows = parseCsv(teamsCsv);
     const teamNames = teamRows.map(r => safe(r.TeamName)).filter(Boolean);
@@ -322,66 +368,94 @@
       if (name) teamNameToRow.set(norm(name), r);
     }
 
-    // --- Regular season games -> seeds ---
+    // Regular season -> seeds
     const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
     const gameRows = parseCsv(gamesCsv);
-
     const { ordered, bySeed } = computeSeedsFromGames(teamNames, gameRows);
 
     const preview = ordered.slice(0, 10).map((r, i) => `S${i+1}: ${r.team}`).join(" • ");
     seedNoteEl.textContent = preview ? `Current seeding: ${preview}` : "";
 
-    // --- Playoff games ---
+    // Playoffs games
     const playoffsCsv = await fetchCsv(window.SHEET?.PLAYOFFS_CSV_URL);
     const playoffRows = parseCsv(playoffsCsv);
 
     const playoffsById = new Map();
     for (const r of playoffRows) {
-      // tolerate GameID / GameId / Game
       const id = toNum(r.GameID) ?? toNum(r.GameId) ?? toNum(r.Game);
       if (!Number.isFinite(id)) continue;
 
-      // normalize expected field names
       r.GameID = String(id);
       r.TeamA = safe(r.TeamA);
       r.TeamB = safe(r.TeamB);
       r.ScoreA = safe(r.ScoreA);
       r.ScoreB = safe(r.ScoreB);
       r.Status = safe(r.Status);
+      r.Date = safe(r.Date);
+      r.Time = safe(r.Time);
+      r.Field = safe(r.Field);
 
       playoffsById.set(id, r);
     }
 
-    // Always render bracket columns even if no data
+    // Resolve TeamA/TeamB for playoff rows (multi-pass for W/L refs)
+    const allIds = Array.from(playoffsById.keys()).sort((a,b)=>a-b);
+    for (let pass = 0; pass < 4; pass++) {
+      for (const id of allIds) {
+        const g = playoffsById.get(id);
+        g.TeamAResolved = resolveRef(g.TeamA, bySeed, playoffsById, teamNameToRow) || "";
+        g.TeamBResolved = resolveRef(g.TeamB, bySeed, playoffsById, teamNameToRow) || "";
+      }
+    }
+
+    // Championship columns (explicit BYEs for S1/S2)
     const champCols = [
-      { title: "Round 1",     ids: [146, 147] },
-      { title: "Semifinals",  ids: [148, 149] },
-      { title: "Championship",ids: [150] }
+      {
+        title: "Round 1",
+        key: "c_r1",
+        colClass: "brRound1",
+        items: [
+          { type: "bye", seed: 1 },
+          { type: "bye", seed: 2 },
+          { type: "game", id: 146 },
+          { type: "game", id: 147 },
+        ]
+      },
+      {
+        title: "Semifinals",
+        key: "c_sf",
+        colClass: "brSemis",
+        items: [
+          { type: "game", id: 148 },
+          { type: "game", id: 149 },
+        ]
+      },
+      {
+        title: "Championship",
+        key: "c_f",
+        colClass: "brFinal",
+        items: [
+          { type: "game", id: 150 },
+        ]
+      }
     ];
 
     const consCols = [
-      { title: "Round 1", ids: [151, 152] },
-      { title: "Round 2", ids: [153, 154, 155] }
+      { title: "Round 1", key: "k_r1", colClass:"brRound1", items: [{type:"game", id:151},{type:"game", id:152}] },
+      { title: "Round 2", key: "k_r2", colClass:"brSemis",  items: [{type:"game", id:153},{type:"game", id:154},{type:"game", id:155}] },
+      { title: "Final",   key: "k_f",  colClass:"brFinal",  items: [] }
     ];
+
+    // Render structure always
+    champEl.classList.add("bracketGrid", "brChamp");
+    consEl.classList.add("bracketGrid", "brCons");
 
     renderBracket(champEl, champCols);
     renderBracket(consEl, consCols);
 
-    // Resolve TeamA/TeamB for playoff rows
-    const allIds = Array.from(playoffsById.keys()).sort((a,b)=>a-b);
-
-    for (let pass = 0; pass < 4; pass++) {
-      for (const id of allIds) {
-        const g = playoffsById.get(id);
-        const aRes = resolveRef(g.TeamA, bySeed, playoffsById, teamNameToRow);
-        const bRes = resolveRef(g.TeamB, bySeed, playoffsById, teamNameToRow);
-        g.TeamAResolved = aRes || "";
-        g.TeamBResolved = bRes || "";
-      }
-    }
-
-    fillBracket(champEl, champCols, playoffsById, teamNameToRow);
-    fillBracket(consEl, consCols, playoffsById, teamNameToRow);
+    // Fill with data / placeholders
+    fillBracket(champEl, champCols, playoffsById, teamNameToRow, bySeed);
+    fillBracket(consEl, consCols, playoffsById, teamNameToRow, bySeed);
 
     msgEl.textContent = "Brackets auto-fill from standings and playoff results (Status=Final + scores).";
   }
