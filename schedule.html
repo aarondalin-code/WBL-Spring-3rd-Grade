@@ -4,23 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Schedule/Scores • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule2" />
 </head>
 
 <body class="watermarkPage schedulePage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-    <button
-      class="navToggle"
-      type="button"
-      aria-label="Open menu"
-      aria-expanded="false"
-      aria-controls="siteNav"
-    >
+    <button class="navToggle" type="button" aria-label="Open menu">
       <span></span><span></span><span></span>
     </button>
 
-    <div class="navOverlay" aria-hidden="true"></div>
+    <div class="navOverlay"></div>
 
     <nav class="nav" id="siteNav">
       <a href="./">Home</a>
@@ -36,7 +30,7 @@
   </div>
 
   <div class="brandCenter">
-    <img src="./logo.png" alt="WBL 3rd Grade 2026 Logo" class="logoImage" />
+    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
     <h1>WBL 3rd Grade 2026</h1>
     <div class="tagline">Schedule / Scores</div>
   </div>
@@ -44,21 +38,27 @@
 
 <main class="wrap">
   <section class="docSection">
-    <div class="standingsHeaderCard">
-      <div class="standingsHeaderTitle">Schedule / Scores</div>
-      <div class="standingsHeaderSub muted">
-        Games are Saturdays at <strong>10:00am</strong> and <strong>12:15pm</strong> on fields <strong>T3/T4/T5</strong>.
-      </div>
-      <div class="standingsHeaderMeta muted small" id="scheduleUpdated"></div>
-    </div>
 
     <div class="card">
       <div class="cardBody">
+
+        <!-- Filters -->
+        <div class="scheduleFilters">
+          <select id="teamFilter">
+            <option value="">All Teams</option>
+          </select>
+
+          <select id="dateFilter">
+            <option value="">All Dates</option>
+          </select>
+
+          <button id="clearFilters" class="btnSecondary">Clear</button>
+        </div>
+
         <div class="tableScroll">
           <table id="scheduleTable" class="scheduleTable">
             <thead>
               <tr>
-                
                 <th>Date</th>
                 <th>Time</th>
                 <th>Field</th>
@@ -72,8 +72,10 @@
         </div>
 
         <p id="scheduleMsg" class="muted small" style="margin-top:12px;"></p>
+
       </div>
     </div>
+
   </section>
 </main>
 
@@ -82,20 +84,23 @@
 <script>
   const tbody = document.querySelector("#scheduleTable tbody");
   const msgEl = document.getElementById("scheduleMsg");
-  const updatedEl = document.getElementById("scheduleUpdated");
+
+  const teamFilter = document.getElementById("teamFilter");
+  const dateFilter = document.getElementById("dateFilter");
+  const clearBtn = document.getElementById("clearFilters");
+
+  let allGames = [];
 
   function safe(v){ return String(v ?? "").trim(); }
   function isFinal(status){ return safe(status).toLowerCase() === "final"; }
+  function normalizeKey(s){ return safe(s).toLowerCase(); }
 
   async function fetchCsv(url) {
-    if (!url) throw new Error("Missing CSV URL in data.js");
     const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
     const res = await fetch(url + bust, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
     return await res.text();
   }
 
-  // Robust CSV parser (quoted commas safe)
   function parseCsv(text) {
     const rows = [];
     let row = [];
@@ -133,137 +138,102 @@
       const obj = {};
       headers.forEach((h, idx) => obj[h] = safe(r[idx]));
       return obj;
-    }).filter(o => Object.values(o).some(v => safe(v) !== ""));
-  }
-
-  function toNum(x){
-    const n = Number(safe(x));
-    return Number.isFinite(n) ? n : null;
-  }
-
-  function normalizeKey(s){
-    return safe(s).toLowerCase();
-  }
-
-  function slugifyTeamName(name) {
-    return safe(name)
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  }
-
-  function linkTeam(teamName, teamNameToSlug){
-    const name = safe(teamName) || "TBD";
-    const slug = teamNameToSlug.get(normalizeKey(name)) || slugifyTeamName(name);
-    return `<a class="teamLinkInline" href="./team.html?team=${encodeURIComponent(slug)}">${name}</a>`;
-  }
-
-  function gameId(g){
-    return safe(g.Game || g.GameID || "");
+    });
   }
 
   function sortGames(a,b){
-    // Prefer numeric by Game ID; fallback to Date/Time string
-    const ga = Number(gameId(a));
-    const gb = Number(gameId(b));
-    const aNum = Number.isFinite(ga);
-    const bNum = Number.isFinite(gb);
-    if (aNum && bNum && ga !== gb) return ga - gb;
-    if (aNum && !bNum) return -1;
-    if (!aNum && bNum) return 1;
-
-    const da = safe(a.Date);
-    const db = safe(b.Date);
-    if (da !== db) return da.localeCompare(db);
-
-    const ta = safe(a.Time);
-    const tb = safe(b.Time);
-    if (ta !== tb) return ta.localeCompare(tb);
-
-    return gameId(a).localeCompare(gameId(b));
+    return safe(a.Date).localeCompare(safe(b.Date)) ||
+           safe(a.Time).localeCompare(safe(b.Time));
   }
 
-  function render(games, teamNameToSlug){
+  function render(teamNameToSlug){
     tbody.innerHTML = "";
 
-    const sorted = [...games].sort(sortGames);
+    let filtered = [...allGames];
 
-    let finalCount = 0;
+    if (teamFilter.value) {
+      filtered = filtered.filter(g =>
+        normalizeKey(g.TeamA) === normalizeKey(teamFilter.value) ||
+        normalizeKey(g.TeamB) === normalizeKey(teamFilter.value)
+      );
+    }
+
+    if (dateFilter.value) {
+      filtered = filtered.filter(g => safe(g.Date) === dateFilter.value);
+    }
+
+    const sorted = filtered.sort(sortGames);
 
     for (const g of sorted){
-      const id = gameId(g);
-      const date = safe(g.Date);
-      const time = safe(g.Time);
-      const field = safe(g.Field);
-
-      const aName = safe(g.TeamA);
-      const bName = safe(g.TeamB);
-
       const final = isFinal(g.Status);
-      if (final) finalCount++;
-
-      const sA = toNum(g.ScoreA);
-      const sB = toNum(g.ScoreB);
-      const score = (final && sA !== null && sB !== null) ? `${sA}-${sB}` : "";
-
-      const matchup = `${linkTeam(aName, teamNameToSlug)} <span class="vsSep">vs</span> ${linkTeam(bName, teamNameToSlug)}`;
-      const statusText = final ? "Final" : (safe(g.Status) || "Scheduled");
+      const score = (final && g.ScoreA && g.ScoreB)
+        ? `${g.ScoreA}-${g.ScoreB}`
+        : "";
 
       const tr = document.createElement("tr");
       if (final) tr.classList.add("finalRow");
 
       tr.innerHTML = `
-        
-        <td>${date}</td>
-        <td>${time}</td>
-        <td>${field}</td>
-        <td><div class="matchupCell">${matchup}</div></td>
+        <td>${g.Date}</td>
+        <td>${g.Time}</td>
+        <td>${g.Field}</td>
+        <td class="matchupCell">${g.TeamA} <span class="vsSep">vs</span> ${g.TeamB}</td>
         <td class="num">${score}</td>
-        <td>${statusText}</td>
+        <td>${final ? "Final" : (g.Status || "Scheduled")}</td>
       `;
 
       tbody.appendChild(tr);
     }
 
-    if (!games.length) {
-      msgEl.textContent = "No games found. Check your Games tab is published to CSV.";
-    } else if (!finalCount) {
-      msgEl.textContent = "No final games yet. Mark completed games as Status = Final (and enter scores) to show results.";
-    } else {
-      msgEl.textContent = `${finalCount} final game(s) shown.`;
-    }
+    msgEl.textContent = filtered.length
+      ? ""
+      : "No games match selected filters.";
   }
 
   async function init(){
-    msgEl.textContent = "";
-    updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
+    const gamesCsv = await fetchCsv(window.SHEET.GAMES_CSV_URL);
+    const teamsCsv = await fetchCsv(window.SHEET.TEAMS_CSV_URL);
 
-    // Build TeamName -> TeamSlug map from Teams CSV (Schema B)
-    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-    const teamRows = parseCsv(teamsCsv);
+    const games = parseCsv(gamesCsv);
+    const teams = parseCsv(teamsCsv);
 
-    const teamNameToSlug = new Map();
-    for (const r of teamRows){
-      const name = safe(r.TeamName);
-      const slug = safe(r.TeamSlug);
-      if (name && slug) teamNameToSlug.set(normalizeKey(name), slug);
-    }
+    allGames = games;
 
-    // Load Games CSV (regular season)
-    const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
-    const gameRows = parseCsv(gamesCsv);
+    /* Populate Team Filter */
+    const teamSet = new Set();
+    games.forEach(g => {
+      if (g.TeamA) teamSet.add(g.TeamA);
+      if (g.TeamB) teamSet.add(g.TeamB);
+    });
 
-    render(gameRows, teamNameToSlug);
+    [...teamSet].sort().forEach(team => {
+      const opt = document.createElement("option");
+      opt.value = team;
+      opt.textContent = team;
+      teamFilter.appendChild(opt);
+    });
+
+    /* Populate Date Filter */
+    const dateSet = new Set(games.map(g => g.Date).filter(Boolean));
+    [...dateSet].sort().forEach(date => {
+      const opt = document.createElement("option");
+      opt.value = date;
+      opt.textContent = date;
+      dateFilter.appendChild(opt);
+    });
+
+    teamFilter.addEventListener("change", () => render());
+    dateFilter.addEventListener("change", () => render());
+    clearBtn.addEventListener("click", () => {
+      teamFilter.value = "";
+      dateFilter.value = "";
+      render();
+    });
+
+    render();
   }
 
-  (async function(){
-    try { await init(); }
-    catch (err) {
-      console.error(err);
-      alert("Schedule page error: check TEAMS_CSV_URL / GAMES_CSV_URL in data.js and confirm your Sheets headers.");
-    }
-  })();
+  init();
 </script>
 
 <script src="./nav.js"></script>
