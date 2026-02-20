@@ -4,19 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Schedule/Scores • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule2" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule3" />
 </head>
 
 <body class="watermarkPage schedulePage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-    <button class="navToggle" type="button" aria-label="Open menu">
+    <button class="navToggle" type="button">
       <span></span><span></span><span></span>
     </button>
-
     <div class="navOverlay"></div>
 
-    <nav class="nav" id="siteNav">
+    <nav class="nav">
       <a href="./">Home</a>
       <a href="./schedule.html" class="active">Schedule/Scores</a>
       <a href="./standings.html">Standings</a>
@@ -37,203 +36,229 @@
 </header>
 
 <main class="wrap">
-  <section class="docSection">
+<section class="docSection">
 
-    <div class="card">
-      <div class="cardBody">
+<div class="card">
+<div class="cardBody">
 
-        <!-- Filters -->
-        <div class="scheduleFilters">
-          <select id="teamFilter">
-            <option value="">All Teams</option>
-          </select>
+<!-- Filters -->
+<div class="scheduleFilters">
+  <select id="teamFilter">
+    <option value="">All Teams</option>
+  </select>
 
-          <select id="dateFilter">
-            <option value="">All Dates</option>
-          </select>
+  <select id="dateFilter">
+    <option value="">All Dates</option>
+  </select>
 
-          <button id="clearFilters" class="btnSecondary">Clear</button>
-        </div>
+  <button id="clearFilters" class="btnSecondary">Clear</button>
+</div>
 
-        <div class="tableScroll">
-          <table id="scheduleTable" class="scheduleTable">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Field</th>
-                <th>Matchup</th>
-                <th class="num">Score</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+<div id="scheduleContainer"></div>
 
-        <p id="scheduleMsg" class="muted small" style="margin-top:12px;"></p>
+<p id="scheduleMsg" class="muted small" style="margin-top:12px;"></p>
 
-      </div>
-    </div>
+</div>
+</div>
 
-  </section>
+</section>
 </main>
 
 <script src="./data.js"></script>
 
 <script>
-  const tbody = document.querySelector("#scheduleTable tbody");
-  const msgEl = document.getElementById("scheduleMsg");
+const container = document.getElementById("scheduleContainer");
+const msgEl = document.getElementById("scheduleMsg");
+const teamFilter = document.getElementById("teamFilter");
+const dateFilter = document.getElementById("dateFilter");
+const clearBtn = document.getElementById("clearFilters");
 
-  const teamFilter = document.getElementById("teamFilter");
-  const dateFilter = document.getElementById("dateFilter");
-  const clearBtn = document.getElementById("clearFilters");
+let allGames = [];
+let teamMap = new Map();
 
-  let allGames = [];
+function safe(v){ return String(v ?? "").trim(); }
+function isFinal(status){ return safe(status).toLowerCase() === "final"; }
+function normalize(s){ return safe(s).toLowerCase(); }
 
-  function safe(v){ return String(v ?? "").trim(); }
-  function isFinal(status){ return safe(status).toLowerCase() === "final"; }
-  function normalizeKey(s){ return safe(s).toLowerCase(); }
+async function fetchCsv(url){
+  const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+  const res = await fetch(url + bust, {cache:"no-store"});
+  return await res.text();
+}
 
-  async function fetchCsv(url) {
-    const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(url + bust, { cache: "no-store" });
-    return await res.text();
+function parseCsv(text){
+  const rows=[];
+  let row=[],cur="",inQuotes=false;
+
+  for(let i=0;i<text.length;i++){
+    const ch=text[i],next=text[i+1];
+    if(ch==='"'){
+      if(inQuotes&&next==='"'){cur+='"';i++;}
+      else inQuotes=!inQuotes;
+      continue;
+    }
+    if(!inQuotes&&ch===","){row.push(cur);cur="";continue;}
+    if(!inQuotes&&(ch==="\n"||ch==="\r")){
+      if(ch==="\r"&&next==="\n")i++;
+      row.push(cur);cur="";
+      if(row.some(v=>safe(v)!==""))rows.push(row);
+      row=[];
+      continue;
+    }
+    cur+=ch;
+  }
+  row.push(cur);
+  if(row.some(v=>safe(v)!==""))rows.push(row);
+
+  const headers=(rows.shift()||[]).map(h=>safe(h).replace(/\s+/g,""));
+  return rows.map(r=>{
+    const o={};
+    headers.forEach((h,i)=>o[h]=safe(r[i]));
+    return o;
+  });
+}
+
+function sortGames(a,b){
+  return safe(a.Date).localeCompare(safe(b.Date)) ||
+         safe(a.Time).localeCompare(safe(b.Time));
+}
+
+function groupByDate(games){
+  const map=new Map();
+  games.forEach(g=>{
+    const d=safe(g.Date);
+    if(!map.has(d))map.set(d,[]);
+    map.get(d).push(g);
+  });
+  return map;
+}
+
+function teamLink(name){
+  const slug = teamMap.get(normalize(name));
+  return `<a class="scheduleTeamLink" href="./team.html?team=${slug}">${name}</a>`;
+}
+
+function teamLogo(name){
+  const slug = teamMap.get(normalize(name));
+  const teamInfo = window.TEAM_INFO?.[slug];
+  return teamInfo?.logo || window.DEFAULT_TEAM_LOGO || "./logo.png";
+}
+
+function render(){
+  container.innerHTML="";
+
+  let filtered=[...allGames];
+
+  if(teamFilter.value){
+    filtered=filtered.filter(g =>
+      normalize(g.TeamA)===normalize(teamFilter.value) ||
+      normalize(g.TeamB)===normalize(teamFilter.value)
+    );
   }
 
-  function parseCsv(text) {
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      const next = text[i + 1];
-
-      if (ch === '"') {
-        if (inQuotes && next === '"') { cur += '"'; i++; }
-        else inQuotes = !inQuotes;
-        continue;
-      }
-
-      if (!inQuotes && ch === ",") { row.push(cur); cur = ""; continue; }
-
-      if (!inQuotes && (ch === "\n" || ch === "\r")) {
-        if (ch === "\r" && next === "\n") i++;
-        row.push(cur); cur = "";
-        if (row.some(v => safe(v) !== "")) rows.push(row);
-        row = [];
-        continue;
-      }
-
-      cur += ch;
-    }
-
-    row.push(cur);
-    if (row.some(v => safe(v) !== "")) rows.push(row);
-
-    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
-    return rows.map(r => {
-      const obj = {};
-      headers.forEach((h, idx) => obj[h] = safe(r[idx]));
-      return obj;
-    });
+  if(dateFilter.value){
+    filtered=filtered.filter(g=>safe(g.Date)===dateFilter.value);
   }
 
-  function sortGames(a,b){
-    return safe(a.Date).localeCompare(safe(b.Date)) ||
-           safe(a.Time).localeCompare(safe(b.Time));
-  }
+  filtered.sort(sortGames);
 
-  function render(teamNameToSlug){
-    tbody.innerHTML = "";
+  const grouped=groupByDate(filtered);
 
-    let filtered = [...allGames];
+  for(const [date,games] of grouped){
+    const section=document.createElement("div");
+    section.className="scheduleDateSection";
 
-    if (teamFilter.value) {
-      filtered = filtered.filter(g =>
-        normalizeKey(g.TeamA) === normalizeKey(teamFilter.value) ||
-        normalizeKey(g.TeamB) === normalizeKey(teamFilter.value)
-      );
-    }
+    section.innerHTML=`<div class="scheduleDateHeader">${date}</div>`;
 
-    if (dateFilter.value) {
-      filtered = filtered.filter(g => safe(g.Date) === dateFilter.value);
-    }
+    games.forEach(g=>{
+      const final=isFinal(g.Status);
+      const score=final?`${g.ScoreA}-${g.ScoreB}`:"";
 
-    const sorted = filtered.sort(sortGames);
+      const gameDiv=document.createElement("div");
+      gameDiv.className="scheduleGameCard";
+      if(final) gameDiv.classList.add("finalGame");
 
-    for (const g of sorted){
-      const final = isFinal(g.Status);
-      const score = (final && g.ScoreA && g.ScoreB)
-        ? `${g.ScoreA}-${g.ScoreB}`
-        : "";
+      gameDiv.innerHTML=`
+        <div class="scheduleGameMeta">
+          <div>${g.Time}</div>
+          <div>${g.Field}</div>
+        </div>
 
-      const tr = document.createElement("tr");
-      if (final) tr.classList.add("finalRow");
+        <div class="scheduleMatchup">
+          <div class="scheduleTeam">
+            <img src="${teamLogo(g.TeamA)}">
+            ${teamLink(g.TeamA)}
+          </div>
 
-      tr.innerHTML = `
-        <td>${g.Date}</td>
-        <td>${g.Time}</td>
-        <td>${g.Field}</td>
-        <td class="matchupCell">${g.TeamA} <span class="vsSep">vs</span> ${g.TeamB}</td>
-        <td class="num">${score}</td>
-        <td>${final ? "Final" : (g.Status || "Scheduled")}</td>
+          <div class="scheduleScore">
+            ${score || "vs"}
+          </div>
+
+          <div class="scheduleTeam">
+            <img src="${teamLogo(g.TeamB)}">
+            ${teamLink(g.TeamB)}
+          </div>
+        </div>
+
+        <div class="scheduleStatus">
+          ${final ? "Final" : (g.Status || "Scheduled")}
+        </div>
       `;
 
-      tbody.appendChild(tr);
-    }
+      section.appendChild(gameDiv);
+    });
 
-    msgEl.textContent = filtered.length
-      ? ""
-      : "No games match selected filters.";
+    container.appendChild(section);
   }
 
-  async function init(){
-    const gamesCsv = await fetchCsv(window.SHEET.GAMES_CSV_URL);
-    const teamsCsv = await fetchCsv(window.SHEET.TEAMS_CSV_URL);
+  msgEl.textContent = filtered.length ? "" : "No games match selected filters.";
+}
 
-    const games = parseCsv(gamesCsv);
-    const teams = parseCsv(teamsCsv);
+async function init(){
+  const gamesCsv=await fetchCsv(window.SHEET.GAMES_CSV_URL);
+  const teamsCsv=await fetchCsv(window.SHEET.TEAMS_CSV_URL);
 
-    allGames = games;
+  allGames=parseCsv(gamesCsv);
+  const teams=parseCsv(teamsCsv);
 
-    /* Populate Team Filter */
-    const teamSet = new Set();
-    games.forEach(g => {
-      if (g.TeamA) teamSet.add(g.TeamA);
-      if (g.TeamB) teamSet.add(g.TeamB);
-    });
+  teams.forEach(t=>{
+    teamMap.set(normalize(t.TeamName), t.TeamSlug);
+  });
 
-    [...teamSet].sort().forEach(team => {
-      const opt = document.createElement("option");
-      opt.value = team;
-      opt.textContent = team;
-      teamFilter.appendChild(opt);
-    });
+  /* Filters */
+  const teamSet=new Set();
+  allGames.forEach(g=>{
+    if(g.TeamA) teamSet.add(g.TeamA);
+    if(g.TeamB) teamSet.add(g.TeamB);
+  });
 
-    /* Populate Date Filter */
-    const dateSet = new Set(games.map(g => g.Date).filter(Boolean));
-    [...dateSet].sort().forEach(date => {
-      const opt = document.createElement("option");
-      opt.value = date;
-      opt.textContent = date;
-      dateFilter.appendChild(opt);
-    });
+  [...teamSet].sort().forEach(team=>{
+    const opt=document.createElement("option");
+    opt.value=team;
+    opt.textContent=team;
+    teamFilter.appendChild(opt);
+  });
 
-    teamFilter.addEventListener("change", () => render());
-    dateFilter.addEventListener("change", () => render());
-    clearBtn.addEventListener("click", () => {
-      teamFilter.value = "";
-      dateFilter.value = "";
-      render();
-    });
+  const dateSet=new Set(allGames.map(g=>g.Date));
+  [...dateSet].sort().forEach(date=>{
+    const opt=document.createElement("option");
+    opt.value=date;
+    opt.textContent=date;
+    dateFilter.appendChild(opt);
+  });
 
+  teamFilter.addEventListener("change",render);
+  dateFilter.addEventListener("change",render);
+  clearBtn.addEventListener("click",()=>{
+    teamFilter.value="";
+    dateFilter.value="";
     render();
-  }
+  });
 
-  init();
+  render();
+}
+
+init();
 </script>
 
 <script src="./nav.js"></script>
