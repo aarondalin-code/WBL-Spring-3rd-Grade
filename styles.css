@@ -1265,3 +1265,124 @@ body.watermarkPage::before{
   .rulesAccSummary{ grid-template-columns: 42px 1fr 20px; padding: 11px; }
   .rulesAccIcon{ width:32px; height:32px; }
 }
+/* =========================
+   Playoffs Bracket Styling
+========================= */
+.bracketGrid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 980px){
+  .bracketGrid{ grid-template-columns: 1fr; }
+}
+
+.brCol{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+  overflow:hidden;
+}
+
+.brColTitle{
+  padding: 10px 12px;
+  font-weight: 950;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+}
+
+.brColBody{
+  padding: 10px 12px;
+  display:grid;
+  gap: 10px;
+}
+
+.brGame{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.brFinal{
+  background: rgba(37,99,235,.06);
+  border-color: rgba(37,99,235,.25);
+}
+
+.brMissing{
+  background: rgba(239,68,68,.06);
+  border-color: rgba(239,68,68,.25);
+}
+
+.brMeta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+  margin-bottom: 8px;
+}
+
+.brMetaTop{
+  font-weight: 900;
+  font-size: 12px;
+  color: #0f172a;
+}
+
+.brMetaBottom{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.brTeams{
+  display:grid;
+  gap: 8px;
+}
+
+.brTeamRow{
+  display:flex;
+  gap: 8px;
+  align-items:center;
+  min-width:0;
+}
+
+.brLogo{
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.brLogoBlank{
+  width: 24px;
+  height: 24px;
+  display:inline-block;
+  flex: 0 0 auto;
+}
+
+.brTeamName{
+  font-weight: 950;
+  text-decoration:none;
+  color:#0f172a;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+
+.brTeamName:hover{
+  color: var(--royal);
+}
+
+.brScore{
+  margin-top: 8px;
+  text-align:right;
+  font-weight: 950;
+  font-size: 14px;
+  color:#0f172a;
+}
