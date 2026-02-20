@@ -704,25 +704,3 @@ a:hover{ opacity:.9; }
   border-color: rgba(37,99,235,0.38);
   background: #fff;
 }
-/* ===== Team header balance tweak ===== */
-.teamHeaderBlock{
-  align-items: start;            /* don't stretch right side to full height */
-}
-
-.teamHeaderRight{
-  align-self: start;             /* keep coach box compact */
-}
-
-.coachCard{
-  height: auto;                  /* cancel any full-height feeling */
-  padding: 12px;                 /* slightly tighter */
-}
-
-.coachName{
-  font-size: 17px;               /* slightly smaller */
-}
-
-.coachLink{
-  padding: 8px 10px;             /* tighter pills */
-  font-size: 12.5px;
-}
