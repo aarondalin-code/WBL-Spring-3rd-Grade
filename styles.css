@@ -609,3 +609,37 @@ a:hover{ opacity:.9; }
   font-size: 18px;
 }
 
+/* =========================================================
+   TEAM PAGE: compatibility patch (HTML uses teamHeaderBlock/teamHeaderLogo)
+   ========================================================= */
+
+.teamHeaderBlock{
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 12px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+@media (max-width: 760px){
+  .teamHeaderBlock{ grid-template-columns: 1fr; }
+}
+
+.teamHeaderLeft{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* This is the key: make your Team page logo match the intended styling */
+.teamHeaderLogo{
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  object-fit: contain;     /* better for MLB logos than cover */
+  border: 1px solid var(--border);
+  background: white;
+  padding: 6px;            /* gives “sticker” look + prevents cropping */
+}
