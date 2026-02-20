@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Standings • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-standings2" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-standings3" />
 </head>
 
 <body class="watermarkPage standingsPage hasHamburger">
@@ -38,7 +38,6 @@
 
 <main class="wrap">
   <section class="docSection">
-
     <div class="card">
       <div class="cardBody">
 
@@ -46,7 +45,7 @@
           <div>
             <div class="standingsTitle">Standings</div>
             <div class="muted small">
-              Auto-calculated from games marked <strong>Final</strong> in your Google Sheet.
+              Auto-calculated from games marked <strong>Final</strong>. Click a column header to sort.
             </div>
           </div>
           <div class="standingsMeta muted small" id="standingsUpdated"></div>
@@ -57,12 +56,19 @@
             <thead>
               <tr>
                 <th class="colTeam">Team</th>
-                <th class="colNum">W</th>
-                <th class="colNum">L</th>
-                <th class="colNum">T</th>
-                <th class="colNum">RF</th>
-                <th class="colNum">RA</th>
-                <th class="colNum colRd">RD</th>
+
+                <th class="colNum sortTh" data-sort="W">W</th>
+                <th class="colNum sortTh" data-sort="L">L</th>
+                <th class="colNum sortTh" data-sort="T">T</th>
+
+                <th class="colNum sortTh" data-sort="GP">GP</th>
+                <th class="colNum sortTh" data-sort="PCT">Win%</th>
+
+                <th class="colNum sortTh" data-sort="RF">RF</th>
+                <th class="colNum sortTh" data-sort="RA">RA</th>
+                <th class="colNum colRd sortTh" data-sort="RD">RD</th>
+
+                <th class="colStreak sortTh" data-sort="STREAK">Streak</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -73,7 +79,6 @@
 
       </div>
     </div>
-
   </section>
 </main>
 
@@ -87,6 +92,10 @@
   // Teams meta from Teams CSV:
   // key: normalized TeamName -> { slug, logo, color }
   const teamMeta = new Map();
+
+  // Sort state
+  let sortKey = "PCT";
+  let sortDir = "desc"; // "asc" | "desc"
 
   function safe(v){ return String(v ?? "").trim(); }
   function norm(v){ return safe(v).toLowerCase(); }
@@ -173,22 +182,139 @@
     `;
   }
 
+  function computePct(W, L, T){
+    const gp = W + L + T;
+    if (!gp) return 0;
+    // baseball-style: ties count as half-win in pct
+    return (W + 0.5*T) / gp;
+  }
+
+  function pctStr(p){
+    // show like .667 or 1.000
+    const s = p.toFixed(3);
+    return s.startsWith("0") ? s.slice(1) : s;
+  }
+
+  // Streak tracking:
+  // We compute by scanning games in chronological order per team
+  // using Date then Time then Field then (optional) GameID.
+  function gameSortKey(g){
+    // string compare is fine because your Date is consistent; if not, still stable enough
+    const d = safe(g.Date);
+    const t = safe(g.Time);
+    const f = safe(g.Field);
+    const id = safe(g.Game || g.GameID || "");
+    return `${d}__${t}__${f}__${id}`;
+  }
+
+  function resultForTeam(game, teamName){
+    const a = safe(game.TeamA);
+    const b = safe(game.TeamB);
+    if (teamName !== a && teamName !== b) return null;
+    if (!isFinal(game.Status)) return null;
+
+    const sa = toNum(game.ScoreA);
+    const sb = toNum(game.ScoreB);
+    if (sa === null || sb === null) return null;
+
+    if (sa === sb) return "T";
+    const teamIsA = (teamName === a);
+    const teamWon = teamIsA ? (sa > sb) : (sb > sa);
+    return teamWon ? "W" : "L";
+  }
+
+  function computeStreaks(teamNames, finalGamesSorted){
+    const streakMap = new Map();
+    // initialize
+    teamNames.forEach(n => streakMap.set(n, { type: "", count: 0 }));
+
+    for (const g of finalGamesSorted){
+      for (const teamName of teamNames){
+        const res = resultForTeam(g, teamName);
+        if (!res) continue;
+
+        const s = streakMap.get(teamName) || { type:"", count:0 };
+        if (!s.type) {
+          s.type = res; s.count = 1;
+        } else if (s.type === res) {
+          s.count += 1;
+        } else {
+          s.type = res; s.count = 1;
+        }
+        streakMap.set(teamName, s);
+      }
+    }
+    return streakMap;
+  }
+
+  function streakStr(s){
+    if (!s || !s.type || !s.count) return "-";
+    return `${s.type}${s.count}`;
+  }
+
   function buildStandings(teamNames) {
     const map = new Map();
     for (const name of teamNames) {
       if (!name) continue;
-      map.set(name, { team: name, W: 0, L: 0, T: 0, RF: 0, RA: 0, RD: 0 });
+      map.set(name, { team: name, W: 0, L: 0, T: 0, RF: 0, RA: 0, RD: 0, GP: 0, PCT: 0, STREAK: "-" });
     }
     return map;
   }
 
-  function sortStandings(a, b) {
-    // W desc, L asc, RD desc, RF desc, team name asc
-    if (b.W !== a.W) return b.W - a.W;
+  function defaultCompare(a, b){
+    // Default standings: PCT desc, L asc, RD desc, RF desc, team name asc
+    if (b.PCT !== a.PCT) return b.PCT - a.PCT;
     if (a.L !== b.L) return a.L - b.L;
     if (b.RD !== a.RD) return b.RD - a.RD;
     if (b.RF !== a.RF) return b.RF - a.RF;
     return a.team.localeCompare(b.team);
+  }
+
+  function compareByKey(a, b){
+    // numeric keys (except STREAK)
+    if (sortKey === "STREAK") {
+      // Sort by streak strength: W > T > L, then count desc
+      const rank = (s) => {
+        if (!s || s === "-") return { r: 0, n: 0 };
+        const type = s[0];
+        const n = Number(s.slice(1)) || 0;
+        const r = type === "W" ? 3 : type === "T" ? 2 : 1;
+        return { r, n };
+      };
+      const ra = rank(a.STREAK);
+      const rb = rank(b.STREAK);
+      if (rb.r !== ra.r) return rb.r - ra.r;
+      if (rb.n !== ra.n) return rb.n - ra.n;
+      return defaultCompare(a,b);
+    }
+
+    const va = a[sortKey];
+    const vb = b[sortKey];
+
+    if (vb !== va) return (vb - va); // default desc
+    return defaultCompare(a,b);
+  }
+
+  function applySort(rows){
+    const sorted = [...rows];
+
+    // Default sort always available via sortKey=PCT
+    sorted.sort((a,b) => {
+      let cmp = compareByKey(a,b);
+      if (sortDir === "asc") cmp = -cmp;
+      return cmp;
+    });
+
+    return sorted;
+  }
+
+  function setSortHeaderState(){
+    document.querySelectorAll(".sortTh").forEach(th => {
+      th.classList.remove("sortActiveAsc","sortActiveDesc");
+      if (th.dataset.sort === sortKey) {
+        th.classList.add(sortDir === "asc" ? "sortActiveAsc" : "sortActiveDesc");
+      }
+    });
   }
 
   function renderRows(rows) {
@@ -201,12 +327,19 @@
 
       tr.innerHTML = `
         <td class="colTeam">${teamCellHtml(r.team)}</td>
+
         <td class="colNum">${r.W}</td>
         <td class="colNum">${r.L}</td>
         <td class="colNum">${r.T}</td>
+
+        <td class="colNum">${r.GP}</td>
+        <td class="colNum">${pctStr(r.PCT)}</td>
+
         <td class="colNum">${r.RF}</td>
         <td class="colNum">${r.RA}</td>
         <td class="colNum colRd">${r.RD > 0 ? "+" : ""}${r.RD}</td>
+
+        <td class="colStreak">${r.STREAK}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -241,6 +374,10 @@
     const gameRows = parseCsv(gamesCsv);
 
     const finalGames = gameRows.filter(g => isFinal(g.Status));
+    // Sort finals chronologically for streak calculations
+    const finalGamesSorted = [...finalGames].sort((a,b) => gameSortKey(a).localeCompare(gameSortKey(b)));
+
+    // Compute W/L/T, RF/RA
     let counted = 0;
 
     for (const g of finalGames) {
@@ -252,8 +389,8 @@
       const scoreB = toNum(g.ScoreB);
       if (scoreA === null || scoreB === null) continue;
 
-      if (!standings.has(aName)) standings.set(aName, { team: aName, W:0, L:0, T:0, RF:0, RA:0, RD:0 });
-      if (!standings.has(bName)) standings.set(bName, { team: bName, W:0, L:0, T:0, RF:0, RA:0, RD:0 });
+      if (!standings.has(aName)) standings.set(aName, { team: aName, W:0, L:0, T:0, RF:0, RA:0, RD:0, GP:0, PCT:0, STREAK:"-" });
+      if (!standings.has(bName)) standings.set(bName, { team: bName, W:0, L:0, T:0, RF:0, RA:0, RD:0, GP:0, PCT:0, STREAK:"-" });
 
       const a = standings.get(aName);
       const b = standings.get(bName);
@@ -270,16 +407,54 @@
       counted += 1;
     }
 
-    // RD
-    for (const v of standings.values()) v.RD = v.RF - v.RA;
+    // Compute derived fields
+    for (const v of standings.values()){
+      v.GP = v.W + v.L + v.T;
+      v.RD = v.RF - v.RA;
+      v.PCT = computePct(v.W, v.L, v.T);
+    }
 
-    const rows = Array.from(standings.values()).sort(sortStandings);
+    // Streaks
+    const streaks = computeStreaks(Array.from(standings.keys()), finalGamesSorted);
+    for (const [teamName, s] of streaks.entries()){
+      const row = standings.get(teamName);
+      if (row) row.STREAK = streakStr(s);
+    }
+
+    // Build rows and apply current sort
+    let rows = Array.from(standings.values());
+
+    // Default is Win% desc
+    sortKey = "PCT";
+    sortDir = "desc";
+    setSortHeaderState();
+
+    rows = applySort(rows);
     renderRows(rows);
 
     updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
     msgEl.textContent = counted
       ? `Standings based on ${counted} final game(s).`
       : `No final games yet — standings will populate once games are marked Final.`;
+
+    // Sorting handlers
+    document.querySelectorAll(".sortTh").forEach(th => {
+      th.addEventListener("click", () => {
+        const key = th.dataset.sort;
+        if (!key) return;
+
+        if (sortKey === key) {
+          sortDir = (sortDir === "desc") ? "asc" : "desc";
+        } else {
+          sortKey = key;
+          sortDir = "desc";
+        }
+
+        setSortHeaderState();
+        const sorted = applySort(Array.from(standings.values()));
+        renderRows(sorted);
+      });
+    });
   }
 
   init().catch(err => {
