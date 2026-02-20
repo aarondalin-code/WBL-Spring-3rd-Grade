@@ -998,3 +998,79 @@ body.watermarkPage::before{
   font-variant-numeric: tabular-nums;
   font-weight: 900;
 }
+/* =========================
+   Standings: playoff highlights + clinched badge + rank + cut line
+========================= */
+
+.standingsTableModern .colRank{
+  width: 52px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.standingsTeamText{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.clinchedBadge{
+  display:inline-flex;
+  align-items:center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 950;
+  border: 1px solid rgba(22,163,74,0.25);
+  background: rgba(22,163,74,0.10);
+  color: #065f46;
+  white-space: nowrap;
+}
+
+.playoffRow{
+  background: rgba(37,99,235,0.045) !important;
+}
+
+.cutLineRow td{
+  padding: 10px 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+
+.cutLineLabel{
+  display:block;
+  text-align:center;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Sorting cues (if you haven’t already added these) */
+.standingsTableModern .sortTh{
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 22px;
+}
+.standingsTableModern .sortTh::after{
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.35;
+}
+.standingsTableModern .sortActiveDesc::after{ content: "↓"; opacity: 0.9; }
+.standingsTableModern .sortActiveAsc::after{ content: "↑"; opacity: 0.9; }
+
+.standingsTableModern .colStreak{
+  width: 12%;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
