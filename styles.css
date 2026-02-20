@@ -972,3 +972,29 @@ body.watermarkPage::before{
   outline: 2px solid rgba(37,99,235,0.14);
   outline-offset: -2px;
 }
+/* Standings sorting cues */
+.standingsTableModern .sortTh{
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 22px; /* space for arrow */
+}
+
+.standingsTableModern .sortTh::after{
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.35;
+}
+
+.standingsTableModern .sortActiveDesc::after{ content: "↓"; opacity: 0.9; }
+.standingsTableModern .sortActiveAsc::after{ content: "↑"; opacity: 0.9; }
+
+.colStreak{
+  width: 12%;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
