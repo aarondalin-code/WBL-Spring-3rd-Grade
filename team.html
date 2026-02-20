@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,8 +26,8 @@
       <a href="./">Home</a>
       <a href="./schedule.html">Schedule/Scores</a>
       <a href="./standings.html">Standings</a>
-      <!-- Add Playoffs later when we build playoffs.html -->
       <a href="./teams.html">Teams</a>
+      <a href="./playoffs.html">Playoffs</a>
       <a href="./rules.html">Rules</a>
       <a href="./contacts.html">Contacts</a>
       <a href="./gallery.html">Gallery</a>
@@ -37,7 +36,7 @@
   </div>
 
   <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage">
+    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
     <h1>WBL 3rd Grade 2026</h1>
     <div class="tagline">Team Roster</div>
   </div>
@@ -47,35 +46,37 @@
   <!-- Team header block -->
   <section class="card" style="margin-top:12px;">
     <div class="cardBody">
-<div class="teamHeaderCard">
-  <div class="teamHeaderLeft">
-    <img id="teamLogo" class="teamLogo" src="./logo.png" alt="Team Logo" />
+      <div class="teamHeaderBlock">
+        <div class="teamHeaderLeft">
+          <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo" />
+          <div>
+            <div class="muted small">Team</div>
+            <h2 id="teamName" style="margin:0;">Team</h2>
+            <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
+          </div>
+        </div>
 
-    <div>
-      <div class="teamKicker">Team</div>
-      <h2 id="teamName" class="teamTitle">Team</h2>
-      <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
-    </div>
-  </div>
+        <div class="teamHeaderRight">
+          <div class="coachCard">
+            <div class="coachTitleCenter">
+              <div class="coachLabel">Head Coach</div>
+              <div class="coachName" id="coachName">TBD</div>
+            </div>
 
-  <div class="teamHeaderRight">
-    <div class="coachCard">
-      <div class="coachLabel">Head Coach</div>
-      <div class="coachName" id="coachName">TBD</div>
-
-      <div class="coachLinks">
-        <a id="coachEmail" class="coachLink" href="#" style="display:none;"></a>
-        <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
+            <div class="coachLinks">
+              <a id="coachEmail" class="coachLink" href="#" style="display:none;"></a>
+              <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
   </section>
 
   <!-- Roster -->
   <section class="card" style="margin-top:14px;">
     <div class="cardBody">
-      <div class="rosterTopRow">
+      <div class="rosterTopRow" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
         <h3 style="margin:0;">Roster</h3>
         <a class="btnSecondary" href="./teams.html">← Back to Teams</a>
       </div>
@@ -207,7 +208,7 @@
     logoEl.src = logo;
     logoEl.onerror = () => { logoEl.src = window.DEFAULT_TEAM_LOGO || "./logo.png"; };
 
-    subEl.textContent = ""; // reserved
+    subEl.textContent = ""; // reserved for division/notes later if needed
 
     const coachName = safe(teamRow.CoachName);
     const coachEmail = safe(teamRow.CoachEmail);
@@ -235,9 +236,13 @@
   // -----------------------------
   // Roster render
   // -----------------------------
+  function getPlayerName(player){
+    return safe(player.Name || player.PlayerName || "Player");
+  }
+
   function getPhotoSrc(player){
     const url = safe(player.PhotoURL);
-    return url ? url : "./logo.png";
+    return url ? url : (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
   }
 
   function line(label, value){
@@ -250,7 +255,7 @@
   }
 
   function renderPlayerModal(player, teamDisplayName){
-    const name = safe(player.PlayerName || player.Name || "Player");
+    const name = getPlayerName(player);
     const num = safe(player.Number);
     const pos = safe(player.Position);
     const bats = safe(player.Bats);
@@ -270,7 +275,7 @@
     openModal(`
       <div class="profileHeader">
         <div class="profilePhoto">
-          <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='./logo.png';">
+          <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
         </div>
         <div>
           <h3 id="modalTitle" class="profileName">${name}</h3>
@@ -302,7 +307,7 @@
       if (aHas && bHas && na !== nb) return na - nb;
       if (aHas && !bHas) return -1;
       if (!aHas && bHas) return 1;
-      return safe(a.PlayerName || a.Name).localeCompare(safe(b.PlayerName || b.Name));
+      return getPlayerName(a).localeCompare(getPlayerName(b));
     });
 
     for (const p of players){
@@ -310,7 +315,7 @@
       btn.type = "button";
       btn.className = "playerCardBtn";
 
-      const name = safe(p.PlayerName || p.Name || "Player");
+      const name = getPlayerName(p);
       const num = safe(p.Number);
       const pos = safe(p.Position);
       const photo = getPhotoSrc(p);
@@ -318,13 +323,15 @@
       btn.innerHTML = `
         <div class="playerCardRow">
           <div class="playerThumb">
-            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='./logo.png';">
+            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
           </div>
-          <div class="playerText">
-            <div class="playerNameLine">${name}${num ? ` <span class="muted">#${num}</span>` : ""}</div>
+          <div class="playerText" style="min-width:0;">
+            <div class="playerNameLine" style="font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              ${name}${num ? ` <span class="muted">#${num}</span>` : ""}
+            </div>
             <div class="muted small">${pos || ""}</div>
           </div>
-          <div class="playerChevron">›</div>
+          <div class="playerChevron" aria-hidden="true" style="margin-left:auto; font-weight:900; font-size:18px; color:#94a3b8;">›</div>
         </div>
       `;
 
