@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Standings • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-standings3" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-standings4" />
 </head>
 
 <body class="watermarkPage standingsPage hasHamburger">
@@ -55,6 +55,7 @@
           <table id="standingsTable" class="standingsTableModern">
             <thead>
               <tr>
+                <th class="colRank sortTh" data-sort="RANK">#</th>
                 <th class="colTeam">Team</th>
 
                 <th class="colNum sortTh" data-sort="W">W</th>
@@ -89,6 +90,8 @@
   const msgEl = document.getElementById("standingsMsg");
   const updatedEl = document.getElementById("standingsUpdated");
 
+  const PLAYOFF_CUTOFF = 6;
+
   // Teams meta from Teams CSV:
   // key: normalized TeamName -> { slug, logo, color }
   const teamMeta = new Map();
@@ -96,6 +99,10 @@
   // Sort state
   let sortKey = "PCT";
   let sortDir = "desc"; // "asc" | "desc"
+
+  // Cached base standings rows
+  let baseRows = [];
+  let clinchedSet = new Set();
 
   function safe(v){ return String(v ?? "").trim(); }
   function norm(v){ return safe(v).toLowerCase(); }
@@ -173,11 +180,17 @@
     const logo = meta.logo || (window.DEFAULT_TEAM_LOGO || "./logo.png");
     const fallback = window.DEFAULT_TEAM_LOGO || "./logo.png";
 
+    const clinched = clinchedSet.has(name);
+    const badge = clinched ? `<span class="clinchedBadge" title="Clinched a playoff spot">Clinched</span>` : "";
+
     return `
       <div class="standingsTeamCell">
         <img class="standingsTeamLogo" src="${logo}" alt="${name} logo"
              onerror="this.onerror=null; this.src='${fallback}';">
-        <a class="standingsTeamLink" ${style} href="${href}">${name}</a>
+        <div class="standingsTeamText">
+          <a class="standingsTeamLink" ${style} href="${href}">${name}</a>
+          ${badge}
+        </div>
       </div>
     `;
   }
@@ -185,21 +198,19 @@
   function computePct(W, L, T){
     const gp = W + L + T;
     if (!gp) return 0;
-    // baseball-style: ties count as half-win in pct
     return (W + 0.5*T) / gp;
   }
 
   function pctStr(p){
-    // show like .667 or 1.000
     const s = p.toFixed(3);
     return s.startsWith("0") ? s.slice(1) : s;
   }
 
-  // Streak tracking:
-  // We compute by scanning games in chronological order per team
-  // using Date then Time then Field then (optional) GameID.
+  // "Points" used for clinch math (wins + 0.5 ties)
+  function points(W, T){ return W + 0.5*T; }
+
+  // Sorting key for streak calc: Date + Time + Field + GameID
   function gameSortKey(g){
-    // string compare is fine because your Date is consistent; if not, still stable enough
     const d = safe(g.Date);
     const t = safe(g.Time);
     const f = safe(g.Field);
@@ -225,7 +236,6 @@
 
   function computeStreaks(teamNames, finalGamesSorted){
     const streakMap = new Map();
-    // initialize
     teamNames.forEach(n => streakMap.set(n, { type: "", count: 0 }));
 
     for (const g of finalGamesSorted){
@@ -234,13 +244,10 @@
         if (!res) continue;
 
         const s = streakMap.get(teamName) || { type:"", count:0 };
-        if (!s.type) {
-          s.type = res; s.count = 1;
-        } else if (s.type === res) {
-          s.count += 1;
-        } else {
-          s.type = res; s.count = 1;
-        }
+        if (!s.type) { s.type = res; s.count = 1; }
+        else if (s.type === res) { s.count += 1; }
+        else { s.type = res; s.count = 1; }
+
         streakMap.set(teamName, s);
       }
     }
@@ -252,17 +259,30 @@
     return `${s.type}${s.count}`;
   }
 
-  function buildStandings(teamNames) {
-    const map = new Map();
-    for (const name of teamNames) {
-      if (!name) continue;
-      map.set(name, { team: name, W: 0, L: 0, T: 0, RF: 0, RA: 0, RD: 0, GP: 0, PCT: 0, STREAK: "-" });
+  // Conservative clinch logic:
+  // A team is clinched if fewer than 6 OTHER teams can still reach (>=) its current points.
+  // - current "min points" = current points (assuming it loses remaining)
+  // - other teams "max points" = current points + remaining games (assuming wins)
+  function computeClinched(rows){
+    const set = new Set();
+
+    for (const x of rows){
+      const xMin = x.PTS; // already current points
+
+      let threatCount = 0;
+      for (const o of rows){
+        if (o.team === x.team) continue;
+        if (o.MAX_PTS >= xMin) threatCount += 1;
+      }
+
+      if (threatCount < PLAYOFF_CUTOFF) set.add(x.team);
     }
-    return map;
+
+    return set;
   }
 
+  // Default standings compare
   function defaultCompare(a, b){
-    // Default standings: PCT desc, L asc, RD desc, RF desc, team name asc
     if (b.PCT !== a.PCT) return b.PCT - a.PCT;
     if (a.L !== b.L) return a.L - b.L;
     if (b.RD !== a.RD) return b.RD - a.RD;
@@ -271,9 +291,12 @@
   }
 
   function compareByKey(a, b){
-    // numeric keys (except STREAK)
+    if (sortKey === "RANK"){
+      // rank is derived from default order; keep stable
+      return defaultCompare(a,b);
+    }
+
     if (sortKey === "STREAK") {
-      // Sort by streak strength: W > T > L, then count desc
       const rank = (s) => {
         if (!s || s === "-") return { r: 0, n: 0 };
         const type = s[0];
@@ -290,21 +313,17 @@
 
     const va = a[sortKey];
     const vb = b[sortKey];
-
-    if (vb !== va) return (vb - va); // default desc
+    if (vb !== va) return (vb - va);
     return defaultCompare(a,b);
   }
 
   function applySort(rows){
     const sorted = [...rows];
-
-    // Default sort always available via sortKey=PCT
     sorted.sort((a,b) => {
       let cmp = compareByKey(a,b);
       if (sortDir === "asc") cmp = -cmp;
       return cmp;
     });
-
     return sorted;
   }
 
@@ -317,15 +336,21 @@
     });
   }
 
-  function renderRows(rows) {
+  function renderRows(sortedRows) {
     tbody.innerHTML = "";
 
-    rows.forEach((r, idx) => {
+    sortedRows.forEach((r, idx) => {
       const tr = document.createElement("tr");
+
+      // Top two outline still ok if sorted by default; keep subtle always
       if (idx === 0) tr.classList.add("standingsTop1");
       if (idx === 1) tr.classList.add("standingsTop2");
 
+      // Playoff shading based on *current visible order* (rank)
+      if (idx < PLAYOFF_CUTOFF) tr.classList.add("playoffRow");
+
       tr.innerHTML = `
+        <td class="colRank">${idx + 1}</td>
         <td class="colTeam">${teamCellHtml(r.team)}</td>
 
         <td class="colNum">${r.W}</td>
@@ -342,6 +367,14 @@
         <td class="colStreak">${r.STREAK}</td>
       `;
       tbody.appendChild(tr);
+
+      // Cut line after #6
+      if (idx === PLAYOFF_CUTOFF - 1){
+        const cut = document.createElement("tr");
+        cut.className = "cutLineRow";
+        cut.innerHTML = `<td colspan="11"><span class="cutLineLabel">Playoff Cut Line</span></td>`;
+        tbody.appendChild(cut);
+      }
     });
   }
 
@@ -349,7 +382,7 @@
     msgEl.textContent = "";
     updatedEl.textContent = "";
 
-    // Load Teams CSV for logo/color/slug AND to ensure all teams appear even before finals.
+    // Load Teams CSV
     const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
     const teamRows = parseCsv(teamsCsv);
 
@@ -359,7 +392,6 @@
       if (!name) continue;
 
       teamNames.push(name);
-
       teamMeta.set(norm(name), {
         slug: safe(r.TeamSlug),
         logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
@@ -367,17 +399,43 @@
       });
     }
 
-    const standings = buildStandings(teamNames);
-
     // Load Games CSV
     const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
     const gameRows = parseCsv(gamesCsv);
 
+    // Compute total scheduled games per team from the games sheet itself
+    const totalByTeam = new Map();
+    const finalsPlayedByTeam = new Map();
+
+    function bump(map, key, amt=1){
+      map.set(key, (map.get(key) || 0) + amt);
+    }
+
+    for (const g of gameRows){
+      const a = safe(g.TeamA);
+      const b = safe(g.TeamB);
+      if (a) bump(totalByTeam, a, 1);
+      if (b) bump(totalByTeam, b, 1);
+
+      if (isFinal(g.Status)){
+        if (a) bump(finalsPlayedByTeam, a, 1);
+        if (b) bump(finalsPlayedByTeam, b, 1);
+      }
+    }
+
+    // Build standings rows
+    const standings = new Map();
+    for (const name of teamNames){
+      standings.set(name, {
+        team: name, W:0, L:0, T:0, RF:0, RA:0, RD:0,
+        GP:0, PCT:0, STREAK:"-",
+        PTS:0, REM:0, MAX_PTS:0
+      });
+    }
+
     const finalGames = gameRows.filter(g => isFinal(g.Status));
-    // Sort finals chronologically for streak calculations
     const finalGamesSorted = [...finalGames].sort((a,b) => gameSortKey(a).localeCompare(gameSortKey(b)));
 
-    // Compute W/L/T, RF/RA
     let counted = 0;
 
     for (const g of finalGames) {
@@ -389,17 +447,15 @@
       const scoreB = toNum(g.ScoreB);
       if (scoreA === null || scoreB === null) continue;
 
-      if (!standings.has(aName)) standings.set(aName, { team: aName, W:0, L:0, T:0, RF:0, RA:0, RD:0, GP:0, PCT:0, STREAK:"-" });
-      if (!standings.has(bName)) standings.set(bName, { team: bName, W:0, L:0, T:0, RF:0, RA:0, RD:0, GP:0, PCT:0, STREAK:"-" });
+      if (!standings.has(aName)) standings.set(aName, { team:aName, W:0,L:0,T:0,RF:0,RA:0,RD:0,GP:0,PCT:0,STREAK:"-",PTS:0,REM:0,MAX_PTS:0 });
+      if (!standings.has(bName)) standings.set(bName, { team:bName, W:0,L:0,T:0,RF:0,RA:0,RD:0,GP:0,PCT:0,STREAK:"-",PTS:0,REM:0,MAX_PTS:0 });
 
       const a = standings.get(aName);
       const b = standings.get(bName);
 
-      // Runs
       a.RF += scoreA; a.RA += scoreB;
       b.RF += scoreB; b.RA += scoreA;
 
-      // W/L/T
       if (scoreA > scoreB) { a.W += 1; b.L += 1; }
       else if (scoreB > scoreA) { b.W += 1; a.L += 1; }
       else { a.T += 1; b.T += 1; }
@@ -407,11 +463,19 @@
       counted += 1;
     }
 
-    // Compute derived fields
+    // Derived fields (GP, PCT, RD, PTS, REM, MAX_PTS)
     for (const v of standings.values()){
       v.GP = v.W + v.L + v.T;
       v.RD = v.RF - v.RA;
       v.PCT = computePct(v.W, v.L, v.T);
+
+      v.PTS = points(v.W, v.T);
+
+      const total = totalByTeam.get(v.team) || 0;
+      const finalsPlayed = finalsPlayedByTeam.get(v.team) || 0;
+      v.REM = Math.max(0, total - finalsPlayed);
+
+      v.MAX_PTS = v.PTS + v.REM; // assume wins in remaining
     }
 
     // Streaks
@@ -421,16 +485,18 @@
       if (row) row.STREAK = streakStr(s);
     }
 
-    // Build rows and apply current sort
-    let rows = Array.from(standings.values());
+    baseRows = Array.from(standings.values());
 
-    // Default is Win% desc
+    // Default standings (Win%)
     sortKey = "PCT";
     sortDir = "desc";
     setSortHeaderState();
 
-    rows = applySort(rows);
-    renderRows(rows);
+    // Compute clinched using default order rows (doesn't depend on UI sort)
+    clinchedSet = computeClinched(baseRows);
+
+    const sorted = applySort(baseRows);
+    renderRows(sorted);
 
     updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
     msgEl.textContent = counted
@@ -443,16 +509,12 @@
         const key = th.dataset.sort;
         if (!key) return;
 
-        if (sortKey === key) {
-          sortDir = (sortDir === "desc") ? "asc" : "desc";
-        } else {
-          sortKey = key;
-          sortDir = "desc";
-        }
+        if (sortKey === key) sortDir = (sortDir === "desc") ? "asc" : "desc";
+        else { sortKey = key; sortDir = "desc"; }
 
         setSortHeaderState();
-        const sorted = applySort(Array.from(standings.values()));
-        renderRows(sorted);
+        const resorted = applySort(baseRows);
+        renderRows(resorted);
       });
     });
   }
