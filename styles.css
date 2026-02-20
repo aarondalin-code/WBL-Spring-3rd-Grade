@@ -1266,8 +1266,12 @@ body.watermarkPage::before{
   .rulesAccIcon{ width:32px; height:32px; }
 }
 /* =========================
-   Playoffs Bracket Styling
+   Playoffs Bracket Styling (v2)
+   - connector lines (desktop)
+   - scores beside team names
+   - explicit BYE boxes for S1/S2
 ========================= */
+
 .bracketGrid{
   display:grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1278,7 +1282,9 @@ body.watermarkPage::before{
   .bracketGrid{ grid-template-columns: 1fr; }
 }
 
+/* Columns */
 .brCol{
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 14px;
   background: #fff;
@@ -1303,7 +1309,9 @@ body.watermarkPage::before{
   gap: 10px;
 }
 
+/* Game boxes */
 .brGame{
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: #f8fafc;
@@ -1320,6 +1328,12 @@ body.watermarkPage::before{
   border-color: rgba(239,68,68,.25);
 }
 
+.brBye{
+  background: rgba(16,185,129,.06);
+  border-color: rgba(16,185,129,.25);
+}
+
+/* Meta */
 .brMeta{
   display:flex;
   justify-content:space-between;
@@ -1329,7 +1343,7 @@ body.watermarkPage::before{
 }
 
 .brMetaTop{
-  font-weight: 900;
+  font-weight: 950;
   font-size: 12px;
   color: #0f172a;
 }
@@ -1339,6 +1353,7 @@ body.watermarkPage::before{
   color: var(--muted);
 }
 
+/* Teams */
 .brTeams{
   display:grid;
   gap: 8px;
@@ -1365,6 +1380,11 @@ body.watermarkPage::before{
   flex: 0 0 auto;
 }
 
+.brTeamMain{
+  min-width:0;
+  flex: 1 1 auto;
+}
+
 .brTeamName{
   font-weight: 950;
   text-decoration:none;
@@ -1373,16 +1393,74 @@ body.watermarkPage::before{
   overflow:hidden;
   text-overflow:ellipsis;
   min-width:0;
+  display:inline-block;
 }
 
 .brTeamName:hover{
   color: var(--royal);
 }
 
-.brScore{
-  margin-top: 8px;
-  text-align:right;
+.brTeamScore{
+  margin-left: auto;
   font-weight: 950;
   font-size: 14px;
-  color:#0f172a;
+  color: #0f172a;
+  padding-left: 8px;
+}
+
+/* =========================
+   Connector Lines (desktop only)
+   Simple but clean: horizontal stubs + vertical spine in middle columns.
+========================= */
+@media (min-width: 981px){
+
+  /* horizontal connector stubs from round1 -> semis */
+  .brChamp .brRound1 .brGame::after,
+  .brCons  .brRound1 .brGame::after{
+    content:"";
+    position:absolute;
+    right:-12px;
+    top:50%;
+    width:12px;
+    height:2px;
+    background: var(--border);
+    transform: translateY(-50%);
+  }
+
+  /* horizontal connector stubs from semis -> final */
+  .brChamp .brSemis .brGame::after,
+  .brCons  .brSemis .brGame::after{
+    content:"";
+    position:absolute;
+    right:-12px;
+    top:50%;
+    width:12px;
+    height:2px;
+    background: var(--border);
+    transform: translateY(-50%);
+  }
+
+  /* vertical spine on Semis column (gives bracket feel) */
+  .brChamp .brSemis::before,
+  .brCons  .brSemis::before{
+    content:"";
+    position:absolute;
+    left:-12px;
+    top: 56px;
+    bottom: 56px;
+    width:2px;
+    background: var(--border);
+  }
+
+  /* vertical spine on Final column */
+  .brChamp .brFinal::before,
+  .brCons  .brFinal::before{
+    content:"";
+    position:absolute;
+    left:-12px;
+    top: 56px;
+    bottom: 56px;
+    width:2px;
+    background: var(--border);
+  }
 }
