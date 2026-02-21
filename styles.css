@@ -1692,3 +1692,30 @@ body.watermarkPage::before{
     background: var(--border);
   }
 }
+/* ===== Modal: narrower + better layout ===== */
+.modalCard{
+  width: min(640px, 96vw);     /* was 860px-ish; this reduces whitespace */
+  padding: 16px;
+}
+
+.profileHeader{
+  display: grid;              /* instead of a loose flex wrap */
+  grid-template-columns: 110px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 520px){
+  .profileHeader{
+    grid-template-columns: 1fr;
+  }
+  .profilePhoto img{
+    width: 96px;
+    height: 96px;
+  }
+}
+
+.profileLines{
+  width: 100%;
+  max-width: 100%;
+}
