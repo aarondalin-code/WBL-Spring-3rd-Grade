@@ -13,7 +13,7 @@ window.SHEET = {
   POLL_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1716021344&single=true&output=csv",
 
   // Real-time voting API (Apps Script Web App) — optional
-  POLL_API_URL: "https://script.google.com/macros/library/d/1P2eLnsPPdWpVtVOJLNTua9JjoOjX-Gm7Q2945aUlYraC_5itQPfvsMz4/1",
+  POLL_API_URL: "https://script.google.com/macros/s/AKfycbwWK18dcqAKaMNgVdFi6kgPYjXpXKEgSVDLwaTUhkFjAM4KWpE9OSeC4Jlpe8rVrKUl/exec",
 
   // Key League Dates & News tab (published CSV) — YOU MUST ADD THIS URL
   // Required headers:
