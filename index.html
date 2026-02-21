@@ -157,19 +157,23 @@
             </div>
           </div>
 
-          <div id="pollWrap" style="margin-top:12px;">
-            <div id="pollQuestion" style="font-weight:800; margin-bottom:10px;">Loading…</div>
-            <div id="pollOptions" class="pollOptions"></div>
+   <div id="pollWrap" class="pollGrid" style="margin-top:12px;">
+  <div class="pollLeft">
+    <div id="pollQuestion" class="pollQuestion">Loading…</div>
+    <div id="pollOptions" class="pollOptions"></div>
 
-            <div class="pollActions" style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-              <button id="pollVoteBtn" class="btnPrimary" type="button">Vote</button>
-              <button id="pollViewBtn" class="btnSecondary" type="button">View Results</button>
-            </div>
+    <div class="pollActions">
+      <button id="pollVoteBtn" class="btnPrimary" type="button">Vote</button>
+      <button id="pollViewBtn" class="btnSecondary" type="button">View Results</button>
+    </div>
 
-            <div id="pollMsg" class="muted small" style="margin-top:10px;"></div>
-            <div id="pollResults" style="margin-top:12px; display:none;"></div>
-          </div>
-        </div>
+    <div id="pollMsg" class="muted small" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="pollRight">
+    <div id="pollResults" style="display:none;"></div>
+  </div>
+</div>
       </div>
     </section>
 
