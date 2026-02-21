@@ -18,7 +18,7 @@ window.SHEET = {
   // Key League Dates & News tab (published CSV) — YOU MUST ADD THIS URL
   // Required headers:
   // Date | Title | Details | Link (optional) | Priority (optional)
-  KEY_DATES_CSV_URL: ""
+  KEY_DATES_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=869225004&single=true&output=csv"
 };
 
 // Default logo used across the site (header + fallback when team logos are missing)
