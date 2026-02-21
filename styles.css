@@ -1719,3 +1719,32 @@ body.watermarkPage::before{
   width: 100%;
   max-width: 100%;
 }
+/* ===== Team header watermark (logo behind content; no layout impact) ===== */
+.teamHeaderBlock{
+  position: relative; /* required for watermark layer */
+  overflow: hidden;   /* keeps watermark inside rounded corners */
+}
+
+/* watermark layer */
+.teamHeaderBlock::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+
+  /* dynamic logo watermark; JS sets --teamWatermark */
+  background-image: var(--teamWatermark, none);
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 220px;
+
+  opacity: 0.08;          /* faint */
+  filter: grayscale(100%); /* keeps it subtle */
+}
+
+/* keep actual header content above watermark */
+.teamHeaderBlock > *{
+  position: relative;
+  z-index: 1;
+}
