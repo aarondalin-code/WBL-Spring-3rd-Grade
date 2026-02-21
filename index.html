@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl-home-countdown-1" />
+  <link rel="stylesheet" href="./styles.css?v=wbl-home-v3" />
 </head>
 
 <body class="watermarkPage hasHamburger">
@@ -38,7 +38,7 @@
 
   <main class="wrap">
 
-    <!-- Welcome + Countdown Banner -->
+    <!-- Welcome + Countdown -->
     <section class="docSection">
       <div class="card">
         <div class="cardBody">
@@ -107,6 +107,8 @@
                   <th class="num">W</th>
                   <th class="num">L</th>
                   <th class="num">T</th>
+                  <th class="num">Win%</th>
+                  <th class="num">Streak</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -153,6 +155,7 @@
     function parseDateLoose(s){
       s = safe(s);
       if (!s) return null;
+
       const d1 = new Date(s);
       if (!isNaN(d1.getTime())) return d1;
 
@@ -253,29 +256,6 @@
       `);
     }
 
-    function fmtGameRow(g){
-      const date = safe(g.Date);
-      const time = safe(g.Time);
-      const field = safe(g.Field);
-      const a = safe(g.TeamA);
-      const b = safe(g.TeamB);
-      const sa = safe(g.ScoreA);
-      const sb = safe(g.ScoreB);
-      const status = safe(g.Status);
-
-      const score = isFinal(status) ? `<strong>${sa}-${sb}</strong>` : "";
-      const statusTxt = isFinal(status) ? `<span class="pillFinal">Final</span>` : `<span class="muted small">Scheduled</span>`;
-      return `
-        <div class="homeGameRow">
-          <div class="homeGameMeta muted small">${date}${time ? " • " + time : ""}${field ? " • " + field : ""}</div>
-          <div class="homeGameMain">
-            <div class="homeGameTeams">${a} <span class="muted">vs</span> ${b}</div>
-            <div class="homeGameRight">${score} ${statusTxt}</div>
-          </div>
-        </div>
-      `;
-    }
-
     // ---- Opening Day + weekly anchor logic ----
     const LEAGUE_START_DATE = new Date(2026, 3, 11); // Apr 11, 2026 (month 0-indexed)
     const LEAGUE_START_GAME_TIME = "10:00 AM";
@@ -339,15 +319,153 @@
       timerEl.textContent = fmtCountdown(nextGame.getTime() - now.getTime());
     }
 
+    // ---- Team meta (from Teams CSV headers you provided) ----
+    function getTeamMetaMap(teamsRows){
+      const m = new Map();
+      (teamsRows || []).forEach(t => {
+        const name = safe(t.TeamName);
+        if (!name) return;
+
+        const color = safe(t.TeamColor);
+        const logo = safe(t.TeamLogo);
+
+        m.set(name, {
+          name,
+          color,
+          logo: logo || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
+          slug: safe(t.TeamSlug),
+          id: safe(t.TeamID)
+        });
+      });
+      return m;
+    }
+
+    function teamNameHtml(teamName, teamMap){
+      const meta = teamMap?.get(teamName);
+      const colorStyle = meta?.color ? `style="color:${meta.color};"` : "";
+      return `<span class="teamNameColored" ${colorStyle}>${teamName}</span>`;
+    }
+
+    function teamLogoHtml(teamName, teamMap){
+      const meta = teamMap?.get(teamName);
+      const src = meta?.logo || (window.DEFAULT_TEAM_LOGO || "./logo.png");
+      return `<img class="teamLogoMini" src="${src}" alt="${teamName} logo"
+              onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">`;
+    }
+
+    // ---- Schedule-like mini card renderer (home snapshot) ----
+    function fmtGameRow(g, teamMap){
+      const date = safe(g.Date);
+      const time = safe(g.Time);
+      const field = safe(g.Field);
+      const a = safe(g.TeamA);
+      const b = safe(g.TeamB);
+      const sa = safe(g.ScoreA);
+      const sb = safe(g.ScoreB);
+      const status = safe(g.Status);
+
+      const isF = isFinal(status);
+      const score = isF ? `<div class="miniScore"><strong>${sa}-${sb}</strong></div>` : `<div class="miniScore muted small">—</div>`;
+      const statusTxt = isF ? `<span class="pillFinal">Final</span>` : `<span class="muted small">Scheduled</span>`;
+
+      return `
+        <div class="miniGameCard">
+          <div class="miniGameMeta muted small">
+            ${date}${time ? " • " + time : ""}${field ? " • " + field : ""}
+          </div>
+
+          <div class="miniGameBody">
+            <div class="miniTeams">
+              <div class="miniTeamRow">
+                ${teamLogoHtml(a, teamMap)}
+                <div class="miniTeamName">${teamNameHtml(a, teamMap)}</div>
+              </div>
+
+              <div class="miniTeamRow">
+                ${teamLogoHtml(b, teamMap)}
+                <div class="miniTeamName">${teamNameHtml(b, teamMap)}</div>
+              </div>
+            </div>
+
+            <div class="miniRight">
+              ${score}
+              <div class="miniStatus">${statusTxt}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ---- Standings calculations ----
     function toNum(x){
       const n = Number(safe(x));
       return Number.isFinite(n) ? n : null;
+    }
+
+    function calcPct(W,L,T){
+      const gp = W + L + T;
+      if (!gp) return 0;
+      return (W + 0.5*T) / gp;
+    }
+
+    function fmtPct(p){
+      return (p * 100).toFixed(1);
+    }
+
+    function buildStreaksFromFinals(games){
+      const byTeam = new Map();
+
+      function pushResult(team, res){
+        if (!team) return;
+        if (!byTeam.has(team)) byTeam.set(team, []);
+        byTeam.get(team).push(res);
+      }
+
+      const finals = games
+        .filter(g => isFinal(g.Status))
+        .map(g => ({ g, d: parseDateLoose(g.Date) }))
+        .filter(x => x.d)
+        .sort((a,b)=> a.d - b.d)
+        .map(x => x.g);
+
+      for (const g of finals){
+        const a = safe(g.TeamA), b = safe(g.TeamB);
+        const sa = toNum(g.ScoreA), sb = toNum(g.ScoreB);
+        if (!a || !b || sa===null || sb===null) continue;
+
+        if (sa > sb){ pushResult(a,"W"); pushResult(b,"L"); }
+        else if (sb > sa){ pushResult(b,"W"); pushResult(a,"L"); }
+        else { pushResult(a,"T"); pushResult(b,"T"); }
+      }
+
+      const streak = new Map();
+      for (const [team, arr] of byTeam.entries()){
+        if (!arr.length){ streak.set(team,"—"); continue; }
+        const last = arr[arr.length-1];
+        let n = 1;
+        for (let i=arr.length-2; i>=0; i--){
+          if (arr[i] === last) n++;
+          else break;
+        }
+        streak.set(team, `${last}${n}`);
+      }
+      return streak;
     }
 
     async function initHome(){
       // Countdown timer
       updateCountdown();
       setInterval(updateCountdown, 1000);
+
+      // Teams feed (logos + colors)
+      let teamMap = new Map();
+      try{
+        const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+        const teams = parseCsv(teamsCsv);
+        teamMap = getTeamMetaMap(teams);
+      } catch(e){
+        console.warn("Teams feed unavailable for home styling.", e);
+      }
 
       // Games feed
       const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
@@ -359,7 +477,6 @@
       const lastSat = new Date(thisSat.getFullYear(), thisSat.getMonth(), thisSat.getDate() - 7);
       lastSat.setHours(0,0,0,0);
 
-      // Update titles to show actual date when pre-season
       const thisWeekTitle = document.getElementById("thisWeekTitle");
       const bannerNote = document.getElementById("homeBannerNote");
 
@@ -396,17 +513,20 @@
 
       const thisEl = document.getElementById("thisWeekGames");
       thisEl.innerHTML = thisWeek.length
-        ? thisWeek.map(fmtGameRow).join("")
+        ? thisWeek.map(g => fmtGameRow(g, teamMap)).join("")
         : `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
 
       const lastEl = document.getElementById("lastWeekFinals");
       lastEl.innerHTML = lastWeekFinals.length
-        ? lastWeekFinals.map(fmtGameRow).join("")
+        ? lastWeekFinals.map(g => fmtGameRow(g, teamMap)).join("")
         : `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
 
-      // Standings snapshot from all Final games
+      // Standings snapshot from Final games
       const teamsSet = new Set();
-      games.forEach(g => { if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA)); if (safe(g.TeamB)) teamsSet.add(safe(g.TeamB)); });
+      games.forEach(g => {
+        if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA));
+        if (safe(g.TeamB)) teamsSet.add(safe(g.TeamB));
+      });
 
       const table = new Map();
       for (const t of teamsSet) table.set(t, { team:t, W:0, L:0, T:0 });
@@ -429,22 +549,38 @@
       }
 
       const rows = Array.from(table.values()).sort((x,y)=>{
+        // Use win% first, then W, then L, then team name (more standings-like)
+        const xp = calcPct(x.W,x.L,x.T);
+        const yp = calcPct(y.W,y.L,y.T);
+        if (yp !== xp) return yp - xp;
         if (y.W !== x.W) return y.W - x.W;
         if (x.L !== y.L) return x.L - y.L;
-        if (y.T !== x.T) return y.T - x.T;
         return x.team.localeCompare(y.team);
       });
 
+      const streakMap = buildStreaksFromFinals(games);
+
       const miniBody = document.querySelector("#standingsMini tbody");
       miniBody.innerHTML = "";
+
       rows.slice(0,4).forEach((r,idx)=>{
+        const pct = calcPct(r.W, r.L, r.T);
+        const streak = streakMap.get(r.team) || "—";
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="num">${idx+1}</td>
-          <td>${r.team}</td>
+          <td>
+            <div class="miniTeamCell">
+              ${teamLogoHtml(r.team, teamMap)}
+              <div class="miniTeamCellName">${teamNameHtml(r.team, teamMap)}</div>
+            </div>
+          </td>
           <td class="num">${r.W}</td>
           <td class="num">${r.L}</td>
           <td class="num">${r.T}</td>
+          <td class="num">${fmtPct(pct)}</td>
+          <td class="num">${streak}</td>
         `;
         miniBody.appendChild(tr);
       });
