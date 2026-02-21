@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gallery • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-gallery-formmap-1" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-gallery-drivefix-1" />
 </head>
 
 <body class="watermarkPage galleryPage hasHamburger">
@@ -44,7 +44,7 @@
     <div class="card" style="margin-top:12px;">
       <div class="cardBody">
 
-        <!-- Filters (use same styling class as schedule page) -->
+        <!-- Filters (styled like schedule page) -->
         <div class="scheduleFilters" style="margin-bottom:12px;">
           <select id="teamFilter">
             <option value="">All Teams</option>
@@ -139,7 +139,7 @@
     });
   }
 
-  // ---- Type + URL helpers ----
+  // ---- URL + type helpers ----
   function isImageUrl(url){
     const u = safe(url).toLowerCase();
     return u.match(/\.(jpg|jpeg|png|gif|webp)(\?|#|$)/);
@@ -156,42 +156,60 @@
     return "";
   }
 
+  // Convert Drive links to direct-display image link
+  function driveToDirect(url){
+    url = safe(url);
+    if (!url) return "";
+
+    // open?id=FILEID
+    let m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+
+    // file/d/FILEID/view
+    m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
+    if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+
+    // uc?id=FILEID already
+    m = url.match(/drive\.google\.com\/uc\?[^#]*id=([a-zA-Z0-9_-]+)/);
+    if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+
+    return url;
+  }
+
   function normalizeTypeFromForm(mediaType, url){
     const t = norm(mediaType);
     if (t.includes("video")) return "video";
     if (t.includes("photo") || t.includes("image") || t.includes("picture")) return "photo";
 
-    // Fallback inference from URL
+    // Fallback inference
     if (youtubeEmbed(url)) return "video";
     if (isImageUrl(url)) return "photo";
+    // Drive links often are photos; default to photo if not sure
+    if (url.includes("drive.google.com")) return "photo";
     return "";
   }
 
-  // Prefer Media Link, fallback to File Upload (if it’s already a usable URL)
+  // Prefer Media Link; fallback to File Upload
   function pickMediaUrl(row){
-    const link = safe(row.MediaLink);
-    const upload = safe(row.FileUpload);
+    const link = safe(row.MediaLink);     // "Media Link"
+    const upload = safe(row.FileUpload);  // "File Upload"
 
-    // Many Google Forms "File upload" entries can be non-public or multiple links.
-    // Prefer MediaLink if provided.
     if (link) return link;
 
-    // If FileUpload contains a URL, use it.
-    // (If it contains multiple, take the first.)
     if (upload){
-      const first = upload.split(/\s*,\s*/)[0];
+      const first = upload.split(/\s*,\s*/)[0]; // in case multiple
       return first;
     }
 
     return "";
   }
 
-  // Permission gating (optional)
+  // Permission column is: "I confirm I have permission."
+  // Header key becomes: "IconfirmIhavepermission."
   function hasPermission(row){
-    const v = norm(row.IconfirmIhavepermission || row.IconfirmIhavepermission. || row.IconfirmIhavepermission);
-    // If the column is blank, we’ll allow it (you can tighten this later)
-    if (!v) return true;
-    return v.includes("yes") || v.includes("true") || v.includes("i confirm");
+    const v = norm(row["IconfirmIhavepermission."]);
+    if (!v) return true; // allow if blank
+    return (v === "yes" || v === "y" || v === "true" || v.includes("confirm"));
   }
 
   function buildCaptionFromForm(it){
@@ -272,12 +290,12 @@
         `;
       }
 
-      // photo (or unknown fallback as photo)
       return `
         <div class="galleryItem">
           <div class="galleryMedia">
             <a href="${url}" target="_blank" rel="noopener">
-              <img src="${url}" alt="${caption}" loading="lazy" />
+              <img src="${url}" alt="${caption}" loading="lazy"
+                   onerror="this.onerror=null; this.src='./logo.png';" />
             </a>
           </div>
           ${caption ? `<div class="galleryCaption">${caption}</div>` : ""}
@@ -295,13 +313,17 @@
     const csv = await fetchCsv(window.SHEET?.GALLERY_CSV_URL);
     const rows = parseCsv(csv);
 
-    // Your Form response headers normalize (spaces removed):
+    // Form response headers become (spaces removed):
     // Timestamp, Team, Name, MediaType, FileUpload, MediaLink, Caption, IconfirmIhavepermission.
-    const items = rows
+    allItems = rows
       .filter(r => hasPermission(r))
       .map(r => {
-        const url = pickMediaUrl(r);
-        const type = normalizeTypeFromForm(r.MediaType, url) || (youtubeEmbed(url) ? "video" : (isImageUrl(url) ? "photo" : ""));
+        const rawUrl = pickMediaUrl(r);
+        const cookedUrl = driveToDirect(rawUrl);
+
+        const t = normalizeTypeFromForm(r.MediaType, cookedUrl) ||
+                  (youtubeEmbed(cookedUrl) ? "video" : (isImageUrl(cookedUrl) ? "photo" : "photo"));
+
         return {
           Timestamp: safe(r.Timestamp),
           Team: safe(r.Team),
@@ -310,13 +332,11 @@
           FileUpload: safe(r.FileUpload),
           MediaLink: safe(r.MediaLink),
           Caption: safe(r.Caption),
-          _url: url,
-          _type: type || "photo" // default to photo if unknown
+          _url: cookedUrl,
+          _type: t
         };
       })
       .filter(it => safe(it._url));
-
-    allItems = items;
 
     populateTeamFilter(allItems);
 
@@ -345,5 +365,4 @@
 <script src="./nav.js"></script>
 </body>
 </html>
-
 
