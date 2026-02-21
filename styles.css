@@ -2023,3 +2023,8 @@ body.watermarkPage::before{
 .pollOpt input{
   cursor: pointer;
 }
+/* Add breathing room between last option and buttons */
+.pollActions{
+  margin-top: 18px;   /* was ~12px */
+  padding-top: 6px;
+}
