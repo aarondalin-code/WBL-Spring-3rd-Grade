@@ -2028,3 +2028,92 @@ body.watermarkPage::before{
   margin-top: 18px;   /* was ~12px */
   padding-top: 6px;
 }
+/* ===========================
+   COUNTDOWN: Opening Day Energy
+   (paste at bottom of styles.css)
+   =========================== */
+
+.homeCountdown{
+  border: 2px solid rgba(30,63,168,.25);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(30,63,168,.08), rgba(255,255,255,0));
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle moving sheen */
+.homeCountdown::before{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:-60%;
+  width: 80%;
+  height: 180%;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.35), rgba(255,255,255,0));
+  transform: rotate(20deg);
+  opacity: .35;
+  animation: wblSheen 3.2s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes wblSheen{
+  0%   { left:-70%; opacity:.0; }
+  15%  { opacity:.28; }
+  55%  { opacity:.22; }
+  100% { left:120%; opacity:0; }
+}
+
+.homeCountdownLabel{
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.homeCountdownTimer{
+  margin-top: 6px;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .6px;
+  line-height: 1.05;
+  font-size: clamp(22px, 3.2vw, 34px);
+  color: var(--wbl-blue);
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+}
+
+/* “Opening Day” mode: more hype */
+.homeCountdown.isOpening{
+  border-color: rgba(30,63,168,.55);
+  background: radial-gradient(circle at 20% 0%, rgba(30,63,168,.16), rgba(255,255,255,0) 55%),
+              linear-gradient(180deg, rgba(30,63,168,.10), rgba(255,255,255,0));
+  box-shadow: 0 10px 24px rgba(30,63,168,.10);
+}
+
+.homeCountdown.isOpening .homeCountdownTimer{
+  animation: wblPulse 1.25s ease-in-out infinite;
+}
+
+@keyframes wblPulse{
+  0%   { transform: translateY(0) scale(1); filter: brightness(1); }
+  50%  { transform: translateY(-1px) scale(1.02); filter: brightness(1.12); }
+  100% { transform: translateY(0) scale(1); filter: brightness(1); }
+}
+
+/* “Next Game Day” mode: calmer */
+.homeCountdown.isNext{
+  border-color: rgba(30,63,168,.28);
+}
+
+.homeCountdown.isNext .homeCountdownTimer{
+  animation: wblTick 1s steps(1) infinite;
+}
+
+@keyframes wblTick{
+  0%   { opacity: 1; }
+  50%  { opacity: .92; }
+  100% { opacity: 1; }
+}
+
+/* Mobile: keep it tight */
+@media (max-width: 520px){
+  .homeCountdown{ padding: 10px 12px; }
+}
