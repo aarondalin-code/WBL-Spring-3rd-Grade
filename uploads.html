@@ -4,7 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Uploads • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-uploads-note-1" />
+
+  <style>
+    .infoCallout{
+      border: 1px solid rgba(30,63,168,.28);
+      background: rgba(30,63,168,.06);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      text-align: left;
+    }
+    .infoCalloutTitle{
+      font-weight: 900;
+      color: var(--wbl-blue);
+      margin: 0;
+    }
+    .infoCalloutText{
+      margin: 6px 0 0;
+    }
+  </style>
 </head>
 
 <body class="watermarkPage uploadsPage hasHamburger">
@@ -56,6 +75,18 @@
           <p><strong>Upload link not configured yet.</strong></p>
           <p class="muted small" style="margin-top:6px;">
             Add <code>window.UPLOADS_FORM_URL</code> to <code>data.js</code> to enable uploads.
+          </p>
+        </div>
+
+        <!-- NEW: Permission clarity box -->
+        <div class="infoCallout">
+          <p class="infoCalloutTitle">No permissions needed when you upload here</p>
+          <p class="infoCalloutText muted small">
+            If you use the <strong>Upload Media</strong> button, just pick a photo/video from your phone and submit —
+            it should show in the Gallery automatically.
+            <br><br>
+            If you instead paste a Google Drive link (Media Link), make sure it’s shared as
+            <strong>“Anyone with the link can view.”</strong>
           </p>
         </div>
 
