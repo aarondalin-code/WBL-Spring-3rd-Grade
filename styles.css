@@ -1983,3 +1983,43 @@ body.watermarkPage::before{
 @media (max-width: 520px){
   .cardBody{ padding: 16px; }
 }
+/* --- Poll layout v2: question/options left, results right --- */
+.pollGrid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.pollQuestion{
+  font-weight: 900;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+}
+
+.pollActions{
+  margin-top: 12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+@media (min-width: 900px){
+  .pollGrid{
+    grid-template-columns: 1.05fr .95fr;
+    align-items:start;
+  }
+  .pollRight{
+    padding-left: 12px;
+    border-left: 2px solid rgba(30,63,168,.18);
+  }
+}
+
+/* Ensure poll options are always clickable */
+.pollOpt{
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+.pollOpt input{
+  cursor: pointer;
+}
