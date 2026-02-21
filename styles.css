@@ -2150,3 +2150,12 @@ body.watermarkPage::before{
   position: absolute;
   right: 0;
 }
+/* --- Royal blue accent for Poll question --- */
+.pollQuestion{
+  color: var(--wbl-blue);
+}
+
+/* --- Royal blue for Key League Dates content --- */
+#newsList .cardBody{
+  color: var(--wbl-blue);
+}
