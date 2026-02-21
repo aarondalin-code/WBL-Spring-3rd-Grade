@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl-home-1" />
+  <link rel="stylesheet" href="./styles.css?v=wbl-home-countdown-1" />
 </head>
 
 <body class="watermarkPage hasHamburger">
@@ -38,17 +38,18 @@
 
   <main class="wrap">
 
-    <!-- Quick links / Hero -->
+    <!-- Welcome + Countdown Banner -->
     <section class="docSection">
       <div class="card">
         <div class="cardBody">
-          <div class="homeHeroRow">
-            <div>
-              <div class="muted small">Welcome</div>
-              <h2 style="margin:6px 0 8px;">Weekly schedule, standings, highlights & Players of the Week</h2>
-              <div class="muted">
-                Games Saturdays at <strong>10:00 AM</strong> and <strong>12:15 PM</strong> on fields <strong>T3, T4, T5</strong>.
-              </div>
+          <div class="homeWelcome">
+            <div class="muted" id="welcomeLine">
+              Games Saturdays at <strong>10:00 AM</strong> and <strong>12:15 PM</strong> on fields <strong>T3, T4, T5</strong>.
+            </div>
+
+            <div class="homeCountdown" aria-live="polite" aria-atomic="true">
+              <div class="homeCountdownLabel muted small" id="countdownLabel">Countdown to Opening Day (Apr 11)</div>
+              <div class="homeCountdownTimer" id="countdownTimer">Loading…</div>
             </div>
 
             <div class="homeHeroBtns">
@@ -56,6 +57,8 @@
               <a class="btnSecondary" href="./standings.html">Standings</a>
               <a class="btnSecondary" href="./uploads.html">Upload Photos/Videos</a>
             </div>
+
+            <div id="homeBannerNote" class="muted small" style="margin-top:12px; display:none;"></div>
           </div>
         </div>
       </div>
@@ -67,7 +70,7 @@
         <div class="card">
           <div class="cardBody">
             <div class="homeSectionHead">
-              <h3 style="margin:0;">This Week</h3>
+              <h3 style="margin:0;" id="thisWeekTitle">This Week</h3>
               <a class="linkPill" href="./schedule.html">Full Schedule →</a>
             </div>
             <div id="thisWeekGames" class="muted small">Loading…</div>
@@ -77,7 +80,7 @@
         <div class="card">
           <div class="cardBody">
             <div class="homeSectionHead">
-              <h3 style="margin:0;">Last Week (Finals)</h3>
+              <h3 style="margin:0;" id="lastWeekTitle">Last Week (Finals)</h3>
               <a class="linkPill" href="./schedule.html">Scores →</a>
             </div>
             <div id="lastWeekFinals" class="muted small">Loading…</div>
@@ -122,42 +125,19 @@
           <div class="homeSectionHead">
             <div>
               <h3 style="margin:0;">Players of the Week</h3>
-              <div class="muted small">Updated weekly — one player per team.</div>
+              <div class="muted small">One player per team — updated weekly.</div>
             </div>
           </div>
 
-          <div id="potwGrid" class="potwGrid" style="margin-top:12px;"></div>
+          <div id="potwGrid" class="potwGrid homePotwGrid" style="margin-top:12px;"></div>
           <p id="potwMsg" class="muted small" style="margin-top:10px;"></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Teams (compact) -->
-    <section class="docSection">
-      <h2 style="margin-bottom:10px;">Teams</h2>
-      <div class="card">
-        <div class="cardBody">
-          <div id="teamsGridHome" class="teamsGrid"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Park map -->
-    <section class="docSection">
-      <h2 style="margin-bottom:10px;">Park Map</h2>
-      <div class="card">
-        <div class="cardBody">
-          <div class="muted small">Fields: T3, T4, T5</div>
-          <div class="homeMapWrap" style="margin-top:10px;">
-            <img id="parkMapImg" alt="Park Map" />
-          </div>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Modal (reused for Players of Week) -->
+  <!-- Modal -->
   <div id="modalOverlay" class="modalOverlay" aria-hidden="true">
     <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="modalClose" id="modalCloseBtn" type="button">✕</button>
@@ -173,11 +153,9 @@
     function parseDateLoose(s){
       s = safe(s);
       if (!s) return null;
-      // Try native first
       const d1 = new Date(s);
       if (!isNaN(d1.getTime())) return d1;
 
-      // Try M/D/YYYY
       const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (m){
         const mm = Number(m[1]) - 1, dd = Number(m[2]), yy = Number(m[3]);
@@ -250,13 +228,9 @@
     function renderPlayerModal(player){
       const name = safe(player.PlayerName || player.Name || "Player");
       const team = safe(player.Team || player.TeamName || "");
-      const num  = safe(player.Number);
       const photo = safe(player.PhotoURL) || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
       const blurb = safe(player.Blurb || player.Why || player.Reason || player.Notes || "");
-
-      const lines = [];
-      if (team) lines.push(`<div class="profileLine"><span class="profileKey">Team</span><span class="profileVal">${team}</span></div>`);
-      if (num)  lines.push(`<div class="profileLine"><span class="profileKey">Number</span><span class="profileVal">#${num}</span></div>`);
+      const coach = safe(player.CoachName);
 
       openModal(`
         <div class="profileHeader">
@@ -265,8 +239,15 @@
           </div>
           <div>
             <h3 id="modalTitle" class="profileName">${name}</h3>
-            ${lines.length ? `<div class="profileLines" style="margin-top:12px;">${lines.join("")}</div>` : ""}
-            ${blurb ? `<div class="card" style="margin-top:12px;"><div class="cardBody"><div class="muted small">Coach’s Note</div><div style="margin-top:6px;">${blurb}</div></div></div>` : ""}
+            ${team ? `<div class="muted" style="margin-top:4px;">${team}</div>` : ""}
+            ${(blurb || coach) ? `
+              <div class="card" style="margin-top:12px;">
+                <div class="cardBody">
+                  <div class="muted small">Coach’s Note${coach ? ` • ${coach}` : ""}</div>
+                  <div style="margin-top:6px;">${blurb || "Write-up coming soon."}</div>
+                </div>
+              </div>
+            ` : ""}
           </div>
         </div>
       `);
@@ -295,52 +276,108 @@
       `;
     }
 
-    function startOfWeekSatAnchor(){
-      // Anchor by Saturday of current week (or next Saturday if earlier in week)
-      const now = new Date();
-      const day = now.getDay(); // 0 Sun ... 6 Sat
+    // ---- Opening Day + weekly anchor logic ----
+    const LEAGUE_START_DATE = new Date(2026, 3, 11); // Apr 11, 2026 (month 0-indexed)
+    const LEAGUE_START_GAME_TIME = "10:00 AM";
+
+    function openingCountdownTarget(){
+      const d = new Date(LEAGUE_START_DATE.getFullYear(), LEAGUE_START_DATE.getMonth(), LEAGUE_START_DATE.getDate());
+      const dt = new Date(`${d.toDateString()} ${LEAGUE_START_GAME_TIME}`);
+      return isNaN(dt.getTime()) ? d : dt;
+    }
+
+    function saturdayFor(date){
+      const d = new Date(date);
+      const day = d.getDay(); // 0 Sun ... 6 Sat
       const daysUntilSat = (6 - day + 7) % 7;
-      const sat = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSat);
+      const sat = new Date(d.getFullYear(), d.getMonth(), d.getDate() + daysUntilSat);
       sat.setHours(0,0,0,0);
       return sat;
     }
 
-    async function initHome(){
-      // Park map
-      const mapEl = document.getElementById("parkMapImg");
-      mapEl.src = window.PARK_MAP_IMG || "./park-map.jpg";
-      mapEl.onerror = () => { mapEl.style.display = "none"; };
+    function getDisplaySaturday(now){
+      const openingSat = new Date(LEAGUE_START_DATE.getFullYear(), LEAGUE_START_DATE.getMonth(), LEAGUE_START_DATE.getDate());
+      openingSat.setHours(0,0,0,0);
 
-      // Teams grid (from Teams CSV)
-      try{
-        const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-        const teams = parseCsv(teamsCsv);
-        const grid = document.getElementById("teamsGridHome");
-        grid.innerHTML = "";
-        teams
-          .map(t => ({ name: safe(t.TeamName || t.Team), slug: safe(t.TeamSlug || t.Slug) }))
-          .filter(t => t.name && t.slug)
-          .sort((a,b)=> a.name.localeCompare(b.name))
-          .forEach(t=>{
-            const a = document.createElement("a");
-            a.className = "teamTile";
-            a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
-            a.textContent = t.name;
-            grid.appendChild(a);
-          });
-      } catch(e){
-        // ok to fail silently-ish
-        console.error(e);
+      // Before opening day: always show opening day games (Apr 11)
+      if (now.getTime() < openingSat.getTime()) return openingSat;
+
+      // After opening: show the next Saturday (including today if Saturday)
+      return saturdayFor(now);
+    }
+
+    function fmtCountdown(ms){
+      const total = Math.max(0, ms);
+      const sec = Math.floor(total / 1000);
+      const days = Math.floor(sec / 86400);
+      const hrs = Math.floor((sec % 86400) / 3600);
+      const mins = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      const pad = (n)=> String(n).padStart(2,"0");
+      return `${days}d ${pad(hrs)}h ${pad(mins)}m ${pad(s)}s`;
+    }
+
+    function updateCountdown(){
+      const labelEl = document.getElementById("countdownLabel");
+      const timerEl = document.getElementById("countdownTimer");
+      if (!labelEl || !timerEl) return;
+
+      const now = new Date();
+      const openingTarget = openingCountdownTarget();
+
+      // Before opening: countdown to Apr 11 @ 10:00 AM
+      if (now.getTime() < openingTarget.getTime()){
+        labelEl.textContent = "Countdown to Opening Day (Apr 11)";
+        timerEl.textContent = fmtCountdown(openingTarget.getTime() - now.getTime());
+        return;
       }
 
-      // Games (This week + Last week + Standings mini)
+      // After opening: countdown to next Saturday's first game time (10:00 AM)
+      const nextSat = getDisplaySaturday(now);
+      const nextGame = new Date(`${nextSat.toDateString()} ${LEAGUE_START_GAME_TIME}`);
+      labelEl.textContent = "Countdown to Next Game Day";
+      timerEl.textContent = fmtCountdown(nextGame.getTime() - now.getTime());
+    }
+
+    function toNum(x){
+      const n = Number(safe(x));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    async function initHome(){
+      // Countdown timer
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+
+      // Games feed
       const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
       const games = parseCsv(gamesCsv);
 
-      // Partition games by date around “this Saturday”
-      const thisSat = startOfWeekSatAnchor();
+      // Determine which Saturday we're showing
+      const now = new Date();
+      const thisSat = getDisplaySaturday(now);
       const lastSat = new Date(thisSat.getFullYear(), thisSat.getMonth(), thisSat.getDate() - 7);
+      lastSat.setHours(0,0,0,0);
 
+      // Update titles to show actual date when pre-season
+      const thisWeekTitle = document.getElementById("thisWeekTitle");
+      const bannerNote = document.getElementById("homeBannerNote");
+
+      const openingSat = new Date(LEAGUE_START_DATE.getFullYear(), LEAGUE_START_DATE.getMonth(), LEAGUE_START_DATE.getDate());
+      openingSat.setHours(0,0,0,0);
+
+      const fmtShort = (d)=> d.toLocaleDateString(undefined, { month:"short", day:"numeric" });
+
+      if (now.getTime() < openingSat.getTime()){
+        thisWeekTitle.textContent = `Opening Day (${fmtShort(thisSat)})`;
+        bannerNote.textContent = `Showing Opening Day games on ${fmtShort(thisSat)}.`;
+        bannerNote.style.display = "";
+      } else {
+        thisWeekTitle.textContent = `This Week (${fmtShort(thisSat)})`;
+        bannerNote.style.display = "none";
+      }
+
+      // Partition games by date = thisSat / lastSat
       const thisWeek = [];
       const lastWeekFinals = [];
 
@@ -358,22 +395,21 @@
       }
 
       const thisEl = document.getElementById("thisWeekGames");
-      thisEl.innerHTML = thisWeek.length ? thisWeek.map(fmtGameRow).join("") : `<div class="muted small">No games found for this Saturday yet.</div>`;
+      thisEl.innerHTML = thisWeek.length
+        ? thisWeek.map(fmtGameRow).join("")
+        : `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
 
       const lastEl = document.getElementById("lastWeekFinals");
-      lastEl.innerHTML = lastWeekFinals.length ? lastWeekFinals.map(fmtGameRow).join("") : `<div class="muted small">No final games from last Saturday yet.</div>`;
+      lastEl.innerHTML = lastWeekFinals.length
+        ? lastWeekFinals.map(fmtGameRow).join("")
+        : `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
 
-      // Standings snapshot from Final games
+      // Standings snapshot from all Final games
       const teamsSet = new Set();
       games.forEach(g => { if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA)); if (safe(g.TeamB)) teamsSet.add(safe(g.TeamB)); });
 
       const table = new Map();
       for (const t of teamsSet) table.set(t, { team:t, W:0, L:0, T:0 });
-
-      function toNum(x){
-        const n = Number(safe(x));
-        return Number.isFinite(n) ? n : null;
-      }
 
       let finalsCount = 0;
       for (const g of games){
@@ -416,7 +452,7 @@
       document.getElementById("standingsMiniMsg").textContent =
         finalsCount ? `Based on ${finalsCount} final game(s).` : `No final games yet — standings will appear once games are marked Final.`;
 
-      // Players of the Week (2 rows of 5)
+      // Players of the Week (10 total, one per team)
       const potwGrid = document.getElementById("potwGrid");
       const potwMsg = document.getElementById("potwMsg");
       potwGrid.innerHTML = "";
@@ -425,32 +461,63 @@
         const potwCsv = await fetchCsv(window.SHEET?.PLAYERS_OF_WEEK_CSV_URL);
         const potw = parseCsv(potwCsv);
 
-        // Expect columns like: Team, PlayerID, Name/PlayerName, Blurb/Why, PhotoURL (optional)
-        const players = potw
-          .map(r => ({
-            Team: safe(r.Team),
-            PlayerID: safe(r.PlayerID),
-            PlayerName: safe(r.PlayerName || r.Name),
-            PhotoURL: safe(r.PhotoURL),
-            Blurb: safe(r.Blurb || r.Why || r.Reason || r.Notes)
-          }))
-          .filter(p => p.Team && p.PlayerName);
+        const mapped = potw.map(r => {
+          const team = safe(r.TeamName || r.Team);
+          const playerID = safe(r.PlayerID);
+          const name = safe(r.PlayerName || r.Name); // optional if present
+          const photoOverride = safe(r.PhotoURL);
+          const blurb = safe(r.Blurb || r.Why || r.Reason || r.Notes);
+          const coach = safe(r.CoachName);
+          const week = safe(r.Week);
+          const weekDate = safe(r.WeekDate);
 
-        // If your sheet includes all 10, this will show 10 (2x5).
-        players.slice(0,10).forEach(p=>{
+          const localPhoto = playerID ? `./player-photos/${encodeURIComponent(playerID)}.jpg` : "";
+          const photo = photoOverride || localPhoto || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
+
+          return {
+            Team: team,
+            TeamName: team,
+            PlayerID: playerID,
+            PlayerName: name || playerID || "Player",
+            PhotoURL: photo,
+            Blurb: blurb,
+            CoachName: coach,
+            Week: week,
+            WeekDate: weekDate
+          };
+        }).filter(p => p.Team && p.PlayerID);
+
+        // De-dupe: one per team
+        const byTeam = new Map();
+        for (const p of mapped){
+          if (!byTeam.has(p.Team)) byTeam.set(p.Team, p);
+        }
+        const onePerTeam = Array.from(byTeam.values());
+
+        // Sort newest first (WeekDate/Week), then Team name
+        onePerTeam.sort((a,b)=>{
+          const ad = parseDateLoose(a.WeekDate);
+          const bd = parseDateLoose(b.WeekDate);
+          if (ad && bd && bd.getTime() !== ad.getTime()) return bd - ad;
+          const aw = Number(a.Week), bw = Number(b.Week);
+          if (Number.isFinite(aw) && Number.isFinite(bw) && bw !== aw) return bw - aw;
+          return a.Team.localeCompare(b.Team);
+        });
+
+        const show = onePerTeam.slice(0,10);
+
+        show.forEach(p=>{
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "potwCardBtn";
 
-          const photo = p.PhotoURL || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
-
           btn.innerHTML = `
-            <img class="potwPhoto" src="${photo}" alt="${p.PlayerName}"
+            <img class="potwPhoto" src="${p.PhotoURL}" alt="${p.PlayerName}"
                  onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
             <div class="potwText">
               <div class="potwName">${p.PlayerName}</div>
               <div class="potwTeam muted small">${p.Team}</div>
-              <div class="potwLink">View →</div>
+              <div class="potwLink">Learn more →</div>
             </div>
           `;
 
@@ -458,10 +525,10 @@
           potwGrid.appendChild(btn);
         });
 
-        potwMsg.textContent = players.length ? "" : "No Players of the Week yet.";
+        potwMsg.textContent = show.length ? "" : "Players of the Week will appear here once the sheet is populated.";
       } catch(e){
         console.error(e);
-        potwMsg.textContent = "Players of the Week unavailable right now.";
+        potwMsg.textContent = "Players of the Week unavailable right now (check tab publish + URL).";
       }
     }
 
@@ -471,4 +538,3 @@
   <script src="./nav.js"></script>
 </body>
 </html>
-
