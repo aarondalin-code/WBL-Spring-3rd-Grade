@@ -10,9 +10,16 @@
 <body class="watermarkPage playoffsPage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-    <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+    <button
+      class="navToggle"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="siteNav"
+    >
       <span></span><span></span><span></span>
     </button>
+
     <div class="navOverlay" aria-hidden="true"></div>
 
     <nav class="nav" id="siteNav">
@@ -37,37 +44,52 @@
 
 <main class="wrap">
   <section class="docSection">
+
     <div class="standingsHeaderCard">
       <div class="standingsHeaderTitle">Playoffs</div>
       <div class="standingsHeaderSub muted">
-        Brackets always display. Seeds auto-fill from regular season standings.
+        Brackets auto-fill from regular season standings and playoff results.
       </div>
       <div class="standingsHeaderMeta muted small" id="playoffsUpdated"></div>
       <div class="muted small" id="seedNote" style="margin-top:6px;"></div>
     </div>
 
-    <!-- Championship -->
+    <!-- Championship Bracket -->
     <div class="card" style="margin-top:14px;">
       <div class="cardBody">
-        <h2 style="margin:0 0 10px 0;">Championship Bracket (Seeds 1–6)</h2>
-        <div id="championshipBracket" class="bracketGrid"></div>
+        <h2 style="margin:0 0 8px 0;">Championship Bracket (Seeds 1–6)</h2>
+
+        <!-- IMPORTANT: playoffs.js will render into this -->
+        <div id="championshipBracket"></div>
+
+        <p class="muted small" style="margin-top:10px;">
+          Seeds 1–2 receive first-round byes. Games auto-update when Status = <strong>Final</strong> and scores are entered.
+        </p>
       </div>
     </div>
 
-    <!-- Consolation -->
+    <!-- Consolation Bracket -->
     <div class="card" style="margin-top:14px;">
       <div class="cardBody">
-        <h2 style="margin:0 0 10px 0;">Consolation Bracket (Seeds 7–10)</h2>
-        <div id="consolationBracket" class="bracketGrid"></div>
+        <h2 style="margin:0 0 8px 0;">Consolation Bracket (Seeds 7–10)</h2>
+
+        <!-- IMPORTANT: playoffs.js will render into this -->
+        <div id="consolationBracket"></div>
+
+        <p class="muted small" style="margin-top:10px;">
+          Consolation bracket populates from seeds 7–10.
+        </p>
       </div>
     </div>
 
     <p id="playoffsMsg" class="muted small" style="margin-top:12px;"></p>
+
   </section>
 </main>
 
+<!-- Order matters -->
 <script src="./data.js"></script>
-<script src="./playoffs.js?v=wbl2026"></script>
+<script src="./playoffs.js"></script>
 <script src="./nav.js"></script>
 </body>
 </html>
