@@ -1757,3 +1757,74 @@ body.watermarkPage::before{
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
+/* Home: Welcome + Countdown banner */
+.homeWelcome{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+  text-align:center;
+}
+.homeCountdown{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+  width: min(520px, 100%);
+}
+.homeCountdownTimer{
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* POTW grid: 2 rows of 5 on desktop */
+.homePotwGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:10px;
+}
+@media (min-width: 720px){
+  .homePotwGrid{ grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+/* Home snapshots: schedule-like mini cards */
+.miniGameCard{
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.12);
+  margin-top: 10px;
+}
+.miniGameMeta{ margin-bottom: 8px; }
+.miniGameBody{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.miniTeams{ display:flex; flex-direction:column; gap:8px; }
+.miniTeamRow{ display:flex; align-items:center; gap:10px; }
+.teamLogoMini{
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.miniTeamName{ font-weight: 800; line-height: 1.1; }
+.miniRight{ text-align:right; min-width: 92px; }
+.miniScore{ font-size: 1.05rem; }
+.miniStatus{ margin-top: 4px; }
+
+/* Standings snapshot: logo + colored name */
+.miniTeamCell{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.miniTeamCellName{ font-weight: 800; }
+.teamNameColored{ font-weight: 800; }
