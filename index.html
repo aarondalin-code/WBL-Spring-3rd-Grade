@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl-home-v6" />
+  <link rel="stylesheet" href="./styles.css?v=wbl-home-v7" />
 </head>
 
 <body class="watermarkPage hasHamburger">
@@ -64,7 +64,7 @@
       </div>
     </section>
 
-    <!-- This week + last week (render schedule.html cards) -->
+    <!-- This week + last week -->
     <section class="docSection">
       <div class="homeTwoCol">
         <div class="card">
@@ -100,7 +100,6 @@
 
           <div class="tableScroll" style="margin-top:10px;">
             <table class="standingsTable" id="standingsMini">
-              <!-- Fixed widths ensure header/data alignment even with logos+links in Team column -->
               <colgroup>
                 <col style="width:44px;">
                 <col>
@@ -110,7 +109,6 @@
                 <col style="width:70px;">
                 <col style="width:70px;">
               </colgroup>
-
               <thead>
                 <tr>
                   <th class="num">#</th>
@@ -207,9 +205,7 @@
 
   <script src="./data.js"></script>
   <script>
-    /* ----------------------------------------------------------
-       Utils
-    ---------------------------------------------------------- */
+    /* -------------------- Utils -------------------- */
     function safe(v){ return String(v ?? "").trim(); }
     function norm(v){ return safe(v).toLowerCase(); }
     function isFinal(status){ return norm(status) === "final"; }
@@ -238,7 +234,6 @@
       return await res.text();
     }
 
-    // Robust CSV parser (quoted commas safe)
     function parseCsv(text){
       const rows = [];
       let row = [], cur = "", inQuotes = false;
@@ -276,9 +271,7 @@
       }).filter(o => Object.values(o).some(v => safe(v) !== ""));
     }
 
-    /* ----------------------------------------------------------
-       Modal (shared)
-    ---------------------------------------------------------- */
+    /* -------------------- Modal -------------------- */
     const overlay = document.getElementById("modalOverlay");
     const modalContent = document.getElementById("modalContent");
     const closeBtn = document.getElementById("modalCloseBtn");
@@ -325,9 +318,7 @@
       `);
     }
 
-    /* ----------------------------------------------------------
-       Countdown: opening day -> next Saturday game day
-    ---------------------------------------------------------- */
+    /* -------------------- Countdown -------------------- */
     const LEAGUE_START_DATE = new Date(2026, 3, 11); // Apr 11, 2026
     const LEAGUE_START_GAME_TIME = "10:00 AM";
 
@@ -339,7 +330,7 @@
 
     function saturdayFor(date){
       const d = new Date(date);
-      const day = d.getDay(); // 0 Sun ... 6 Sat
+      const day = d.getDay();
       const daysUntilSat = (6 - day + 7) % 7;
       const sat = new Date(d.getFullYear(), d.getMonth(), d.getDate() + daysUntilSat);
       sat.setHours(0,0,0,0);
@@ -384,19 +375,12 @@
       timerEl.textContent = fmtCountdown(nextGame.getTime() - now.getTime());
     }
 
-    /* ----------------------------------------------------------
-       Teams meta (slug/logo/color)
-    ---------------------------------------------------------- */
-    // key: normalized TeamName -> { slug, logo, color }
-    const teamMeta = new Map();
+    /* -------------------- Teams meta -------------------- */
+    const teamMeta = new Map(); // normalized TeamName -> { slug, logo, color }
 
     function getMeta(teamName){
       const m = teamMeta.get(norm(teamName));
-      return m || {
-        slug: "",
-        logo: window.DEFAULT_TEAM_LOGO || "./logo.png",
-        color: ""
-      };
+      return m || { slug:"", logo:(window.DEFAULT_TEAM_LOGO || "./logo.png"), color:"" };
     }
 
     function teamHref(teamName){
@@ -412,9 +396,7 @@
       return `<a class="scheduleTeamLink" ${style} href="${href}">${name}</a>`;
     }
 
-    /* ----------------------------------------------------------
-       Schedule snapshot renderer (exact schedule.html markup/classes)
-    ---------------------------------------------------------- */
+    /* -------------------- Schedule snapshot cards (match schedule.html) -------------------- */
     function renderScheduleCard(g){
       const aName = safe(g.TeamA);
       const bName = safe(g.TeamB);
@@ -459,9 +441,7 @@
       `;
     }
 
-    /* ----------------------------------------------------------
-       Standings calcs
-    ---------------------------------------------------------- */
+    /* -------------------- Standings calcs -------------------- */
     function toNum(x){
       const n = Number(safe(x));
       return Number.isFinite(n) ? n : null;
@@ -516,31 +496,110 @@
       return streak;
     }
 
-    /* ----------------------------------------------------------
-       Poll of the Week (sheet-configurable; real-time via POLL_API_URL)
-       Requirements: simple totals + percentage only (no change vote)
-    ---------------------------------------------------------- */
-    let POLL = {
-      weekKey: "",
-      question: "",
-      options: [],
-      mode: "local" // "local" | "realtime"
-    };
+    /* -------------------- POLL: JSONP (no CORS issues) -------------------- */
+    let POLL = { weekKey:"", question:"", options:[], mode:"realtime" };
 
     function pollVoteKey(){ return `wbl_poll_vote_${POLL.weekKey || "week"}`; }
-
-    function loadMyVote(){
-      return safe(localStorage.getItem(pollVoteKey()));
-    }
-    function saveMyVote(idx){
-      localStorage.setItem(pollVoteKey(), String(idx));
-    }
+    function loadMyVote(){ return safe(localStorage.getItem(pollVoteKey())); }
+    function saveMyVote(idx){ localStorage.setItem(pollVoteKey(), String(idx)); }
 
     function getSelectedPollIndex(){
       const selected = document.querySelector('input[name="pollOpt"]:checked');
       if (!selected) return null;
       const idx = Number(selected.value);
       return Number.isFinite(idx) ? idx : null;
+    }
+
+    function padCountsToOptions(counts){
+      const out = new Array(POLL.options.length).fill(0);
+      for (let i=0; i<out.length; i++) out[i] = Number(counts[i]) || 0;
+      return out;
+    }
+
+    function jsonpCall(baseUrl, params){
+      return new Promise((resolve, reject) => {
+        const cbName = "jsonp_cb_" + Math.random().toString(36).slice(2);
+        const url = new URL(baseUrl);
+
+        Object.entries(params || {}).forEach(([k,v]) => url.searchParams.set(k, String(v)));
+        url.searchParams.set("callback", cbName);
+
+        const script = document.createElement("script");
+        script.src = url.toString();
+        script.async = true;
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("JSONP timeout"));
+        }, 8000);
+
+        function cleanup(){
+          clearTimeout(timeout);
+          if (script.parentNode) script.parentNode.removeChild(script);
+          try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
+        }
+
+        window[cbName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("JSONP load error"));
+        };
+
+        document.head.appendChild(script);
+      });
+    }
+
+    async function pollFetchResults(){
+      if (!window.SHEET?.POLL_API_URL) return null;
+      const data = await jsonpCall(window.SHEET.POLL_API_URL, {
+        action: "results",
+        weekKey: POLL.weekKey
+      });
+      if (data && data.ok && Array.isArray(data.counts)) return data.counts;
+      return null;
+    }
+
+    async function pollSubmitVote(optionIndex){
+      if (!window.SHEET?.POLL_API_URL) throw new Error("Missing POLL_API_URL");
+      const data = await jsonpCall(window.SHEET.POLL_API_URL, {
+        action: "vote",
+        weekKey: POLL.weekKey,
+        optionIndex: optionIndex
+      });
+      if (data && data.ok && Array.isArray(data.counts)) return data.counts;
+      throw new Error(data && data.error ? data.error : "Vote failed");
+    }
+
+    async function loadPollFromSheet(){
+      const url = window.SHEET?.POLL_CSV_URL;
+      if (!url) return false;
+
+      const csv = await fetchCsv(url);
+      const rows = parseCsv(csv);
+      if (!rows.length) return false;
+
+      const active = rows.find(r => ["true","yes","1"].includes(norm(r.Active))) || rows[0];
+
+      const wk = safe(active.WeekKey);
+      const q  = safe(active.Question);
+
+      const opts = [];
+      for (let i=1; i<=8; i++){
+        const v = safe(active["Option"+i]);
+        if (v) opts.push(v);
+      }
+
+      if (!wk || !q || !opts.length) return false;
+
+      POLL.weekKey = wk;
+      POLL.question = q;
+      POLL.options = opts;
+      POLL.mode = window.SHEET?.POLL_API_URL ? "realtime" : "local";
+      return true;
     }
 
     function renderPollUI(){
@@ -554,7 +613,7 @@
       qEl.textContent = POLL.question || "Poll";
       subEl.textContent = POLL.mode === "realtime"
         ? `Week: ${POLL.weekKey} • Live totals + percentages`
-        : `Week: ${POLL.weekKey} • Local device voting (no server yet)`;
+        : `Week: ${POLL.weekKey} • Real-time voting not enabled (missing POLL_API_URL)`;
 
       optEl.innerHTML = "";
       msgEl.textContent = "";
@@ -607,66 +666,6 @@
       `;
     }
 
-    async function pollFetchResults(){
-      if (POLL.mode !== "realtime" || !window.SHEET?.POLL_API_URL) return null;
-      try{
-        const url = window.SHEET.POLL_API_URL + (window.SHEET.POLL_API_URL.includes("?") ? "&" : "?") + "weekKey=" + encodeURIComponent(POLL.weekKey);
-        const resp = await fetch(url, { cache:"no-store" });
-        if (!resp.ok) return null;
-        const data = await resp.json(); // {ok, counts, total, percents}
-        if (!data || !Array.isArray(data.counts)) return null;
-        return data.counts;
-      } catch(e){
-        console.warn(e);
-        return null;
-      }
-    }
-
-    async function pollSubmitVote(optionIndex){
-      if (POLL.mode !== "realtime" || !window.SHEET?.POLL_API_URL) return null;
-      const resp = await fetch(window.SHEET.POLL_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ weekKey: POLL.weekKey, optionIndex })
-      });
-      if (!resp.ok) throw new Error(`Vote failed (${resp.status})`);
-      const data = await resp.json(); // {ok, counts, total, percents}
-      if (!data || !Array.isArray(data.counts)) throw new Error("Invalid vote response");
-      return data.counts;
-    }
-
-    async function loadPollFromSheet(){
-      // Expected Poll tab CSV columns:
-      // WeekKey, Active, Question, Option1..Option8
-      const url = window.SHEET?.POLL_CSV_URL;
-      if (!url) return false;
-
-      try{
-        const csv = await fetchCsv(url);
-        const rows = parseCsv(csv);
-        if (!rows.length) return false;
-
-        const active = rows.find(r => ["true","yes","1"].includes(norm(r.Active))) || rows[0];
-        const wk = safe(active.WeekKey);
-        const q  = safe(active.Question);
-        const opts = [];
-        for (let i=1; i<=8; i++){
-          const v = safe(active["Option"+i]);
-          if (v) opts.push(v);
-        }
-        if (!wk || !q || !opts.length) return false;
-
-        POLL.weekKey = wk;
-        POLL.question = q;
-        POLL.options = opts;
-        POLL.mode = window.SHEET?.POLL_API_URL ? "realtime" : "local";
-        return true;
-      } catch(e){
-        console.warn(e);
-        return false;
-      }
-    }
-
     function wirePollButtons(){
       const voteBtn = document.getElementById("pollVoteBtn");
       const viewBtn = document.getElementById("pollViewBtn");
@@ -674,11 +673,16 @@
 
       viewBtn.onclick = async () => {
         msgEl.textContent = "";
-        const counts = await pollFetchResults();
-        if (counts){
+        try{
+          const counts = await pollFetchResults();
+          if (!counts){
+            msgEl.textContent = "Live results unavailable (check POLL_API_URL).";
+            return;
+          }
           renderPollResultsFromCounts(padCountsToOptions(counts));
-        } else {
-          msgEl.textContent = "Live results unavailable. (Check POLL_API_URL.)";
+        } catch(e){
+          console.error(e);
+          msgEl.textContent = "Could not load results.";
         }
       };
 
@@ -690,8 +694,8 @@
           return;
         }
 
-        if (POLL.mode !== "realtime"){
-          msgEl.textContent = "Real-time voting not enabled yet (missing POLL_API_URL).";
+        if (!window.SHEET?.POLL_API_URL){
+          msgEl.textContent = "Voting not enabled yet (missing POLL_API_URL).";
           return;
         }
 
@@ -704,29 +708,19 @@
           msgEl.textContent = "Vote recorded.";
         } catch(e){
           console.error(e);
-          msgEl.textContent = "Vote failed. Please try again.";
+          msgEl.textContent = "Vote failed. (Make sure POLL_API_URL is the deployed /exec URL.)";
         }
       };
     }
 
-    function padCountsToOptions(counts){
-      const out = new Array(POLL.options.length).fill(0);
-      for (let i=0; i<out.length; i++){
-        out[i] = Number(counts[i]) || 0;
-      }
-      return out;
-    }
-
-    /* ----------------------------------------------------------
-       Key Dates & News (sheet-driven)
-    ---------------------------------------------------------- */
+    /* -------------------- Key Dates & News -------------------- */
     async function loadKeyDatesNews(){
       const listEl = document.getElementById("newsList");
       const msgEl = document.getElementById("newsMsg");
       const url = window.SHEET?.KEY_DATES_CSV_URL;
 
       if (!url){
-        listEl.innerHTML = `<div class="muted small">Add a KeyDatesNews tab and set <code>window.SHEET.KEY_DATES_CSV_URL</code> in <code>data.js</code>.</div>`;
+        listEl.innerHTML = `<div class="muted small">Missing <code>window.SHEET.KEY_DATES_CSV_URL</code> in <code>data.js</code>.</div>`;
         msgEl.textContent = "";
         return;
       }
@@ -739,20 +733,15 @@
           date: safe(r.Date),
           title: safe(r.Title),
           details: safe(r.Details),
-          link: safe(r.Link),
-          priority: safe(r.Priority)
+          link: safe(r.Link)
         })).filter(x => x.title || x.details);
 
         const now = new Date();
-        const withDates = items.map((x, idx) => {
-          const d = parseDateLoose(x.date);
-          return { ...x, _d: d, _i: idx };
-        });
+        const withDates = items.map((x, idx) => ({...x, _d: parseDateLoose(x.date), _i: idx }));
 
         withDates.sort((a,b)=>{
           const ad = a._d ? a._d.getTime() : null;
           const bd = b._d ? b._d.getTime() : null;
-
           if (ad !== null && bd !== null){
             const aFuture = ad >= now.getTime();
             const bFuture = bd >= now.getTime();
@@ -775,7 +764,6 @@
           const titlePart = item.title ? `<div style="font-weight:800;">${item.title}</div>` : "";
           const detailsPart = item.details ? `<div class="muted" style="margin-top:6px;">${item.details}</div>` : "";
           const linkPart = item.link ? `<div style="margin-top:8px;"><a class="linkPill" href="${item.link}" target="_blank" rel="noopener">Details →</a></div>` : "";
-
           return `
             <div class="card" style="margin-top:10px;">
               <div class="cardBody">
@@ -796,44 +784,44 @@
       }
     }
 
-    /* ----------------------------------------------------------
-       Home init
-    ---------------------------------------------------------- */
+    /* -------------------- Home init -------------------- */
     async function initHome(){
-      // Countdown
       updateCountdown();
       setInterval(updateCountdown, 1000);
 
-      // Poll
-      const pollOk = await loadPollFromSheet();
-      if (!pollOk){
-        // Minimal fallback
+      // Load poll config first
+      try{
+        const ok = await loadPollFromSheet();
+        if (!ok){
+          POLL.weekKey = "week";
+          POLL.question = "Poll unavailable (check poll sheet headers).";
+          POLL.options = ["OK"];
+        }
+      } catch(e){
+        console.warn(e);
         POLL.weekKey = "week";
-        POLL.question = "Poll unavailable (configure Poll CSV).";
+        POLL.question = "Poll unavailable (check poll CSV URL).";
         POLL.options = ["OK"];
-        POLL.mode = "local";
       }
       renderPollUI();
       wirePollButtons();
 
-      // Pre-load results if realtime
-      if (POLL.mode === "realtime"){
-        const counts = await pollFetchResults();
+      // Preload results if possible
+      if (window.SHEET?.POLL_API_URL && POLL.weekKey && POLL.options.length){
+        const counts = await pollFetchResults().catch(()=>null);
         if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
       }
 
-      // Key dates/news
+      // News
       loadKeyDatesNews().catch(()=>{});
 
-      // Load teams meta
+      // Teams
       try{
         const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
         const teamRows = parseCsv(teamsCsv);
-
         for (const r of teamRows){
           const name = safe(r.TeamName);
           if (!name) continue;
-
           teamMeta.set(norm(name), {
             slug: safe(r.TeamSlug),
             logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
@@ -844,7 +832,7 @@
         console.warn("Teams feed unavailable.", e);
       }
 
-      // Load roster map (PlayerID -> PlayerName / PhotoURL)
+      // Roster map (for POTW names)
       const rosterMap = new Map();
       try{
         const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
@@ -852,20 +840,16 @@
         for (const r of roster){
           const pid = safe(r.PlayerID);
           if (!pid) continue;
-          rosterMap.set(pid, {
-            name: safe(r.PlayerName || r.Name),
-            photo: safe(r.PhotoURL)
-          });
+          rosterMap.set(pid, { name: safe(r.PlayerName || r.Name), photo: safe(r.PhotoURL) });
         }
       } catch(e){
-        console.warn("Roster feed unavailable for POTW name lookup.", e);
+        console.warn("Roster feed unavailable.", e);
       }
 
-      // Load games
+      // Games
       const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
       const games = parseCsv(gamesCsv);
 
-      // Determine which Saturday we're showing
       const now = new Date();
       const thisSat = getDisplaySaturday(now);
       const lastSat = new Date(thisSat.getFullYear(), thisSat.getMonth(), thisSat.getDate() - 7);
@@ -888,7 +872,6 @@
         bannerNote.style.display = "none";
       }
 
-      // Partition games by date = thisSat / lastSat
       const thisWeek = [];
       const lastWeekFinals = [];
 
@@ -897,31 +880,21 @@
         if (!d) continue;
         d.setHours(0,0,0,0);
 
-        if (d.getTime() === thisSat.getTime()){
-          thisWeek.push(g);
-        }
-        if (d.getTime() === lastSat.getTime() && isFinal(g.Status)){
-          lastWeekFinals.push(g);
-        }
+        if (d.getTime() === thisSat.getTime()) thisWeek.push(g);
+        if (d.getTime() === lastSat.getTime() && isFinal(g.Status)) lastWeekFinals.push(g);
       }
 
-      const thisEl = document.getElementById("thisWeekGames");
-      thisEl.innerHTML = thisWeek.length
-        ? thisWeek.map(renderScheduleCard).join("")
-        : `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
+      document.getElementById("thisWeekGames").innerHTML =
+        thisWeek.length ? thisWeek.map(renderScheduleCard).join("") :
+        `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
 
-      // Last week finals rendered exactly like schedule page, including score if present
-      const lastEl = document.getElementById("lastWeekFinals");
-      lastEl.innerHTML = lastWeekFinals.length
-        ? lastWeekFinals.map(renderScheduleCard).join("")
-        : `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
+      document.getElementById("lastWeekFinals").innerHTML =
+        lastWeekFinals.length ? lastWeekFinals.map(renderScheduleCard).join("") :
+        `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
 
-      // Standings snapshot from final games
+      // Standings snapshot
       const teamsSet = new Set();
-      games.forEach(g => {
-        if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA));
-        if (safe(g.TeamB)) teamsSet.add(safe(g.TeamB));
-      });
+      games.forEach(g => { if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA)); if (safe(g.TeamB)) teamsSet.add(safe(g.TeamB)); });
 
       const table = new Map();
       for (const t of teamsSet) table.set(t, { team:t, W:0, L:0, T:0 });
@@ -985,7 +958,7 @@
       document.getElementById("standingsMiniMsg").textContent =
         finalsCount ? `Based on ${finalsCount} final game(s).` : `No final games yet — standings will appear once games are marked Final.`;
 
-      // Players of the Week — show PLAYER NAME (join POTW->Roster by PlayerID)
+      // Players of the Week — show PLAYER NAME (join POTW -> Roster by PlayerID)
       const potwGrid = document.getElementById("potwGrid");
       const potwMsg = document.getElementById("potwMsg");
       potwGrid.innerHTML = "";
@@ -1000,12 +973,11 @@
 
           const sheetName = safe(r.PlayerName || r.Name);
           const rosterInfo = playerID ? rosterMap.get(playerID) : null;
-          const name = sheetName || safe(rosterInfo?.name) || ""; // prefer real name
+          const name = sheetName || safe(rosterInfo?.name) || "";
 
           const photoOverride = safe(r.PhotoURL);
           const rosterPhoto = safe(rosterInfo?.photo);
           const localPhoto = playerID ? `./player-photos/${encodeURIComponent(playerID)}.jpg` : "";
-
           const photo = photoOverride || rosterPhoto || localPhoto || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
 
           const blurb = safe(r.Blurb || r.Why || r.Reason || r.Notes);
@@ -1013,27 +985,15 @@
           const week = safe(r.Week);
           const weekDate = safe(r.WeekDate);
 
-          return {
-            Team: team,
-            TeamName: team,
-            PlayerID: playerID,
-            PlayerName: name,
-            PhotoURL: photo,
-            Blurb: blurb,
-            CoachName: coach,
-            Week: week,
-            WeekDate: weekDate
-          };
+          return { Team:team, PlayerID:playerID, PlayerName:name, PhotoURL:photo, Blurb:blurb, CoachName:coach, Week:week, WeekDate:weekDate };
         }).filter(p => p.Team && p.PlayerID);
 
-        // De-dupe: one per team
         const byTeam = new Map();
         for (const p of mapped){
           if (!byTeam.has(p.Team)) byTeam.set(p.Team, p);
         }
         const onePerTeam = Array.from(byTeam.values());
 
-        // Sort newest first (WeekDate/Week), then Team name
         onePerTeam.sort((a,b)=>{
           const ad = parseDateLoose(a.WeekDate);
           const bd = parseDateLoose(b.WeekDate);
@@ -1061,7 +1021,6 @@
               <div class="potwLink">Learn more →</div>
             </div>
           `;
-
           btn.addEventListener("click", ()=> renderPlayerModal(p));
           potwGrid.appendChild(btn);
         });
@@ -1069,7 +1028,7 @@
         potwMsg.textContent = show.length ? "" : "Players of the Week will appear here once the sheet is populated.";
       } catch(e){
         console.error(e);
-        potwMsg.textContent = "Players of the Week unavailable right now (check tab publish + URL).";
+        potwMsg.textContent = "Players of the Week unavailable right now.";
       }
     }
 
