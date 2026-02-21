@@ -2117,3 +2117,64 @@ body.watermarkPage::before{
 @media (max-width: 520px){
   .homeCountdown{ padding: 10px 12px; }
 }
+/* ===========================
+   CENTER KEY HOME SECTIONS
+   =========================== */
+
+/* -------- Players of the Week -------- */
+#potwGrid{
+  justify-content: center;
+}
+
+.potwGrid{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:18px;
+}
+
+.potwCardBtn{
+  text-align:center;
+}
+
+.potwText{
+  text-align:center;
+}
+
+/* -------- Poll of the Week -------- */
+.pollGrid{
+  justify-content:center;
+}
+
+.pollLeft{
+  text-align:center;
+}
+
+.pollOptions{
+  align-items:center;
+}
+
+.pollOpt{
+  width:100%;
+  max-width:420px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.pollActions{
+  justify-content:center;
+}
+
+/* -------- Key League Dates & News -------- */
+#newsList{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+
+#newsList .card{
+  width:100%;
+  max-width:700px;
+  text-align:center;
+}
