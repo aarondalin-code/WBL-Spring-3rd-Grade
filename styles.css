@@ -1464,3 +1464,231 @@ body.watermarkPage::before{
     background: var(--border);
   }
 }
+/* =========================
+   Playoffs Bracket Styling (TRUE ALIGNMENT)
+   - fixed row slots per column
+   - connectors that line up with slots
+========================= */
+
+.bracketAligned{
+  margin-top: 6px;
+}
+
+.brAlignGrid{
+  display:grid;
+  gap: 14px;
+  align-items: stretch;
+}
+
+/* 3 columns (championship) */
+.brCols3{
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* 2 columns (consolation) */
+.brCols2{
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 980px){
+  .brCols3, .brCols2{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Column card */
+.brAlignCol{
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+  overflow:hidden;
+}
+
+.brAlignColTitle{
+  padding: 10px 12px;
+  font-weight: 950;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+}
+
+/* Slot grid inside each column */
+.brAlignSlots{
+  position: relative;
+  display:grid;
+  gap: 12px;
+  padding: 12px;
+  min-height: 420px; /* gives room; adjusts by content naturally */
+}
+
+@media (max-width: 980px){
+  .brAlignSlots{ min-height: auto; }
+}
+
+/* Each slot holds one game/bye box */
+.brSlot{
+  position: relative;
+  display:flex;
+  align-items: center;
+}
+
+/* Game boxes (re-use your v2 visuals) */
+.brGame{
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.brFinal{
+  background: rgba(37,99,235,.06);
+  border-color: rgba(37,99,235,.25);
+}
+
+.brBye{
+  background: rgba(16,185,129,.06);
+  border-color: rgba(16,185,129,.25);
+}
+
+.brMeta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+  margin-bottom: 8px;
+}
+.brMetaTop{
+  font-weight: 950;
+  font-size: 12px;
+  color: #0f172a;
+}
+.brMetaBottom{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.brTeams{
+  display:grid;
+  gap: 8px;
+}
+
+.brTeamRow{
+  display:flex;
+  gap: 8px;
+  align-items:center;
+  min-width:0;
+}
+
+.brLogo{
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.brLogoBlank{
+  width: 24px;
+  height: 24px;
+  display:inline-block;
+  flex: 0 0 auto;
+}
+
+.brTeamMain{
+  min-width:0;
+  flex: 1 1 auto;
+}
+
+.brTeamName{
+  font-weight: 950;
+  text-decoration:none;
+  color:#0f172a;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+  display:inline-block;
+}
+
+.brTeamName:hover{
+  color: var(--royal);
+}
+
+.brTeamScore{
+  margin-left: auto;
+  font-weight: 950;
+  font-size: 14px;
+  color: #0f172a;
+  padding-left: 8px;
+}
+
+/* =========================
+   TRUE CONNECTORS (desktop)
+   - Draw horizontal stubs from each slot to next column
+   - Draw vertical spine inside next column to connect paired feeders
+========================= */
+@media (min-width: 981px){
+
+  /* Horizontal stubs from slot -> next column */
+  .brChampAligned .brAlignCol:nth-child(1) .brSlot::after,
+  .brConsAligned  .brAlignCol:nth-child(1) .brSlot::after{
+    content:"";
+    position:absolute;
+    right:-14px;
+    top:50%;
+    width:14px;
+    height:2px;
+    background: var(--border);
+    transform: translateY(-50%);
+  }
+
+  .brChampAligned .brAlignCol:nth-child(2) .brSlot::after{
+    content:"";
+    position:absolute;
+    right:-14px;
+    top:50%;
+    width:14px;
+    height:2px;
+    background: var(--border);
+    transform: translateY(-50%);
+  }
+
+  /* Championship: vertical spine for Semis column (connect slot0+slot1 pair and slot2+slot3 pair)
+     We know Semis has 2 slots; we draw one spine that spans the column body. */
+  .brChampAligned .brAlignCol:nth-child(2) .brAlignSlots::before{
+    content:"";
+    position:absolute;
+    left:-14px;
+    top: 24px;
+    bottom: 24px;
+    width:2px;
+    background: var(--border);
+  }
+
+  /* Championship: vertical spine for Final column */
+  .brChampAligned .brAlignCol:nth-child(3) .brAlignSlots::before{
+    content:"";
+    position:absolute;
+    left:-14px;
+    top: 24px;
+    bottom: 24px;
+    width:2px;
+    background: var(--border);
+  }
+
+  /* Consolation: vertical spine for Round 2 column */
+  .brConsAligned .brAlignCol:nth-child(2) .brAlignSlots::before{
+    content:"";
+    position:absolute;
+    left:-14px;
+    top: 24px;
+    bottom: 24px;
+    width:2px;
+    background: var(--border);
+  }
+}
