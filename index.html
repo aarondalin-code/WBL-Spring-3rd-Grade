@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl-home-v4" />
+  <link rel="stylesheet" href="./styles.css?v=wbl-home-v6" />
 </head>
 
 <body class="watermarkPage hasHamburger">
@@ -64,7 +64,7 @@
       </div>
     </section>
 
-    <!-- This week + last week (rendered to mirror schedule.html cards) -->
+    <!-- This week + last week (render schedule.html cards) -->
     <section class="docSection">
       <div class="homeTwoCol">
         <div class="card">
@@ -100,6 +100,17 @@
 
           <div class="tableScroll" style="margin-top:10px;">
             <table class="standingsTable" id="standingsMini">
+              <!-- Fixed widths ensure header/data alignment even with logos+links in Team column -->
+              <colgroup>
+                <col style="width:44px;">
+                <col>
+                <col style="width:52px;">
+                <col style="width:52px;">
+                <col style="width:52px;">
+                <col style="width:70px;">
+                <col style="width:70px;">
+              </colgroup>
+
               <thead>
                 <tr>
                   <th class="num">#</th>
@@ -144,7 +155,7 @@
           <div class="homeSectionHead">
             <div>
               <h3 style="margin:0;">Poll of the Week</h3>
-              <div class="muted small" id="pollSubtitle">Vote once per device.</div>
+              <div class="muted small" id="pollSubtitle">Loading…</div>
             </div>
           </div>
 
@@ -155,12 +166,31 @@
             <div class="pollActions" style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
               <button id="pollVoteBtn" class="btnPrimary" type="button">Vote</button>
               <button id="pollViewBtn" class="btnSecondary" type="button">View Results</button>
-              <button id="pollChangeBtn" class="btnSecondary" type="button" style="display:none;">Change Vote</button>
             </div>
 
             <div id="pollMsg" class="muted small" style="margin-top:10px;"></div>
             <div id="pollResults" style="margin-top:12px; display:none;"></div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key League Dates & News -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeSectionHead">
+            <div>
+              <h3 style="margin:0;">Key League Dates & News</h3>
+              <div class="muted small">Photo day, events, reminders, updates.</div>
+            </div>
+          </div>
+
+          <div id="newsList" style="margin-top:12px;">
+            <div class="muted small">Loading…</div>
+          </div>
+
+          <p id="newsMsg" class="muted small" style="margin-top:10px;"></p>
         </div>
       </div>
     </section>
@@ -177,6 +207,9 @@
 
   <script src="./data.js"></script>
   <script>
+    /* ----------------------------------------------------------
+       Utils
+    ---------------------------------------------------------- */
     function safe(v){ return String(v ?? "").trim(); }
     function norm(v){ return safe(v).toLowerCase(); }
     function isFinal(status){ return norm(status) === "final"; }
@@ -200,7 +233,7 @@
     async function fetchCsv(url){
       if (!url) throw new Error("Missing CSV URL in data.js");
       const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-      const res = await fetch(url + bust, { cache: "no-store" });
+      const res = await fetch(url + bust, { cache:"no-store" });
       if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
       return await res.text();
     }
@@ -210,34 +243,42 @@
       const rows = [];
       let row = [], cur = "", inQuotes = false;
 
-      for (let i=0;i<text.length;i++){
+      for (let i=0; i<text.length; i++){
         const ch = text[i], next = text[i+1];
+
         if (ch === '"'){
           if (inQuotes && next === '"'){ cur += '"'; i++; }
           else inQuotes = !inQuotes;
           continue;
         }
+
         if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
+
         if (!inQuotes && (ch === "\n" || ch === "\r")){
           if (ch === "\r" && next === "\n") i++;
           row.push(cur); cur="";
-          if (row.some(v => safe(v)!=="")) rows.push(row);
-          row=[]; continue;
+          if (row.some(v => safe(v) !== "")) rows.push(row);
+          row = [];
+          continue;
         }
+
         cur += ch;
       }
-      row.push(cur);
-      if (row.some(v => safe(v)!=="")) rows.push(row);
 
-      const headers = (rows.shift()||[]).map(h => safe(h).replace(/\s+/g,""));
+      row.push(cur);
+      if (row.some(v => safe(v) !== "")) rows.push(row);
+
+      const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
       return rows.map(r => {
         const o = {};
-        headers.forEach((h,idx)=> o[h]=safe(r[idx]));
+        headers.forEach((h, idx) => o[h] = safe(r[idx]));
         return o;
       }).filter(o => Object.values(o).some(v => safe(v) !== ""));
     }
 
-    // Modal
+    /* ----------------------------------------------------------
+       Modal (shared)
+    ---------------------------------------------------------- */
     const overlay = document.getElementById("modalOverlay");
     const modalContent = document.getElementById("modalContent");
     const closeBtn = document.getElementById("modalCloseBtn");
@@ -284,7 +325,9 @@
       `);
     }
 
-    // ---- Opening Day + weekly anchor logic ----
+    /* ----------------------------------------------------------
+       Countdown: opening day -> next Saturday game day
+    ---------------------------------------------------------- */
     const LEAGUE_START_DATE = new Date(2026, 3, 11); // Apr 11, 2026
     const LEAGUE_START_GAME_TIME = "10:00 AM";
 
@@ -341,7 +384,9 @@
       timerEl.textContent = fmtCountdown(nextGame.getTime() - now.getTime());
     }
 
-    // ---- Teams meta + link helpers (mirrors schedule.html) ----
+    /* ----------------------------------------------------------
+       Teams meta (slug/logo/color)
+    ---------------------------------------------------------- */
     // key: normalized TeamName -> { slug, logo, color }
     const teamMeta = new Map();
 
@@ -367,7 +412,9 @@
       return `<a class="scheduleTeamLink" ${style} href="${href}">${name}</a>`;
     }
 
-    // ---- Schedule snapshot renderer (uses same markup/classes as schedule.html cards) ----
+    /* ----------------------------------------------------------
+       Schedule snapshot renderer (exact schedule.html markup/classes)
+    ---------------------------------------------------------- */
     function renderScheduleCard(g){
       const aName = safe(g.TeamA);
       const bName = safe(g.TeamB);
@@ -412,7 +459,9 @@
       `;
     }
 
-    // ---- Standings calculations ----
+    /* ----------------------------------------------------------
+       Standings calcs
+    ---------------------------------------------------------- */
     function toNum(x){
       const n = Number(safe(x));
       return Number.isFinite(n) ? n : null;
@@ -430,7 +479,6 @@
 
     function buildStreaksFromFinals(games){
       const byTeam = new Map();
-
       function pushResult(team, res){
         if (!team) return;
         if (!byTeam.has(team)) byTeam.set(team, []);
@@ -468,65 +516,45 @@
       return streak;
     }
 
-    // ---- Poll of the Week (localStorage) ----
-    const POLL = {
-      // Change these anytime (weekKey should change weekly so results reset naturally)
-      weekKey: "2026-Week-1", // e.g., "2026-Week-1" or "2026-04-11"
-      question: "Which team will start the season 1–0?",
-      options: [
-        "No vote yet — just excited!",
-        "Team A",
-        "Team B",
-        "Team C",
-        "Team D"
-      ]
+    /* ----------------------------------------------------------
+       Poll of the Week (sheet-configurable; real-time via POLL_API_URL)
+       Requirements: simple totals + percentage only (no change vote)
+    ---------------------------------------------------------- */
+    let POLL = {
+      weekKey: "",
+      question: "",
+      options: [],
+      mode: "local" // "local" | "realtime"
     };
 
-    function pollStorageKey(){
-      return `wbl_poll_${POLL.weekKey}`;
-    }
-
-    function pollVoteKey(){
-      return `wbl_poll_vote_${POLL.weekKey}`;
-    }
-
-    function loadPollCounts(){
-      try{
-        const raw = localStorage.getItem(pollStorageKey());
-        const obj = raw ? JSON.parse(raw) : null;
-        if (obj && Array.isArray(obj.counts) && obj.counts.length === POLL.options.length) return obj.counts;
-      } catch(e){}
-      return new Array(POLL.options.length).fill(0);
-    }
-
-    function savePollCounts(counts){
-      localStorage.setItem(pollStorageKey(), JSON.stringify({ counts }));
-    }
+    function pollVoteKey(){ return `wbl_poll_vote_${POLL.weekKey || "week"}`; }
 
     function loadMyVote(){
       return safe(localStorage.getItem(pollVoteKey()));
     }
-
     function saveMyVote(idx){
       localStorage.setItem(pollVoteKey(), String(idx));
     }
 
-    function clearMyVote(){
-      localStorage.removeItem(pollVoteKey());
+    function getSelectedPollIndex(){
+      const selected = document.querySelector('input[name="pollOpt"]:checked');
+      if (!selected) return null;
+      const idx = Number(selected.value);
+      return Number.isFinite(idx) ? idx : null;
     }
 
-    function renderPoll(){
+    function renderPollUI(){
       const qEl = document.getElementById("pollQuestion");
       const optEl = document.getElementById("pollOptions");
       const msgEl = document.getElementById("pollMsg");
       const resEl = document.getElementById("pollResults");
       const subEl = document.getElementById("pollSubtitle");
       const voteBtn = document.getElementById("pollVoteBtn");
-      const viewBtn = document.getElementById("pollViewBtn");
-      const changeBtn = document.getElementById("pollChangeBtn");
 
-      qEl.textContent = POLL.question;
-      subEl.textContent = `Week: ${POLL.weekKey} • Vote once per device.`;
+      qEl.textContent = POLL.question || "Poll";
+      subEl.textContent = POLL.mode === "realtime"
+        ? `Week: ${POLL.weekKey} • Live totals + percentages`
+        : `Week: ${POLL.weekKey} • Local device voting (no server yet)`;
 
       optEl.innerHTML = "";
       msgEl.textContent = "";
@@ -543,61 +571,19 @@
         wrap.className = "pollOpt";
         wrap.setAttribute("for", id);
         wrap.innerHTML = `
-          <input type="radio" name="pollOpt" id="${id}" value="${idx}" ${hasVoted && idx === myIdx ? "checked" : ""} ${hasVoted ? "disabled" : ""}>
+          <input type="radio" name="pollOpt" id="${id}" value="${idx}"
+            ${hasVoted && idx === myIdx ? "checked" : ""} ${hasVoted ? "disabled" : ""}>
           <span>${label}</span>
         `;
         optEl.appendChild(wrap);
       });
 
-      if (hasVoted){
-        msgEl.textContent = `You voted: ${POLL.options[myIdx]}`;
-        voteBtn.disabled = true;
-        changeBtn.style.display = "";
-      } else {
-        voteBtn.disabled = false;
-        changeBtn.style.display = "none";
-      }
-
-      viewBtn.onclick = () => {
-        renderPollResults();
-      };
-
-      voteBtn.onclick = () => {
-        const selected = document.querySelector('input[name="pollOpt"]:checked');
-        if (!selected){
-          msgEl.textContent = "Pick an option first.";
-          return;
-        }
-        const idx = Number(selected.value);
-        if (!Number.isFinite(idx)) return;
-
-        const counts = loadPollCounts();
-        counts[idx] = (counts[idx] || 0) + 1;
-        savePollCounts(counts);
-        saveMyVote(idx);
-
-        renderPoll();
-        renderPollResults(true);
-      };
-
-      changeBtn.onclick = () => {
-        // Let them re-vote (decrement prior vote, then allow selection)
-        const myVote2 = loadMyVote();
-        const priorIdx = myVote2 !== "" ? Number(myVote2) : null;
-        if (Number.isFinite(priorIdx) && priorIdx >= 0){
-          const counts = loadPollCounts();
-          counts[priorIdx] = Math.max(0, (counts[priorIdx] || 0) - 1);
-          savePollCounts(counts);
-        }
-        clearMyVote();
-        renderPoll();
-        msgEl.textContent = "Vote changed — pick a new option.";
-      };
+      voteBtn.disabled = hasVoted;
+      if (hasVoted && POLL.options[myIdx]) msgEl.textContent = `You voted: ${POLL.options[myIdx]}`;
     }
 
-    function renderPollResults(keepOpen){
+    function renderPollResultsFromCounts(counts){
       const resEl = document.getElementById("pollResults");
-      const counts = loadPollCounts();
       const total = counts.reduce((a,b)=>a+(b||0),0);
 
       resEl.style.display = "";
@@ -619,21 +605,227 @@
           `;
         }).join("")}
       `;
+    }
 
-      if (!keepOpen){
-        document.getElementById("pollMsg").textContent = "";
+    async function pollFetchResults(){
+      if (POLL.mode !== "realtime" || !window.SHEET?.POLL_API_URL) return null;
+      try{
+        const url = window.SHEET.POLL_API_URL + (window.SHEET.POLL_API_URL.includes("?") ? "&" : "?") + "weekKey=" + encodeURIComponent(POLL.weekKey);
+        const resp = await fetch(url, { cache:"no-store" });
+        if (!resp.ok) return null;
+        const data = await resp.json(); // {ok, counts, total, percents}
+        if (!data || !Array.isArray(data.counts)) return null;
+        return data.counts;
+      } catch(e){
+        console.warn(e);
+        return null;
       }
     }
 
+    async function pollSubmitVote(optionIndex){
+      if (POLL.mode !== "realtime" || !window.SHEET?.POLL_API_URL) return null;
+      const resp = await fetch(window.SHEET.POLL_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ weekKey: POLL.weekKey, optionIndex })
+      });
+      if (!resp.ok) throw new Error(`Vote failed (${resp.status})`);
+      const data = await resp.json(); // {ok, counts, total, percents}
+      if (!data || !Array.isArray(data.counts)) throw new Error("Invalid vote response");
+      return data.counts;
+    }
+
+    async function loadPollFromSheet(){
+      // Expected Poll tab CSV columns:
+      // WeekKey, Active, Question, Option1..Option8
+      const url = window.SHEET?.POLL_CSV_URL;
+      if (!url) return false;
+
+      try{
+        const csv = await fetchCsv(url);
+        const rows = parseCsv(csv);
+        if (!rows.length) return false;
+
+        const active = rows.find(r => ["true","yes","1"].includes(norm(r.Active))) || rows[0];
+        const wk = safe(active.WeekKey);
+        const q  = safe(active.Question);
+        const opts = [];
+        for (let i=1; i<=8; i++){
+          const v = safe(active["Option"+i]);
+          if (v) opts.push(v);
+        }
+        if (!wk || !q || !opts.length) return false;
+
+        POLL.weekKey = wk;
+        POLL.question = q;
+        POLL.options = opts;
+        POLL.mode = window.SHEET?.POLL_API_URL ? "realtime" : "local";
+        return true;
+      } catch(e){
+        console.warn(e);
+        return false;
+      }
+    }
+
+    function wirePollButtons(){
+      const voteBtn = document.getElementById("pollVoteBtn");
+      const viewBtn = document.getElementById("pollViewBtn");
+      const msgEl = document.getElementById("pollMsg");
+
+      viewBtn.onclick = async () => {
+        msgEl.textContent = "";
+        const counts = await pollFetchResults();
+        if (counts){
+          renderPollResultsFromCounts(padCountsToOptions(counts));
+        } else {
+          msgEl.textContent = "Live results unavailable. (Check POLL_API_URL.)";
+        }
+      };
+
+      voteBtn.onclick = async () => {
+        msgEl.textContent = "";
+        const idx = getSelectedPollIndex();
+        if (idx === null){
+          msgEl.textContent = "Pick an option first.";
+          return;
+        }
+
+        if (POLL.mode !== "realtime"){
+          msgEl.textContent = "Real-time voting not enabled yet (missing POLL_API_URL).";
+          return;
+        }
+
+        try{
+          msgEl.textContent = "Submitting vote…";
+          const counts = await pollSubmitVote(idx);
+          saveMyVote(idx);
+          renderPollUI();
+          renderPollResultsFromCounts(padCountsToOptions(counts));
+          msgEl.textContent = "Vote recorded.";
+        } catch(e){
+          console.error(e);
+          msgEl.textContent = "Vote failed. Please try again.";
+        }
+      };
+    }
+
+    function padCountsToOptions(counts){
+      const out = new Array(POLL.options.length).fill(0);
+      for (let i=0; i<out.length; i++){
+        out[i] = Number(counts[i]) || 0;
+      }
+      return out;
+    }
+
+    /* ----------------------------------------------------------
+       Key Dates & News (sheet-driven)
+    ---------------------------------------------------------- */
+    async function loadKeyDatesNews(){
+      const listEl = document.getElementById("newsList");
+      const msgEl = document.getElementById("newsMsg");
+      const url = window.SHEET?.KEY_DATES_CSV_URL;
+
+      if (!url){
+        listEl.innerHTML = `<div class="muted small">Add a KeyDatesNews tab and set <code>window.SHEET.KEY_DATES_CSV_URL</code> in <code>data.js</code>.</div>`;
+        msgEl.textContent = "";
+        return;
+      }
+
+      try{
+        const csv = await fetchCsv(url);
+        const rows = parseCsv(csv);
+
+        const items = rows.map(r => ({
+          date: safe(r.Date),
+          title: safe(r.Title),
+          details: safe(r.Details),
+          link: safe(r.Link),
+          priority: safe(r.Priority)
+        })).filter(x => x.title || x.details);
+
+        const now = new Date();
+        const withDates = items.map((x, idx) => {
+          const d = parseDateLoose(x.date);
+          return { ...x, _d: d, _i: idx };
+        });
+
+        withDates.sort((a,b)=>{
+          const ad = a._d ? a._d.getTime() : null;
+          const bd = b._d ? b._d.getTime() : null;
+
+          if (ad !== null && bd !== null){
+            const aFuture = ad >= now.getTime();
+            const bFuture = bd >= now.getTime();
+            if (aFuture !== bFuture) return aFuture ? -1 : 1;
+            return ad - bd;
+          }
+          if (ad !== null && bd === null) return -1;
+          if (ad === null && bd !== null) return 1;
+          return a._i - b._i;
+        });
+
+        if (!withDates.length){
+          listEl.innerHTML = `<div class="muted small">No news yet.</div>`;
+          msgEl.textContent = "";
+          return;
+        }
+
+        listEl.innerHTML = withDates.slice(0,10).map(item => {
+          const datePart = item.date ? `<div class="muted small">${item.date}</div>` : "";
+          const titlePart = item.title ? `<div style="font-weight:800;">${item.title}</div>` : "";
+          const detailsPart = item.details ? `<div class="muted" style="margin-top:6px;">${item.details}</div>` : "";
+          const linkPart = item.link ? `<div style="margin-top:8px;"><a class="linkPill" href="${item.link}" target="_blank" rel="noopener">Details →</a></div>` : "";
+
+          return `
+            <div class="card" style="margin-top:10px;">
+              <div class="cardBody">
+                ${datePart}
+                ${titlePart}
+                ${detailsPart}
+                ${linkPart}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        msgEl.textContent = "";
+      } catch(e){
+        console.error(e);
+        listEl.innerHTML = `<div class="muted small">Unable to load key dates/news right now.</div>`;
+        msgEl.textContent = "";
+      }
+    }
+
+    /* ----------------------------------------------------------
+       Home init
+    ---------------------------------------------------------- */
     async function initHome(){
-      // Countdown timer
+      // Countdown
       updateCountdown();
       setInterval(updateCountdown, 1000);
 
       // Poll
-      renderPoll();
+      const pollOk = await loadPollFromSheet();
+      if (!pollOk){
+        // Minimal fallback
+        POLL.weekKey = "week";
+        POLL.question = "Poll unavailable (configure Poll CSV).";
+        POLL.options = ["OK"];
+        POLL.mode = "local";
+      }
+      renderPollUI();
+      wirePollButtons();
 
-      // Load teams for slug/logo/color (headers: TeamName, TeamSlug, TeamLogo, TeamColor)
+      // Pre-load results if realtime
+      if (POLL.mode === "realtime"){
+        const counts = await pollFetchResults();
+        if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
+      }
+
+      // Key dates/news
+      loadKeyDatesNews().catch(()=>{});
+
+      // Load teams meta
       try{
         const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
         const teamRows = parseCsv(teamsCsv);
@@ -648,17 +840,25 @@
             color: safe(r.TeamColor) || ""
           });
         }
-
-        // Optional: if poll options are placeholder ("Team A"...), swap them to real teams automatically
-        // Keep the first "fun" option, then fill with 4 alphabetically.
-        if (POLL.options.some(o => /^Team [A-D]$/.test(o))){
-          const names = teamRows.map(r => safe(r.TeamName)).filter(Boolean).sort();
-          const filled = [POLL.options[0], ...names.slice(0,4)];
-          if (filled.length === POLL.options.length) POLL.options = filled;
-          renderPoll();
-        }
       } catch(e){
         console.warn("Teams feed unavailable.", e);
+      }
+
+      // Load roster map (PlayerID -> PlayerName / PhotoURL)
+      const rosterMap = new Map();
+      try{
+        const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
+        const roster = parseCsv(rosterCsv);
+        for (const r of roster){
+          const pid = safe(r.PlayerID);
+          if (!pid) continue;
+          rosterMap.set(pid, {
+            name: safe(r.PlayerName || r.Name),
+            photo: safe(r.PhotoURL)
+          });
+        }
+      } catch(e){
+        console.warn("Roster feed unavailable for POTW name lookup.", e);
       }
 
       // Load games
@@ -710,12 +910,13 @@
         ? thisWeek.map(renderScheduleCard).join("")
         : `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
 
+      // Last week finals rendered exactly like schedule page, including score if present
       const lastEl = document.getElementById("lastWeekFinals");
       lastEl.innerHTML = lastWeekFinals.length
         ? lastWeekFinals.map(renderScheduleCard).join("")
         : `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
 
-      // Standings snapshot (Top 4)
+      // Standings snapshot from final games
       const teamsSet = new Set();
       games.forEach(g => {
         if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA));
@@ -784,7 +985,7 @@
       document.getElementById("standingsMiniMsg").textContent =
         finalsCount ? `Based on ${finalsCount} final game(s).` : `No final games yet — standings will appear once games are marked Final.`;
 
-      // Players of the Week (10 total, one per team)
+      // Players of the Week — show PLAYER NAME (join POTW->Roster by PlayerID)
       const potwGrid = document.getElementById("potwGrid");
       const potwMsg = document.getElementById("potwMsg");
       potwGrid.innerHTML = "";
@@ -796,21 +997,27 @@
         const mapped = potw.map(r => {
           const team = safe(r.TeamName || r.Team);
           const playerID = safe(r.PlayerID);
-          const name = safe(r.PlayerName || r.Name); // optional
+
+          const sheetName = safe(r.PlayerName || r.Name);
+          const rosterInfo = playerID ? rosterMap.get(playerID) : null;
+          const name = sheetName || safe(rosterInfo?.name) || ""; // prefer real name
+
           const photoOverride = safe(r.PhotoURL);
+          const rosterPhoto = safe(rosterInfo?.photo);
+          const localPhoto = playerID ? `./player-photos/${encodeURIComponent(playerID)}.jpg` : "";
+
+          const photo = photoOverride || rosterPhoto || localPhoto || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
+
           const blurb = safe(r.Blurb || r.Why || r.Reason || r.Notes);
           const coach = safe(r.CoachName);
           const week = safe(r.Week);
           const weekDate = safe(r.WeekDate);
 
-          const localPhoto = playerID ? `./player-photos/${encodeURIComponent(playerID)}.jpg` : "";
-          const photo = photoOverride || localPhoto || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
-
           return {
             Team: team,
             TeamName: team,
             PlayerID: playerID,
-            PlayerName: name || playerID || "Player",
+            PlayerName: name,
             PhotoURL: photo,
             Blurb: blurb,
             CoachName: coach,
@@ -843,11 +1050,13 @@
           btn.type = "button";
           btn.className = "potwCardBtn";
 
+          const displayName = p.PlayerName || "Player of the Week";
+
           btn.innerHTML = `
-            <img class="potwPhoto" src="${p.PhotoURL}" alt="${p.PlayerName}"
+            <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}"
                  onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
             <div class="potwText">
-              <div class="potwName">${p.PlayerName}</div>
+              <div class="potwName">${displayName}</div>
               <div class="potwTeam muted small">${p.Team}</div>
               <div class="potwLink">Learn more →</div>
             </div>
