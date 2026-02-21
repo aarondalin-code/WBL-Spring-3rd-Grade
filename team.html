@@ -120,7 +120,7 @@
     return await res.text();
   }
 
-  // Robust CSV parser (quoted commas safe) + BOM strip
+  // Robust CSV parser (quoted commas safe)
   function parseCsv(text) {
     const rows = [];
     let row = [];
@@ -153,7 +153,7 @@
     row.push(cur);
     if (row.some(v => safe(v) !== "")) rows.push(row);
 
-    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,"").replace(/^\uFEFF/, ""));
+    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g, ""));
     return rows
       .filter(r => r.some(x => safe(x) !== ""))
       .map(r => {
@@ -187,17 +187,6 @@
   closeBtn.addEventListener("click", closeModal);
   overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
-
-  // -----------------------------
-  // Player photo (TOURNAMENT-STYLE)
-  // PlayerID -> ./player-photos/{PlayerID}.jpg
-  // Example: Or-01 -> ./player-photos/Or-01.jpg
-  // -----------------------------
-  function playerPhotoSrc(player){
-    const id = safe(player.PlayerID);
-    if (id) return `./player-photos/${id}.jpg`;
-    return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
-  }
 
   // -----------------------------
   // Render: Team header + coach
@@ -246,7 +235,35 @@
   }
 
   // -----------------------------
-  // Modal HTML helpers
+  // Photo logic (PlayerID-first, PhotoURL override)
+  // -----------------------------
+  function getPlayerId(player){
+    // Support either "PlayerID" or "PlayerId"
+    return safe(player.PlayerID || player.PlayerId);
+  }
+
+  function playerPhotoFromId(playerId){
+    if (!playerId) return "";
+    // Assumes you upload jpgs named exactly like Or-01.jpg
+    return `./player-photos/${encodeURIComponent(playerId)}.jpg`;
+  }
+
+  function getPhotoSrc(player){
+    // 1) PhotoURL override if filled (lets you hot-fix)
+    const url = safe(player.PhotoURL);
+    if (url) return url;
+
+    // 2) PlayerID -> local file
+    const pid = getPlayerId(player);
+    const local = playerPhotoFromId(pid);
+    if (local) return local;
+
+    // 3) fallback
+    return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
+  }
+
+  // -----------------------------
+  // Modal content
   // -----------------------------
   function line(label, value){
     return `
@@ -265,8 +282,7 @@
     const throws = safe(player.Throws);
     const fav = safe(player.FavoriteTeam);
     const fun = safe(player.FunFact);
-
-    const photo = playerPhotoSrc(player);
+    const photo = getPhotoSrc(player);
 
     const lines = [];
     if (num) lines.push(line("Number", `#${num}`));
@@ -276,13 +292,15 @@
     if (fav) lines.push(line("Favorite MLB Team", fav));
     if (fun) lines.push(line("Fun Fact", fun));
 
+    const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
+
     openModal(`
       <div class="profileHeader">
         <div class="profilePhoto">
           <img src="${photo}" alt="${name}"
-               onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png"}';">
+               onerror="this.onerror=null; this.src='${fallback}';">
         </div>
-        <div style="min-width:0;">
+        <div style="min-width:260px;">
           <h3 id="modalTitle" class="profileName">${name}</h3>
           <div class="muted">${teamDisplayName}${num ? ` • #${num}` : ""}</div>
           <div class="profileLines" style="margin-top:12px;">
@@ -294,7 +312,7 @@
   }
 
   // -----------------------------
-  // Roster render
+  // Roster grid
   // -----------------------------
   function buildRosterGrid(players, teamDisplayName){
     const grid = document.getElementById("rosterGrid");
@@ -307,7 +325,6 @@
     }
     msg.textContent = "";
 
-    // Sort: Number asc, then name
     players.sort((a,b) => {
       const na = Number(safe(a.Number));
       const nb = Number(safe(b.Number));
@@ -319,6 +336,8 @@
       return safe(a.PlayerName || a.Name).localeCompare(safe(b.PlayerName || b.Name));
     });
 
+    const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
+
     for (const p of players){
       const btn = document.createElement("button");
       btn.type = "button";
@@ -327,21 +346,21 @@
       const name = safe(p.PlayerName || p.Name || "Player");
       const num = safe(p.Number);
       const pos = safe(p.Position);
-      const photo = playerPhotoSrc(p);
+      const photo = getPhotoSrc(p);
 
       btn.innerHTML = `
         <div class="playerCardRow">
           <div class="playerThumb">
             <img src="${photo}" alt="${name}"
-                 onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png"}';">
+                 onerror="this.onerror=null; this.src='${fallback}';">
           </div>
           <div class="playerText" style="min-width:0;">
-            <div class="playerNameLine" style="font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            <div class="playerNameLine" style="font-weight:900;">
               ${name}${num ? ` <span class="muted">#${num}</span>` : ""}
             </div>
-            <div class="muted small" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${pos || ""}</div>
+            <div class="muted small">${pos || ""}</div>
           </div>
-          <div class="playerChevron" aria-hidden="true">›</div>
+          <div class="playerChevron" style="margin-left:auto; font-weight:900; color:var(--muted);">›</div>
         </div>
       `;
 
