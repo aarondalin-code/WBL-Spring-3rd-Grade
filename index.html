@@ -359,25 +359,31 @@
       return `${days}d ${pad(hrs)}h ${pad(mins)}m ${pad(s)}s`;
     }
 
-    function updateCountdown(){
-      const labelEl = document.getElementById("countdownLabel");
-      const timerEl = document.getElementById("countdownTimer");
-      if (!labelEl || !timerEl) return;
+function updateCountdown(){
+  const labelEl = document.getElementById("countdownLabel");
+  const timerEl = document.getElementById("countdownTimer");
+  const wrapEl  = document.querySelector(".homeCountdown");
+  if (!labelEl || !timerEl || !wrapEl) return;
 
-      const now = new Date();
-      const openingTarget = openingCountdownTarget();
+  const now = new Date();
+  const openingTarget = openingCountdownTarget();
 
-      if (now.getTime() < openingTarget.getTime()){
-        labelEl.textContent = "Countdown to Opening Day (Apr 11)";
-        timerEl.textContent = fmtCountdown(openingTarget.getTime() - now.getTime());
-        return;
-      }
+  // Reset mode classes
+  wrapEl.classList.remove("isOpening", "isNext");
 
-      const nextSat = getDisplaySaturday(now);
-      const nextGame = new Date(`${nextSat.toDateString()} ${LEAGUE_START_GAME_TIME}`);
-      labelEl.textContent = "Countdown to Next Game Day";
-      timerEl.textContent = fmtCountdown(nextGame.getTime() - now.getTime());
-    }
+  if (now.getTime() < openingTarget.getTime()){
+    labelEl.textContent = "Countdown to Opening Day (Apr 11)";
+    timerEl.textContent = fmtCountdown(openingTarget.getTime() - now.getTime());
+    wrapEl.classList.add("isOpening");
+    return;
+  }
+
+  const nextSat = getDisplaySaturday(now);
+  const nextGame = new Date(`${nextSat.toDateString()} ${LEAGUE_START_GAME_TIME}`);
+  labelEl.textContent = "Countdown to Next Game Day";
+  timerEl.textContent = fmtCountdown(nextGame.getTime() - now.getTime());
+  wrapEl.classList.add("isNext");
+}
 
     /* -------------------- Teams meta -------------------- */
     const teamMeta = new Map(); // normalized TeamName -> { slug, logo, color }
