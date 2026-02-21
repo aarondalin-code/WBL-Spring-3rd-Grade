@@ -1719,3 +1719,41 @@ body.watermarkPage::before{
   width: 100%;
   max-width: 100%;
 }
+/* Home: Welcome + Countdown banner */
+.homeWelcome{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+  text-align:center;
+}
+
+.homeCountdown{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+  width: min(520px, 100%);
+}
+
+.homeCountdownTimer{
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* Players of the Week grid: 2 rows of 5 on desktop */
+.homePotwGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:10px;
+}
+
+@media (min-width: 720px){
+  .homePotwGrid{
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
