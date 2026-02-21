@@ -3,7 +3,7 @@ window.SHEET = {
   TEAMS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=0&single=true&output=csv",
   GAMES_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1880527815&single=true&output=csv",
   ROSTER_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=966740078&single=true&output=csv",
-  GALLERY_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1945229510&single=true&output=csv",
+ GALLERY_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRaG_h4-AqD5sgvmovY2788EtwDzDDYFScSJNw3mCp5VGbCJtFI11nlSCKjFFvxfH_K9pASf2KPGEPW/pub?gid=1678178416&single=true&output=csv",
   PLAYOFFS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=126919836&single=true&output=csv",
   PLAYERS_OF_WEEK_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=557591852&single=true&output=csv",
   POLL_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1716021344&single=true&output=csv",
