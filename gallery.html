@@ -156,25 +156,24 @@
     return "";
   }
 
-  // Convert Drive links to direct-display image link
-  function driveToDirect(url){
-    url = safe(url);
-    if (!url) return "";
+function driveToDirect(url){
+  url = safe(url);
+  if (!url) return "";
 
-    // open?id=FILEID
-    let m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  // open?id=FILEID
+  let m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
 
-    // file/d/FILEID/view
-    m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
-    if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  // file/d/FILEID/view
+  m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
 
-    // uc?id=FILEID already
-    m = url.match(/drive\.google\.com\/uc\?[^#]*id=([a-zA-Z0-9_-]+)/);
-    if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  // uc?id=FILEID...
+  m = url.match(/drive\.google\.com\/uc\?[^#]*id=([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
 
-    return url;
-  }
+  return url;
+}
 
   function normalizeTypeFromForm(mediaType, url){
     const t = norm(mediaType);
