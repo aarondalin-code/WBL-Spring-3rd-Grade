@@ -1828,3 +1828,158 @@ body.watermarkPage::before{
 }
 .miniTeamCellName{ font-weight: 800; }
 .teamNameColored{ font-weight: 800; }
+
+/* ===========================
+   WBL HOME POLISH OVERRIDES
+   (paste at bottom of styles.css)
+   =========================== */
+
+:root{
+  --wbl-blue: #1e3fa8;          /* Royal Blue */
+  --wbl-blue-soft: #e8efff;     /* Light accent */
+}
+
+/* Card accents */
+.card{
+  border: 2px solid rgba(30,63,168,.35);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+}
+
+/* Make card spacing feel intentional */
+.cardBody{
+  padding: 22px;
+}
+
+/* Section headers: cleaner + centered title */
+.homeSectionHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(30,63,168,.22);
+}
+
+.homeSectionHead h3{
+  margin:0;
+  text-align:center;
+  width:100%;
+  font-weight: 900;
+  letter-spacing: .3px;
+}
+
+/* Keep link pill on the right without breaking centered header */
+.homeSectionHead .linkPill{
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Give a subtle blue tint to big “hero” / welcome card */
+.homeWelcome{
+  background: linear-gradient(180deg, rgba(30,63,168,.06), rgba(255,255,255,0));
+  border-radius: 12px;
+  padding: 10px;
+}
+
+/* Primary button: royal blue */
+.btnPrimary{
+  background: var(--wbl-blue);
+  border-color: var(--wbl-blue);
+}
+.btnPrimary:hover{
+  filter: brightness(1.08);
+}
+
+/* Link pills: slight blue accent */
+.linkPill{
+  border-color: rgba(30,63,168,.35);
+}
+.linkPill:hover{
+  border-color: rgba(30,63,168,.65);
+}
+
+/* Poll: two-column on desktop (options left, results right) */
+#pollWrap{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 900px){
+  #pollWrap{
+    grid-template-columns: 1.15fr .85fr;
+    align-items:start;
+  }
+  #pollResults{
+    margin-top:0 !important;
+  }
+}
+
+/* Poll option cards: slightly more structured */
+.pollOptions{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+.pollOpt{
+  border: 1px solid rgba(30,63,168,.22);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+}
+.pollOpt:hover{
+  border-color: rgba(30,63,168,.45);
+  box-shadow: 0 4px 10px rgba(0,0,0,.05);
+}
+.pollOpt input{
+  transform: translateY(1px);
+}
+
+/* Poll bars: royal blue */
+.pollBar{
+  background:#f1f3f7;
+  height:10px;
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:6px;
+}
+.pollBarFill{
+  background: var(--wbl-blue);
+  height:100%;
+  transition: width .4s ease;
+}
+
+/* Schedule/standings “snapshots”: tighten alignment slightly */
+#standingsMini th, #standingsMini td{
+  vertical-align: middle;
+}
+#standingsMini td.num, #standingsMini th.num{
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.miniTeamCell{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.teamLogoMini{
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(30,63,168,.25);
+}
+
+/* Slightly stronger “card within card” look for news items */
+#newsList .card{
+  border-width: 1px;
+  border-color: rgba(30,63,168,.22);
+  box-shadow: 0 4px 12px rgba(0,0,0,.04);
+}
+
+/* Mobile: reduce padding a bit */
+@media (max-width: 520px){
+  .cardBody{ padding: 16px; }
+}
