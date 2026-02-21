@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team Roster • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-compact1" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
 </head>
 
 <body class="watermarkPage teamPage hasHamburger">
@@ -36,7 +36,7 @@
   </div>
 
   <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+    <img src="./logo.png" alt="WBL Logo" class="logoImage">
     <h1>WBL 3rd Grade 2026</h1>
     <div class="tagline">Team Roster</div>
   </div>
@@ -48,7 +48,7 @@
     <div class="cardBody">
       <div class="teamHeaderBlock">
         <div class="teamHeaderLeft">
-          <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo" />
+          <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo">
           <div>
             <div class="muted small">Team</div>
             <h2 id="teamName" style="margin:0;">Team</h2>
@@ -69,6 +69,7 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
@@ -76,7 +77,7 @@
   <!-- Roster -->
   <section class="card" style="margin-top:14px;">
     <div class="cardBody">
-      <div class="rosterTopRow" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+      <div class="rosterTopRow" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
         <h3 style="margin:0;">Roster</h3>
         <a class="btnSecondary" href="./teams.html">← Back to Teams</a>
       </div>
@@ -119,7 +120,7 @@
     return await res.text();
   }
 
-  // Robust CSV parser (quoted commas safe)
+  // Robust CSV parser (quoted commas safe) + BOM strip
   function parseCsv(text) {
     const rows = [];
     let row = [];
@@ -152,7 +153,7 @@
     row.push(cur);
     if (row.some(v => safe(v) !== "")) rows.push(row);
 
-    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g, ""));
+    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,"").replace(/^\uFEFF/, ""));
     return rows
       .filter(r => r.some(x => safe(x) !== ""))
       .map(r => {
@@ -188,6 +189,17 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
   // -----------------------------
+  // Player photo (TOURNAMENT-STYLE)
+  // PlayerID -> ./player-photos/{PlayerID}.jpg
+  // Example: Or-01 -> ./player-photos/Or-01.jpg
+  // -----------------------------
+  function playerPhotoSrc(player){
+    const id = safe(player.PlayerID);
+    if (id) return `./player-photos/${id}.jpg`;
+    return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
+  }
+
+  // -----------------------------
   // Render: Team header + coach
   // -----------------------------
   function setHeaderFromTeamRow(teamRow){
@@ -208,7 +220,7 @@
     logoEl.src = logo;
     logoEl.onerror = () => { logoEl.src = window.DEFAULT_TEAM_LOGO || "./logo.png"; };
 
-    subEl.textContent = ""; // reserved for division/notes later if needed
+    subEl.textContent = ""; // reserved
 
     const coachName = safe(teamRow.CoachName);
     const coachEmail = safe(teamRow.CoachEmail);
@@ -234,17 +246,8 @@
   }
 
   // -----------------------------
-  // Roster render
+  // Modal HTML helpers
   // -----------------------------
-  function getPlayerName(player){
-    return safe(player.Name || player.PlayerName || "Player");
-  }
-
-  function getPhotoSrc(player){
-    const url = safe(player.PhotoURL);
-    return url ? url : (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
-  }
-
   function line(label, value){
     return `
       <div class="profileLine">
@@ -255,14 +258,15 @@
   }
 
   function renderPlayerModal(player, teamDisplayName){
-    const name = getPlayerName(player);
+    const name = safe(player.PlayerName || player.Name || "Player");
     const num = safe(player.Number);
     const pos = safe(player.Position);
     const bats = safe(player.Bats);
     const throws = safe(player.Throws);
     const fav = safe(player.FavoriteTeam);
     const fun = safe(player.FunFact);
-    const photo = getPhotoSrc(player);
+
+    const photo = playerPhotoSrc(player);
 
     const lines = [];
     if (num) lines.push(line("Number", `#${num}`));
@@ -275,9 +279,10 @@
     openModal(`
       <div class="profileHeader">
         <div class="profilePhoto">
-          <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
+          <img src="${photo}" alt="${name}"
+               onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png"}';">
         </div>
-        <div>
+        <div style="min-width:0;">
           <h3 id="modalTitle" class="profileName">${name}</h3>
           <div class="muted">${teamDisplayName}${num ? ` • #${num}` : ""}</div>
           <div class="profileLines" style="margin-top:12px;">
@@ -288,6 +293,9 @@
     `);
   }
 
+  // -----------------------------
+  // Roster render
+  // -----------------------------
   function buildRosterGrid(players, teamDisplayName){
     const grid = document.getElementById("rosterGrid");
     const msg = document.getElementById("rosterMsg");
@@ -299,6 +307,7 @@
     }
     msg.textContent = "";
 
+    // Sort: Number asc, then name
     players.sort((a,b) => {
       const na = Number(safe(a.Number));
       const nb = Number(safe(b.Number));
@@ -307,7 +316,7 @@
       if (aHas && bHas && na !== nb) return na - nb;
       if (aHas && !bHas) return -1;
       if (!aHas && bHas) return 1;
-      return getPlayerName(a).localeCompare(getPlayerName(b));
+      return safe(a.PlayerName || a.Name).localeCompare(safe(b.PlayerName || b.Name));
     });
 
     for (const p of players){
@@ -315,23 +324,24 @@
       btn.type = "button";
       btn.className = "playerCardBtn";
 
-      const name = getPlayerName(p);
+      const name = safe(p.PlayerName || p.Name || "Player");
       const num = safe(p.Number);
       const pos = safe(p.Position);
-      const photo = getPhotoSrc(p);
+      const photo = playerPhotoSrc(p);
 
       btn.innerHTML = `
         <div class="playerCardRow">
           <div class="playerThumb">
-            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
+            <img src="${photo}" alt="${name}"
+                 onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png"}';">
           </div>
           <div class="playerText" style="min-width:0;">
             <div class="playerNameLine" style="font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
               ${name}${num ? ` <span class="muted">#${num}</span>` : ""}
             </div>
-            <div class="muted small">${pos || ""}</div>
+            <div class="muted small" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${pos || ""}</div>
           </div>
-          <div class="playerChevron" aria-hidden="true" style="margin-left:auto; font-weight:900; font-size:18px; color:#94a3b8;">›</div>
+          <div class="playerChevron" aria-hidden="true">›</div>
         </div>
       `;
 
