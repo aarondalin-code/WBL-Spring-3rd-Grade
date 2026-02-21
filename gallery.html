@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gallery • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-gallery-formmap-1" />
 </head>
 
 <body class="watermarkPage galleryPage hasHamburger">
@@ -43,6 +43,22 @@
 
     <div class="card" style="margin-top:12px;">
       <div class="cardBody">
+
+        <!-- Filters (use same styling class as schedule page) -->
+        <div class="scheduleFilters" style="margin-bottom:12px;">
+          <select id="teamFilter">
+            <option value="">All Teams</option>
+          </select>
+
+          <select id="typeFilter">
+            <option value="">All Types</option>
+            <option value="photo">Photos</option>
+            <option value="video">Videos</option>
+          </select>
+
+          <button id="clearFilters" class="btnSecondary" type="button">Clear</button>
+        </div>
+
         <div class="galleryMetaRow">
           <div class="muted small" id="resultCount"></div>
         </div>
@@ -60,7 +76,14 @@
   const msgEl = document.getElementById("galleryMsg");
   const countEl = document.getElementById("resultCount");
 
+  const teamFilter = document.getElementById("teamFilter");
+  const typeFilter = document.getElementById("typeFilter");
+  const clearBtn = document.getElementById("clearFilters");
+
+  let allItems = [];
+
   function safe(v){ return String(v ?? "").trim(); }
+  function norm(v){ return safe(v).toLowerCase(); }
 
   async function fetchCsv(url) {
     if (!url) throw new Error("Missing GALLERY_CSV_URL in data.js");
@@ -116,13 +139,7 @@
     });
   }
 
-  function normalizeType(t){
-    t = safe(t).toLowerCase();
-    if (t === "photo" || t === "image") return "photo";
-    if (t === "video") return "video";
-    return "";
-  }
-
+  // ---- Type + URL helpers ----
   function isImageUrl(url){
     const u = safe(url).toLowerCase();
     return u.match(/\.(jpg|jpeg|png|gif|webp)(\?|#|$)/);
@@ -139,22 +156,77 @@
     return "";
   }
 
-  function buildCaption(it){
+  function normalizeTypeFromForm(mediaType, url){
+    const t = norm(mediaType);
+    if (t.includes("video")) return "video";
+    if (t.includes("photo") || t.includes("image") || t.includes("picture")) return "photo";
+
+    // Fallback inference from URL
+    if (youtubeEmbed(url)) return "video";
+    if (isImageUrl(url)) return "photo";
+    return "";
+  }
+
+  // Prefer Media Link, fallback to File Upload (if it’s already a usable URL)
+  function pickMediaUrl(row){
+    const link = safe(row.MediaLink);
+    const upload = safe(row.FileUpload);
+
+    // Many Google Forms "File upload" entries can be non-public or multiple links.
+    // Prefer MediaLink if provided.
+    if (link) return link;
+
+    // If FileUpload contains a URL, use it.
+    // (If it contains multiple, take the first.)
+    if (upload){
+      const first = upload.split(/\s*,\s*/)[0];
+      return first;
+    }
+
+    return "";
+  }
+
+  // Permission gating (optional)
+  function hasPermission(row){
+    const v = norm(row.IconfirmIhavepermission || row.IconfirmIhavepermission. || row.IconfirmIhavepermission);
+    // If the column is blank, we’ll allow it (you can tighten this later)
+    if (!v) return true;
+    return v.includes("yes") || v.includes("true") || v.includes("i confirm");
+  }
+
+  function buildCaptionFromForm(it){
     const parts = [];
 
-    const title = safe(it.Title);
-    if (title) parts.push(title);
+    const cap = safe(it.Caption);
+    if (cap) parts.push(cap);
 
     const team = safe(it.Team);
-    const player = safe(it.Player);
-    if (team && player) parts.push(`${team} • ${player}`);
+    const name = safe(it.Name);
+    if (team && name) parts.push(`${team} • ${name}`);
     else if (team) parts.push(team);
-    else if (player) parts.push(player);
-
-    const credit = safe(it.Credit);
-    if (credit) parts.push(`Credit: ${credit}`);
+    else if (name) parts.push(name);
 
     return parts.join(" — ");
+  }
+
+  function populateTeamFilter(items){
+    const set = new Set();
+    items.forEach(it => { if (safe(it.Team)) set.add(safe(it.Team)); });
+
+    while (teamFilter.options.length > 1) teamFilter.remove(1);
+
+    [...set].sort((a,b)=>a.localeCompare(b)).forEach(t=>{
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      teamFilter.appendChild(opt);
+    });
+  }
+
+  function matchesFilters(it){
+    if (teamFilter.value && norm(it.Team) !== norm(teamFilter.value)) return false;
+    if (typeFilter.value && norm(it._type) !== norm(typeFilter.value)) return false;
+    return true;
   }
 
   function render(items){
@@ -162,18 +234,19 @@
 
     if (!items.length) {
       countEl.textContent = "";
-      msgEl.textContent = "No gallery items yet.";
+      msgEl.textContent = "No gallery items match your filters.";
       return;
     }
 
     countEl.textContent = `${items.length} item(s)`;
+    msgEl.textContent = "";
 
     const html = items.map(it => {
-      const url = safe(it.MediaURL);
+      const url = safe(it._url);
       if (!url) return "";
 
-      const type = normalizeType(it.Type) || (isImageUrl(url) ? "photo" : "");
-      const caption = buildCaption(it);
+      const type = it._type;
+      const caption = buildCaptionFromForm(it);
 
       if (type === "video") {
         const yt = youtubeEmbed(url);
@@ -199,6 +272,7 @@
         `;
       }
 
+      // photo (or unknown fallback as photo)
       return `
         <div class="galleryItem">
           <div class="galleryMedia">
@@ -212,7 +286,6 @@
     }).join("");
 
     grid.innerHTML = html;
-    msgEl.textContent = "";
   }
 
   async function init(){
@@ -222,8 +295,45 @@
     const csv = await fetchCsv(window.SHEET?.GALLERY_CSV_URL);
     const rows = parseCsv(csv);
 
-    const items = rows.filter(r => safe(r.MediaURL));
-    render(items);
+    // Your Form response headers normalize (spaces removed):
+    // Timestamp, Team, Name, MediaType, FileUpload, MediaLink, Caption, IconfirmIhavepermission.
+    const items = rows
+      .filter(r => hasPermission(r))
+      .map(r => {
+        const url = pickMediaUrl(r);
+        const type = normalizeTypeFromForm(r.MediaType, url) || (youtubeEmbed(url) ? "video" : (isImageUrl(url) ? "photo" : ""));
+        return {
+          Timestamp: safe(r.Timestamp),
+          Team: safe(r.Team),
+          Name: safe(r.Name),
+          MediaType: safe(r.MediaType),
+          FileUpload: safe(r.FileUpload),
+          MediaLink: safe(r.MediaLink),
+          Caption: safe(r.Caption),
+          _url: url,
+          _type: type || "photo" // default to photo if unknown
+        };
+      })
+      .filter(it => safe(it._url));
+
+    allItems = items;
+
+    populateTeamFilter(allItems);
+
+    function apply(){
+      const filtered = allItems.filter(matchesFilters);
+      render(filtered);
+    }
+
+    teamFilter.addEventListener("change", apply);
+    typeFilter.addEventListener("change", apply);
+    clearBtn.addEventListener("click", ()=>{
+      teamFilter.value = "";
+      typeFilter.value = "";
+      apply();
+    });
+
+    apply();
   }
 
   init().catch(err => {
