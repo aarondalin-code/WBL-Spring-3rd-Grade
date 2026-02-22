@@ -29,27 +29,6 @@
     return s === "final" || s.startsWith("final");
   }
 
-  /* =========================================================
-     WEEK 7 GATING (TBD THROUGH WEEK 6)
-     Opening Day: April 11, 2026
-     Week 7 starts Opening Day + 6 weeks
-  ========================================================== */
-  const OPENING_DAY = new Date(2026, 3, 11); // Apr 11 2026
-  OPENING_DAY.setHours(0,0,0,0);
-
-  function week7StartDate(){
-    const d = new Date(OPENING_DAY);
-    d.setDate(d.getDate() + 6*7);
-    d.setHours(0,0,0,0);
-    return d;
-  }
-
-  function isPreWeek7(){
-    const now = new Date();
-    now.setHours(0,0,0,0);
-    return now.getTime() < week7StartDate().getTime();
-  }
-
   async function fetchCsv(url) {
     if (!url) throw new Error("Missing CSV URL in data.js");
     const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
@@ -105,6 +84,54 @@
       });
   }
 
+  // --------- NEW: Completed-week gating (6 completed dates) ----------
+  function parseDateLoose(s){
+    s = safe(s);
+    if (!s) return null;
+
+    const d1 = new Date(s);
+    if (!isNaN(d1.getTime())) return d1;
+
+    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m){
+      const mm = Number(m[1]) - 1;
+      const dd = Number(m[2]);
+      const yy = Number(m[3]);
+      const d2 = new Date(yy, mm, dd);
+      return isNaN(d2.getTime()) ? null : d2;
+    }
+    return null;
+  }
+
+  function completedLeagueDates(gameRows){
+    // A "completed league date" = all games for that Date are Final
+    const byDate = new Map();
+    for (const g of gameRows){
+      const d = safe(g.Date);
+      if (!d) continue;
+      if (!byDate.has(d)) byDate.set(d, []);
+      byDate.get(d).push(g);
+    }
+
+    const complete = [];
+    for (const [date, games] of byDate.entries()){
+      if (!games.length) continue;
+      const allFinal = games.every(x => isFinal(x.Status));
+      if (allFinal) complete.push(date);
+    }
+
+    // Sort by actual date so "first 6 weeks" is meaningful
+    complete.sort((a,b)=>{
+      const da = parseDateLoose(a);
+      const db = parseDateLoose(b);
+      const ta = da ? da.getTime() : Number.POSITIVE_INFINITY;
+      const tb = db ? db.getTime() : Number.POSITIVE_INFINITY;
+      return ta - tb;
+    });
+
+    return complete;
+  }
+
   // ---------- Standings -> Seeds ----------
   function buildStandings(teamNames){
     const map = new Map();
@@ -125,7 +152,6 @@
   function computeSeedsFromGames(teamNames, gameRows){
     const standings = buildStandings(teamNames);
 
-    // Track head-to-head results: key "A|B" (sorted) -> { aWins, bWins, ties }
     const h2h = new Map();
     function pairKey(a,b){
       const A = safe(a), B = safe(b);
@@ -135,7 +161,6 @@
       const k = pairKey(a,b);
       if (!h2h.has(k)) h2h.set(k, { A:"", B:"", aWins:0, bWins:0, ties:0 });
       const rec = h2h.get(k);
-      // store canonical names as they appear
       const A = safe(a), B = safe(b);
       if (!rec.A || !rec.B){
         rec.A = (A < B) ? A : B;
@@ -161,14 +186,11 @@
       A.RF += scoreA; A.RA += scoreB;
       B.RF += scoreB; B.RA += scoreA;
 
-      // update W/L/T
       if (scoreA > scoreB) { A.W++; B.L++; }
       else if (scoreB > scoreA) { B.W++; A.L++; }
       else { A.T++; B.T++; }
 
-      // update H2H
       const rec = getPair(aName, bName);
-      const aIsRecA = (aName === rec.A);
       if (scoreA === scoreB){
         rec.ties++;
       } else {
@@ -186,15 +208,11 @@
 
     const rows = Array.from(standings.values());
 
-    // Sort with tie-group handling for head-to-head (2-team ties only)
     rows.sort((a,b)=>{
       if (b.WP !== a.WP) return b.WP - a.WP;
-      // if still tied, defer until we can evaluate (stable fallback here)
       return a.team.localeCompare(b.team);
     });
 
-    // Resolve 2-team ties via head-to-head if possible
-    // We do this by scanning groups of equal WP, and within that, equal WP only.
     const resolved = [];
     let i = 0;
     while (i < rows.length){
@@ -207,24 +225,18 @@
         const k = pairKey(A.team, B.team);
         const rec = h2h.get(k);
         if (rec){
-          // Determine winner by head-to-head wins if not tied
-          // rec.A and rec.B are the pair in sorted order
           const recAwins = rec.aWins;
           const recBwins = rec.bWins;
           if (recAwins !== recBwins){
             const winner = (recAwins > recBwins) ? rec.A : rec.B;
-            if (winner === A.team){
-              resolved.push(A,B);
-            } else {
-              resolved.push(B,A);
-            }
+            if (winner === A.team) resolved.push(A,B);
+            else resolved.push(B,A);
             i = j;
             continue;
           }
         }
       }
 
-      // For any other tie group (or unresolved 2-team tie), apply secondary metrics
       group.sort((a,b)=>{
         if (b.WP !== a.WP) return b.WP - a.WP;
         if (b.RD !== a.RD) return b.RD - a.RD;
@@ -298,18 +310,15 @@
     const raw = safe(ref);
     if (!raw) return null;
 
-    // direct team name
     if (teamNameToRow.has(norm(raw))) return raw;
 
     const up = raw.toUpperCase();
 
-    // Seed ref S3
     if (/^S\d+$/.test(up)) {
       const n = Number(up.slice(1));
-      return seedsByNum.get(n) || null; // may be "TBD" during pre-week7
+      return seedsByNum.get(n) || null;
     }
 
-    // Winner/Loser ref W146 / L147
     if (/^[WL]\d+$/.test(up)) {
       const type = up[0];
       const gid = Number(up.slice(1));
@@ -371,7 +380,6 @@
     const sA = final ? scoreSpan(game.ScoreA) : "";
     const sB = final ? scoreSpan(game.ScoreB) : "";
 
-    // meta line (small)
     const date = safe(game.Date);
     const time = safe(game.Time);
     const field = safe(game.Field);
@@ -447,10 +455,12 @@
     const gameRows = parseCsv(gamesCsv);
     const { ordered, bySeed } = computeSeedsFromGames(teamNames, gameRows);
 
-    // Week gating
-    const preWeek7 = isPreWeek7();
+    // NEW gating: 6 completed league dates (instead of calendar date)
+    const completeDates = completedLeagueDates(gameRows);
+    const preWeek7 = completeDates.length < 6;
+
     if (preWeek7){
-      seedNoteEl.textContent = "Bracket is shown in TBD mode until Week 7 (after Week 6 is complete).";
+      seedNoteEl.textContent = "Bracket is shown in TBD mode until 6 league weeks are complete.";
       for (let s=1; s<=10; s++) bySeed.set(s, "TBD");
     } else {
       const preview = ordered.slice(0, 10).map((r, i) => `S${i+1}: ${r.team}`).join(" • ");
