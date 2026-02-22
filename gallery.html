@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gallery • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-gallery-drivefix-1" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-gallery-teamhover-1" />
 </head>
 
 <body class="watermarkPage galleryPage hasHamburger">
@@ -86,10 +86,10 @@
   function norm(v){ return safe(v).toLowerCase(); }
 
   async function fetchCsv(url) {
-    if (!url) throw new Error("Missing GALLERY_CSV_URL in data.js");
+    if (!url) throw new Error("Missing CSV URL in data.js");
     const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
     const res = await fetch(url + bust, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to load gallery CSV (${res.status})`);
+    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
     return await res.text();
   }
 
@@ -156,34 +156,33 @@
     return "";
   }
 
-function driveToDirect(url){
-  url = safe(url);
-  if (!url) return "";
+  // Convert Drive links to direct-display image link (thumbnail endpoint works best for <img>)
+  function driveToDirect(url){
+    url = safe(url);
+    if (!url) return "";
 
-  // open?id=FILEID
-  let m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
+    // open?id=FILEID
+    let m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
 
-  // file/d/FILEID/view
-  m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
-  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
+    // file/d/FILEID/view
+    m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
+    if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
 
-  // uc?id=FILEID...
-  m = url.match(/drive\.google\.com\/uc\?[^#]*id=([a-zA-Z0-9_-]+)/);
-  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
+    // uc?id=FILEID...
+    m = url.match(/drive\.google\.com\/uc\?[^#]*id=([a-zA-Z0-9_-]+)/);
+    if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
 
-  return url;
-}
+    return url;
+  }
 
   function normalizeTypeFromForm(mediaType, url){
     const t = norm(mediaType);
     if (t.includes("video")) return "video";
     if (t.includes("photo") || t.includes("image") || t.includes("picture")) return "photo";
 
-    // Fallback inference
     if (youtubeEmbed(url)) return "video";
     if (isImageUrl(url)) return "photo";
-    // Drive links often are photos; default to photo if not sure
     if (url.includes("drive.google.com")) return "photo";
     return "";
   }
@@ -192,28 +191,24 @@ function driveToDirect(url){
   function pickMediaUrl(row){
     const link = safe(row.MediaLink);     // "Media Link"
     const upload = safe(row.FileUpload);  // "File Upload"
-
     if (link) return link;
-
     if (upload){
-      const first = upload.split(/\s*,\s*/)[0]; // in case multiple
+      const first = upload.split(/\s*,\s*/)[0];
       return first;
     }
-
     return "";
   }
 
-  // Permission column is: "I confirm I have permission."
-  // Header key becomes: "IconfirmIhavepermission."
+  // Permission column header: "I confirm I have permission."
+  // After header normalization -> "IconfirmIhavepermission."
   function hasPermission(row){
     const v = norm(row["IconfirmIhavepermission."]);
     if (!v) return true; // allow if blank
     return (v === "yes" || v === "y" || v === "true" || v.includes("confirm"));
   }
 
-  function buildCaptionFromForm(it){
+  function buildCaption(it){
     const parts = [];
-
     const cap = safe(it.Caption);
     if (cap) parts.push(cap);
 
@@ -263,13 +258,14 @@ function driveToDirect(url){
       if (!url) return "";
 
       const type = it._type;
-      const caption = buildCaptionFromForm(it);
+      const caption = buildCaption(it);
+      const accentStyle = it._accent ? `style="--team-accent:${it._accent}"` : "";
 
       if (type === "video") {
         const yt = youtubeEmbed(url);
         if (yt) {
           return `
-            <div class="galleryItem">
+            <div class="galleryItem" ${accentStyle}>
               <div class="galleryMedia">
                 <iframe src="${yt}" title="${caption}" frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -280,7 +276,7 @@ function driveToDirect(url){
           `;
         }
         return `
-          <div class="galleryItem">
+          <div class="galleryItem" ${accentStyle}>
             <div class="galleryMedia" style="display:flex; align-items:center; justify-content:center; padding:18px;">
               <a href="${url}" target="_blank" rel="noopener">Open video</a>
             </div>
@@ -290,7 +286,7 @@ function driveToDirect(url){
       }
 
       return `
-        <div class="galleryItem">
+        <div class="galleryItem" ${accentStyle}>
           <div class="galleryMedia">
             <a href="${url}" target="_blank" rel="noopener">
               <img src="${url}" alt="${caption}" loading="lazy"
@@ -309,6 +305,20 @@ function driveToDirect(url){
     msgEl.textContent = "";
     countEl.textContent = "";
 
+    // Team color map from Teams CSV
+    const teamColor = new Map();
+    try{
+      const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+      const teams = parseCsv(teamsCsv);
+      for (const r of teams){
+        const name = safe(r.TeamName);
+        const color = safe(r.TeamColor);
+        if (name) teamColor.set(norm(name), color);
+      }
+    } catch(e){
+      console.warn("Teams CSV unavailable for team hover accents.");
+    }
+
     const csv = await fetchCsv(window.SHEET?.GALLERY_CSV_URL);
     const rows = parseCsv(csv);
 
@@ -320,19 +330,23 @@ function driveToDirect(url){
         const rawUrl = pickMediaUrl(r);
         const cookedUrl = driveToDirect(rawUrl);
 
+        const team = safe(r.Team);
+        const accent = teamColor.get(norm(team)) || "";
+
         const t = normalizeTypeFromForm(r.MediaType, cookedUrl) ||
                   (youtubeEmbed(cookedUrl) ? "video" : (isImageUrl(cookedUrl) ? "photo" : "photo"));
 
         return {
           Timestamp: safe(r.Timestamp),
-          Team: safe(r.Team),
+          Team: team,
           Name: safe(r.Name),
           MediaType: safe(r.MediaType),
           FileUpload: safe(r.FileUpload),
           MediaLink: safe(r.MediaLink),
           Caption: safe(r.Caption),
           _url: cookedUrl,
-          _type: t
+          _type: t,
+          _accent: accent
         };
       })
       .filter(it => safe(it._url));
@@ -364,4 +378,3 @@ function driveToDirect(url){
 <script src="./nav.js"></script>
 </body>
 </html>
-
