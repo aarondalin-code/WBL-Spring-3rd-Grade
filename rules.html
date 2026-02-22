@@ -238,6 +238,41 @@
             </div>
           </div>
 
+          <!-- NEW SECTION -->
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Playoff Tie Breaker Rules</div>
+            <div class="ruleBodyElite">
+              Seeding for playoffs is determined using the following tiebreakers, in order:
+              <ol style="margin-top:8px;">
+                <li>
+                  <strong>Winning Percentage (Win%).</strong>
+                  (Wins + 0.5 × Ties) ÷ (Wins + Losses + Ties).
+                </li>
+                <li>
+                  <strong>Head-to-Head (two-team tie only).</strong>
+                  If exactly two teams are tied in Win%, the higher seed goes to the team that won the head-to-head matchup
+                  (only if that game did not end in a tie).
+                </li>
+                <li>
+                  <strong>Run Differential (overall).</strong>
+                  Runs For − Runs Allowed.
+                </li>
+                <li>
+                  <strong>Runs For (overall).</strong>
+                  Higher total Runs For.
+                </li>
+                <li>
+                  <strong>Runs Allowed (overall).</strong>
+                  Lower total Runs Allowed.
+                </li>
+                <li>
+                  <strong>Alphabetical Order.</strong>
+                  If still tied after all steps above, seeding is determined alphabetically by team name.
+                </li>
+              </ol>
+            </div>
+          </div>
+
           <div class="rulesFooterNoteElite">
             <div class="rulesFooterLineElite"></div>
             <div class="muted small">
@@ -274,7 +309,6 @@
 </main>
 
 <script>
-  // Tournament-style behavior: when one accordion opens, close the others
   const accs = Array.from(document.querySelectorAll(".rulesAcc"));
   accs.forEach(d => {
     d.addEventListener("toggle", () => {
