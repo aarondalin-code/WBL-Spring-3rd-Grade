@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Schedule/Scores • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule-toggle1" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule-datefix1" />
 </head>
 
 <body class="watermarkPage schedulePage hasHamburger">
@@ -94,6 +94,35 @@
   function norm(v){ return safe(v).toLowerCase(); }
   function isFinal(status){ return norm(status) === "final"; }
 
+  function parseDateLoose(s){
+    s = safe(s);
+    if (!s) return null;
+
+    // Native parse (ISO etc.)
+    const d1 = new Date(s);
+    if (!isNaN(d1.getTime())) return d1;
+
+    // M/D/YYYY
+    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m){
+      const mm = Number(m[1]) - 1;
+      const dd = Number(m[2]);
+      const yy = Number(m[3]);
+      const d2 = new Date(yy, mm, dd);
+      return isNaN(d2.getTime()) ? null : d2;
+    }
+
+    return null;
+  }
+
+  // Simple time rank (so 10:00 AM sorts before 12:15 PM)
+  function timeRank(t){
+    t = safe(t);
+    if (!t) return 0;
+    const d = new Date("1970-01-01 " + t);
+    return isNaN(d.getTime()) ? 0 : d.getTime();
+  }
+
   async function fetchCsv(url){
     if (!url) throw new Error("Missing CSV URL in data.js");
     const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
@@ -144,9 +173,18 @@
   }
 
   function sortGames(a,b){
-    return safe(a.Date).localeCompare(safe(b.Date)) ||
-           safe(a.Time).localeCompare(safe(b.Time)) ||
-           safe(a.Field).localeCompare(safe(b.Field));
+    const da = parseDateLoose(a.Date);
+    const db = parseDateLoose(b.Date);
+    const ta = da ? da.getTime() : Number.POSITIVE_INFINITY;
+    const tb = db ? db.getTime() : Number.POSITIVE_INFINITY;
+
+    if (ta !== tb) return ta - tb;
+
+    const ra = timeRank(a.Time);
+    const rb = timeRank(b.Time);
+    if (ra !== rb) return ra - rb;
+
+    return safe(a.Field).localeCompare(safe(b.Field));
   }
 
   function groupByDate(games){
@@ -189,14 +227,12 @@
 
     let filtered = [...allGames];
 
-    // Toggle filter
     if (statusMode === "upcoming") {
       filtered = filtered.filter(g => !isFinal(g.Status));
     } else if (statusMode === "completed") {
       filtered = filtered.filter(g => isFinal(g.Status));
     }
 
-    // Team filter
     if (teamFilter.value) {
       filtered = filtered.filter(g =>
         norm(g.TeamA) === norm(teamFilter.value) ||
@@ -204,7 +240,6 @@
       );
     }
 
-    // Date filter
     if (dateFilter.value) {
       filtered = filtered.filter(g => safe(g.Date) === dateFilter.value);
     }
@@ -219,6 +254,8 @@
     const grouped = groupByDate(filtered);
 
     for (const [date, games] of grouped){
+      games.sort(sortGames);
+
       const section = document.createElement("div");
       section.className = "scheduleDateSection";
       section.innerHTML = `<div class="scheduleDateHeader">${date}</div>`;
@@ -274,7 +311,6 @@
   }
 
   async function init(){
-    // Load teams for slug/logo/color
     const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
     const teamRows = parseCsv(teamsCsv);
 
@@ -285,15 +321,14 @@
       teamMeta.set(norm(name), {
         slug: safe(r.TeamSlug),
         logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
-        color: safe(r.TeamColor) // optional
+        color: safe(r.TeamColor)
       });
     }
 
-    // Load games
     const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
     allGames = parseCsv(gamesCsv);
 
-    // Populate team filter from Teams tab
+    // Team filter
     const teamNames = teamRows.map(r => safe(r.TeamName)).filter(Boolean).sort();
     teamNames.forEach(t => {
       const opt = document.createElement("option");
@@ -302,18 +337,26 @@
       teamFilter.appendChild(opt);
     });
 
-    // Populate date filter from games
+    // Date filter (sorted by real date, not strings)
     const dateSet = new Set(allGames.map(g => safe(g.Date)).filter(Boolean));
-    [...dateSet].sort().forEach(d => {
+    const dateList = [...dateSet].sort((a,b)=>{
+      const da = parseDateLoose(a);
+      const db = parseDateLoose(b);
+      const ta = da ? da.getTime() : Number.POSITIVE_INFINITY;
+      const tb = db ? db.getTime() : Number.POSITIVE_INFINITY;
+      return ta - tb;
+    });
+
+    dateList.forEach(d => {
       const opt = document.createElement("option");
       opt.value = d;
       opt.textContent = d;
       dateFilter.appendChild(opt);
     });
 
-    // Listeners
     teamFilter.addEventListener("change", render);
     dateFilter.addEventListener("change", render);
+
     clearBtn.addEventListener("click", () => {
       teamFilter.value = "";
       dateFilter.value = "";
