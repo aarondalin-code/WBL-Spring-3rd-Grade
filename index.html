@@ -157,23 +157,23 @@
             </div>
           </div>
 
-   <div id="pollWrap" class="pollGrid" style="margin-top:12px;">
-  <div class="pollLeft">
-    <div id="pollQuestion" class="pollQuestion">Loading…</div>
-    <div id="pollOptions" class="pollOptions"></div>
+          <div id="pollWrap" class="pollGrid" style="margin-top:12px;">
+            <div class="pollLeft">
+              <div id="pollQuestion" class="pollQuestion">Loading…</div>
+              <div id="pollOptions" class="pollOptions"></div>
 
-    <div class="pollActions">
-      <button id="pollVoteBtn" class="btnPrimary" type="button">Vote</button>
-      <button id="pollViewBtn" class="btnSecondary" type="button">View Results</button>
-    </div>
+              <div class="pollActions">
+                <button id="pollVoteBtn" class="btnPrimary" type="button">Vote</button>
+              </div>
 
-    <div id="pollMsg" class="muted small" style="margin-top:10px;"></div>
-  </div>
+              <div id="pollMsg" class="muted small" style="margin-top:10px;"></div>
+            </div>
 
-  <div class="pollRight">
-    <div id="pollResults" style="display:none;"></div>
-  </div>
-</div>
+            <div class="pollRight">
+              <div id="pollResults" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -678,23 +678,7 @@ function updateCountdown(){
 
     function wirePollButtons(){
       const voteBtn = document.getElementById("pollVoteBtn");
-      const viewBtn = document.getElementById("pollViewBtn");
       const msgEl = document.getElementById("pollMsg");
-
-      viewBtn.onclick = async () => {
-        msgEl.textContent = "";
-        try{
-          const counts = await pollFetchResults();
-          if (!counts){
-            msgEl.textContent = "Live results unavailable (check POLL_API_URL).";
-            return;
-          }
-          renderPollResultsFromCounts(padCountsToOptions(counts));
-        } catch(e){
-          console.error(e);
-          msgEl.textContent = "Could not load results.";
-        }
-      };
 
       voteBtn.onclick = async () => {
         msgEl.textContent = "";
