@@ -2241,3 +2241,17 @@ body.watermarkPage::before{
   object-fit: cover;
   display: block;
 }
+/* Gallery: team-color border accent on hover */
+.galleryItem{
+  border: 1px solid rgba(30,63,168,.16);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+.galleryItem:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  border-color: var(--team-accent, rgba(30,63,168,.55));
+}
