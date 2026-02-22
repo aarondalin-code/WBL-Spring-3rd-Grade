@@ -47,7 +47,7 @@
     <div class="rulesAccordions">
 
       <!-- QUICK SUMMARY -->
-      <details class="rulesAcc" open>
+      <details class="rulesAcc">
         <summary class="rulesAccSummary">
           <span class="rulesAccIcon">📌</span>
 
@@ -309,6 +309,7 @@
 </main>
 
 <script>
+  // Tournament-style behavior: when one accordion opens, close the others
   const accs = Array.from(document.querySelectorAll(".rulesAcc"));
   accs.forEach(d => {
     d.addEventListener("toggle", () => {
@@ -321,4 +322,3 @@
 <script src="./nav.js"></script>
 </body>
 </html>
-
