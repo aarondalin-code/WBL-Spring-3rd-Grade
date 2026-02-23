@@ -429,10 +429,10 @@ function updateCountdown(){
 
           <div class="scheduleMatchupGrid">
             <div class="scheduleTeam sideLeft">
-              <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
-                   onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-              ${teamAnchor(aName)}
-            </div>
+  ${teamAnchor(aName)}
+  <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
+       onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+</div>
 
             <div class="scheduleScore">
               ${scoreText || `<span class="vsLabel">@</span>`}
