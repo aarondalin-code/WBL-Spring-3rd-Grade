@@ -1,296 +1,438 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Schedule/Scores • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-schedule-datefix1" />
+  <title>Westfield Baseball League Spring 2026 - 3rd Grade </title>
+  <link rel="stylesheet" href="./styles.css?v=wbl-home-v7" />
 </head>
 
-<body class="watermarkPage schedulePage hasHamburger">
-<header class="siteHeader">
-  <div class="navWrap">
-    <button class="navToggle" type="button" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="navOverlay"></div>
+<body class="watermarkPage hasHamburger">
+  <header class="siteHeader">
+    <div class="navWrap">
+      <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+        <span></span><span></span><span></span>
+      </button>
 
-    <nav class="nav" id="siteNav">
-      <a href="./">Home</a>
-      <a href="./schedule.html" class="active">Schedule/Scores</a>
-      <a href="./standings.html">Standings</a>
-      <a href="./teams.html">Teams</a>
-      <a href="./playoffs.html">Playoffs</a>
-      <a href="./rules.html">Rules</a>
-      <a href="./contacts.html">Contacts</a>
-      <a href="./gallery.html">Gallery</a>
-      <a href="./uploads.html">Uploads</a>
-    </nav>
-  </div>
+      <div class="navOverlay" aria-hidden="true"></div>
 
-  <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
-    <h1>WBL 3rd Grade 2026</h1>
-    <div class="tagline">Schedule / Scores</div>
-  </div>
-</header>
-
-<main class="wrap">
-  <section class="docSection">
-    <div class="card">
-      <div class="cardBody">
-
-        <!-- Filters -->
-        <div class="scheduleFilters">
-          <select id="teamFilter">
-            <option value="">All Teams</option>
-          </select>
-
-          <select id="dateFilter">
-            <option value="">All Dates</option>
-          </select>
-
-          <button id="clearFilters" class="btnSecondary" type="button">Clear</button>
-        </div>
-
-        <!-- Toggle -->
-        <div class="scheduleToggle" role="tablist" aria-label="Schedule filter">
-          <button id="toggleAll" class="toggleBtn active" type="button">All</button>
-          <button id="toggleUpcoming" class="toggleBtn" type="button">Upcoming</button>
-          <button id="toggleCompleted" class="toggleBtn" type="button">Completed</button>
-        </div>
-
-        <!-- Render target -->
-        <div id="scheduleContainer"></div>
-
-        <p id="scheduleMsg" class="muted small" style="margin-top:12px;"></p>
-      </div>
+      <nav class="nav" id="siteNav">
+        <a href="./" class="active">Home</a>
+        <a href="./schedule.html">Schedule/Scores</a>
+        <a href="./standings.html">Standings</a>
+        <a href="./playoffs.html">Playoffs</a>
+        <a href="./teams.html">Teams</a>
+        <a href="./rules.html">Rules</a>
+        <a href="./contacts.html">Contacts</a>
+        <a href="./gallery.html">Gallery</a>
+        <a href="./uploads.html">Uploads</a>
+      </nav>
     </div>
-  </section>
-</main>
 
-<script src="./data.js"></script>
+    <div class="brandCenter">
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+      <h1>Westfield Baseball League Spring 2026 - 3rd Grade</h1>
+      <div class="tagline">Spring League Central</div>
+    </div>
+  </header>
 
-<script>
-  const container = document.getElementById("scheduleContainer");
-  const msgEl = document.getElementById("scheduleMsg");
+  <main class="wrap">
 
-  const teamFilter = document.getElementById("teamFilter");
-  const dateFilter = document.getElementById("dateFilter");
-  const clearBtn = document.getElementById("clearFilters");
+    <!-- Welcome + Countdown -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeWelcome">
+            <div class="muted" id="welcomeLine">
+              Games Saturdays at <strong>10:00 AM</strong> and <strong>12:15 PM</strong> on fields <strong>T3, T4, T5</strong>.
+            </div>
 
-  const toggleAll = document.getElementById("toggleAll");
-  const toggleUpcoming = document.getElementById("toggleUpcoming");
-  const toggleCompleted = document.getElementById("toggleCompleted");
+            <div class="homeCountdown" aria-live="polite" aria-atomic="true">
+              <div class="homeCountdownLabel muted small" id="countdownLabel">Countdown to Opening Day (Apr 11)</div>
+              <div class="homeCountdownTimer" id="countdownTimer">Loading…</div>
+            </div>
 
-  let allGames = [];
-  let statusMode = "all"; // "all" | "upcoming" | "completed"
+            <div class="homeHeroBtns">
+              <a class="btnPrimary" href="./schedule.html">This Week’s Games</a>
+              <a class="btnSecondary" href="./standings.html">Standings</a>
+              <a class="btnSecondary" href="./uploads.html">Upload Photos/Videos</a>
+            </div>
 
-  // Teams meta from Teams CSV:
-  // key: normalized TeamName -> { slug, logo, color }
-  const teamMeta = new Map();
+            <div id="homeBannerNote" class="muted small" style="margin-top:12px; display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  function safe(v){ return String(v ?? "").trim(); }
-  function norm(v){ return safe(v).toLowerCase(); }
-  function isFinal(status){ return norm(status) === "final"; }
+    <!-- This week + last week -->
+    <section class="docSection">
+      <div class="homeTwoCol">
+        <div class="card">
+          <div class="cardBody">
+            <div class="homeSectionHead">
+              <h3 style="margin:0;" id="thisWeekTitle">This Week</h3>
+              <a class="linkPill" href="./schedule.html">Full Schedule →</a>
+            </div>
+            <div id="thisWeekGames" class="muted small">Loading…</div>
+          </div>
+        </div>
 
-  function parseDateLoose(s){
-    s = safe(s);
-    if (!s) return null;
+        <div class="card">
+          <div class="cardBody">
+            <div class="homeSectionHead">
+              <h3 style="margin:0;" id="lastWeekTitle">Last Week (Finals)</h3>
+              <a class="linkPill" href="./schedule.html">Scores →</a>
+            </div>
+            <div id="lastWeekFinals" class="muted small">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    // Native parse (ISO etc.)
-    const d1 = new Date(s);
-    if (!isNaN(d1.getTime())) return d1;
+    <!-- Standings snapshot -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeSectionHead">
+            <h3 style="margin:0;">Standings Snapshot (Top 4)</h3>
+            <a class="linkPill" href="./standings.html">View Full Standings →</a>
+          </div>
 
-    // M/D/YYYY
-    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-    if (m){
-      const mm = Number(m[1]) - 1;
-      const dd = Number(m[2]);
-      const yy = Number(m[3]);
-      const d2 = new Date(yy, mm, dd);
-      return isNaN(d2.getTime()) ? null : d2;
+          <div class="tableScroll" style="margin-top:10px;">
+            <table class="standingsTable" id="standingsMini">
+              <colgroup>
+                <col style="width:44px;">
+                <col>
+                <col style="width:52px;">
+                <col style="width:52px;">
+                <col style="width:52px;">
+                <col style="width:70px;">
+                <col style="width:70px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="num">#</th>
+                  <th>Team</th>
+                  <th class="num">W</th>
+                  <th class="num">L</th>
+                  <th class="num">T</th>
+                  <th class="num">Win%</th>
+                  <th class="num">Streak</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <p id="standingsMiniMsg" class="muted small" style="margin-top:10px;"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Players of the Week -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeSectionHead">
+            <div>
+              <h3 style="margin:0;">Players of the Week</h3>
+              <div class="muted small">One player per team — updated weekly.</div>
+            </div>
+          </div>
+
+          <div id="potwGrid" class="potwGrid homePotwGrid" style="margin-top:12px;"></div>
+          <p id="potwMsg" class="muted small" style="margin-top:10px;"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Poll of the Week -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeSectionHead">
+            <div>
+              <h3 style="margin:0;">Poll of the Week</h3>
+              <div class="muted small" id="pollSubtitle">Loading…</div>
+            </div>
+          </div>
+
+          <div id="pollWrap" class="pollGrid" style="margin-top:12px;">
+            <div class="pollLeft">
+              <div id="pollQuestion" class="pollQuestion">Loading…</div>
+              <div id="pollOptions" class="pollOptions"></div>
+
+              <div class="pollActions">
+                <button id="pollVoteBtn" class="btnPrimary" type="button">Vote</button>
+              </div>
+
+              <div id="pollMsg" class="muted small" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="pollRight">
+              <div id="pollResults" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key League Dates & News -->
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeSectionHead">
+            <div>
+              <h3 style="margin:0;">Key League Dates & News</h3>
+              <div class="muted small">Photo day, events, reminders, updates.</div>
+            </div>
+          </div>
+
+          <div id="newsList" style="margin-top:12px;">
+            <div class="muted small">Loading…</div>
+          </div>
+
+          <p id="newsMsg" class="muted small" style="margin-top:10px;"></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal -->
+  <div id="modalOverlay" class="modalOverlay" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modalClose" id="modalCloseBtn" type="button">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script>
+    /* -------------------- Utils -------------------- */
+    function safe(v){ return String(v ?? "").trim(); }
+    function norm(v){ return safe(v).toLowerCase(); }
+    function isFinal(status){ return norm(status) === "final"; }
+
+    function parseDateLoose(s){
+      s = safe(s);
+      if (!s) return null;
+
+      const d1 = new Date(s);
+      if (!isNaN(d1.getTime())) return d1;
+
+      const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (m){
+        const mm = Number(m[1]) - 1, dd = Number(m[2]), yy = Number(m[3]);
+        const d2 = new Date(yy, mm, dd);
+        return isNaN(d2.getTime()) ? null : d2;
+      }
+      return null;
     }
 
-    return null;
-  }
+    async function fetchCsv(url){
+      if (!url) throw new Error("Missing CSV URL in data.js");
+      const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+      const res = await fetch(url + bust, { cache:"no-store" });
+      if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
+      return await res.text();
+    }
 
-  // Simple time rank (so 10:00 AM sorts before 12:15 PM)
-  function timeRank(t){
-    t = safe(t);
-    if (!t) return 0;
-    const d = new Date("1970-01-01 " + t);
-    return isNaN(d.getTime()) ? 0 : d.getTime();
-  }
+    function parseCsv(text){
+      const rows = [];
+      let row = [], cur = "", inQuotes = false;
 
-  async function fetchCsv(url){
-    if (!url) throw new Error("Missing CSV URL in data.js");
-    const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(url + bust, { cache:"no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
-    return await res.text();
-  }
+      for (let i=0; i<text.length; i++){
+        const ch = text[i], next = text[i+1];
 
-  // Robust CSV parser (quoted commas safe)
-  function parseCsv(text){
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
+        if (ch === '"'){
+          if (inQuotes && next === '"'){ cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+          continue;
+        }
 
-    for (let i=0; i<text.length; i++){
-      const ch = text[i];
-      const next = text[i+1];
+        if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
 
-      if (ch === '"'){
-        if (inQuotes && next === '"'){ cur += '"'; i++; }
-        else inQuotes = !inQuotes;
-        continue;
+        if (!inQuotes && (ch === "\n" || ch === "\r")){
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cur); cur="";
+          if (row.some(v => safe(v) !== "")) rows.push(row);
+          row = [];
+          continue;
+        }
+
+        cur += ch;
       }
 
-      if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
+      row.push(cur);
+      if (row.some(v => safe(v) !== "")) rows.push(row);
 
-      if (!inQuotes && (ch === "\n" || ch === "\r")){
-        if (ch === "\r" && next === "\n") i++;
-        row.push(cur); cur="";
-        if (row.some(v => safe(v) !== "")) rows.push(row);
-        row = [];
-        continue;
-      }
-
-      cur += ch;
+      const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
+      return rows.map(r => {
+        const o = {};
+        headers.forEach((h, idx) => o[h] = safe(r[idx]));
+        return o;
+      }).filter(o => Object.values(o).some(v => safe(v) !== ""));
     }
 
-    row.push(cur);
-    if (row.some(v => safe(v) !== "")) rows.push(row);
+    /* -------------------- Modal -------------------- */
+    const overlay = document.getElementById("modalOverlay");
+    const modalContent = document.getElementById("modalContent");
+    const closeBtn = document.getElementById("modalCloseBtn");
 
-    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
-    return rows.map(r => {
-      const o = {};
-      headers.forEach((h, idx) => o[h] = safe(r[idx]));
-      return o;
-    }).filter(o => Object.values(o).some(v => safe(v) !== ""));
-  }
-
-  function sortGames(a,b){
-    const da = parseDateLoose(a.Date);
-    const db = parseDateLoose(b.Date);
-    const ta = da ? da.getTime() : Number.POSITIVE_INFINITY;
-    const tb = db ? db.getTime() : Number.POSITIVE_INFINITY;
-
-    if (ta !== tb) return ta - tb;
-
-    const ra = timeRank(a.Time);
-    const rb = timeRank(b.Time);
-    if (ra !== rb) return ra - rb;
-
-    return safe(a.Field).localeCompare(safe(b.Field));
-  }
-
-  function groupByDate(games){
-    const m = new Map();
-    for (const g of games){
-      const d = safe(g.Date) || "TBD";
-      if (!m.has(d)) m.set(d, []);
-      m.get(d).push(g);
+    function openModal(html){
+      modalContent.innerHTML = html;
+      overlay.classList.add("open");
+      document.body.classList.add("noScroll");
+      overlay.setAttribute("aria-hidden","false");
     }
-    return m;
-  }
+    function closeModal(){
+      overlay.classList.remove("open");
+      document.body.classList.remove("noScroll");
+      overlay.setAttribute("aria-hidden","true");
+      modalContent.innerHTML = "";
+    }
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", (e)=>{ if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeModal(); });
 
-  function getMeta(teamName){
-    const m = teamMeta.get(norm(teamName));
-    return m || {
-      slug: "",
-      logo: window.DEFAULT_TEAM_LOGO || "./logo.png",
-      color: ""
-    };
-  }
+    function renderPlayerModal(player){
+      const name = safe(player.PlayerName || player.Name || "Player");
+      const team = safe(player.Team || player.TeamName || "");
+      const photo = safe(player.PhotoURL) || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
+      const blurb = safe(player.Blurb || player.Why || player.Reason || player.Notes || "");
+      const coach = safe(player.CoachName);
 
-  function teamAnchor(teamName){
-    const name = safe(teamName) || "TBD";
-    const m = getMeta(name);
-
-    const href = m.slug ? `./team.html?team=${encodeURIComponent(m.slug)}` : "#";
-    const style = m.color ? `style="color:${m.color}"` : "";
-
-    return `<a class="scheduleTeamLink" ${style} href="${href}">${name}</a>`;
-  }
-
-  function setActiveToggle(btn){
-    [toggleAll, toggleUpcoming, toggleCompleted].forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-  }
-
-  function render(){
-    container.innerHTML = "";
-    msgEl.textContent = "";
-
-    let filtered = [...allGames];
-
-    if (statusMode === "upcoming") {
-      filtered = filtered.filter(g => !isFinal(g.Status));
-    } else if (statusMode === "completed") {
-      filtered = filtered.filter(g => isFinal(g.Status));
+      openModal(`
+        <div class="profileHeader">
+          <div class="profilePhoto">
+            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
+          </div>
+          <div>
+            <h3 id="modalTitle" class="profileName">${name}</h3>
+            ${team ? `<div class="muted" style="margin-top:4px;">${team}</div>` : ""}
+            <div class="card" style="margin-top:12px;">
+              <div class="cardBody">
+                <div class="muted small">Coach’s Note${coach ? ` • ${coach}` : ""}</div>
+                <div style="margin-top:6px;">${blurb || "Write-up coming soon."}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
     }
 
-    if (teamFilter.value) {
-      filtered = filtered.filter(g =>
-        norm(g.TeamA) === norm(teamFilter.value) ||
-        norm(g.TeamB) === norm(teamFilter.value)
-      );
+    /* -------------------- Countdown -------------------- */
+    const LEAGUE_START_DATE = new Date(2026, 3, 11); // Apr 11, 2026
+    const LEAGUE_START_GAME_TIME = "10:00 AM";
+
+    function openingCountdownTarget(){
+      const d = new Date(LEAGUE_START_DATE.getFullYear(), LEAGUE_START_DATE.getMonth(), LEAGUE_START_DATE.getDate());
+      const dt = new Date(`${d.toDateString()} ${LEAGUE_START_GAME_TIME}`);
+      return isNaN(dt.getTime()) ? d : dt;
     }
 
-    if (dateFilter.value) {
-      filtered = filtered.filter(g => safe(g.Date) === dateFilter.value);
+    function saturdayFor(date){
+      const d = new Date(date);
+      const day = d.getDay();
+      const daysUntilSat = (6 - day + 7) % 7;
+      const sat = new Date(d.getFullYear(), d.getMonth(), d.getDate() + daysUntilSat);
+      sat.setHours(0,0,0,0);
+      return sat;
     }
 
-    filtered.sort(sortGames);
-
-    if (!filtered.length) {
-      msgEl.textContent = "No games match your filters.";
-      return;
+    function getDisplaySaturday(now){
+      const openingSat = new Date(LEAGUE_START_DATE.getFullYear(), LEAGUE_START_DATE.getMonth(), LEAGUE_START_DATE.getDate());
+      openingSat.setHours(0,0,0,0);
+      if (now.getTime() < openingSat.getTime()) return openingSat;
+      return saturdayFor(now);
     }
 
-    const grouped = groupByDate(filtered);
+    function fmtCountdown(ms){
+      const total = Math.max(0, ms);
+      const sec = Math.floor(total / 1000);
+      const days = Math.floor(sec / 86400);
+      const hrs = Math.floor((sec % 86400) / 3600);
+      const mins = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      const pad = (n)=> String(n).padStart(2,"0");
+      return `${days}d ${pad(hrs)}h ${pad(mins)}m ${pad(s)}s`;
+    }
 
-    for (const [date, games] of grouped){
-      games.sort(sortGames);
+function updateCountdown(){
+  const labelEl = document.getElementById("countdownLabel");
+  const timerEl = document.getElementById("countdownTimer");
+  const wrapEl  = document.querySelector(".homeCountdown");
+  if (!labelEl || !timerEl || !wrapEl) return;
 
-      const section = document.createElement("div");
-      section.className = "scheduleDateSection";
-      section.innerHTML = `<div class="scheduleDateHeader">${date}</div>`;
+  const now = new Date();
+  const openingTarget = openingCountdownTarget();
 
-      for (const g of games){
-        const aName = safe(g.TeamA);
-        const bName = safe(g.TeamB);
-        const aMeta = getMeta(aName);
-        const bMeta = getMeta(bName);
+  // Reset mode classes
+  wrapEl.classList.remove("isOpening", "isNext");
 
-        const final = isFinal(g.Status);
-        const hasScores = safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "";
-        const scoreText = (final && hasScores) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "";
+  if (now.getTime() < openingTarget.getTime()){
+    labelEl.textContent = "Countdown to Opening Day (Apr 11)";
+    timerEl.textContent = fmtCountdown(openingTarget.getTime() - now.getTime());
+    wrapEl.classList.add("isOpening");
+    return;
+  }
 
-        const card = document.createElement("div");
-        card.className = "scheduleGameCard";
-        if (final) card.classList.add("finalGame");
+  const nextSat = getDisplaySaturday(now);
+  const nextGame = new Date(`${nextSat.toDateString()} ${LEAGUE_START_GAME_TIME}`);
+  labelEl.textContent = "Countdown to Next Game Day";
+  timerEl.textContent = fmtCountdown(nextGame.getTime() - now.getTime());
+  wrapEl.classList.add("isNext");
+}
 
-        card.innerHTML = `
+    /* -------------------- Teams meta -------------------- */
+    const teamMeta = new Map(); // normalized TeamName -> { slug, logo, color }
+
+    function getMeta(teamName){
+      const m = teamMeta.get(norm(teamName));
+      return m || { slug:"", logo:(window.DEFAULT_TEAM_LOGO || "./logo.png"), color:"" };
+    }
+
+    function teamHref(teamName){
+      const m = getMeta(teamName);
+      return m.slug ? `./team.html?team=${encodeURIComponent(m.slug)}` : "./teams.html";
+    }
+
+    function teamAnchor(teamName){
+      const name = safe(teamName) || "TBD";
+      const m = getMeta(name);
+      const href = teamHref(name);
+      const style = m.color ? `style="color:${m.color}"` : "";
+      return `<a class="scheduleTeamLink" ${style} href="${href}">${name}</a>`;
+    }
+
+    /* -------------------- Schedule snapshot cards (match schedule.html) -------------------- */
+    function renderScheduleCard(g){
+      const aName = safe(g.TeamA);
+      const bName = safe(g.TeamB);
+      const aMeta = getMeta(aName);
+      const bMeta = getMeta(bName);
+
+      const final = isFinal(g.Status);
+      const hasScores = safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "";
+      const scoreText = (final && hasScores) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "";
+
+      const classes = `scheduleGameCard${final ? " finalGame" : ""}`;
+
+      return `
+        <div class="${classes}">
           <div class="scheduleGameMeta">
             <div>${safe(g.Time) || ""}</div>
             <div>${safe(g.Field) || ""}</div>
           </div>
 
-<div class="scheduleMatchupGrid">
-  <div class="scheduleTeam sideLeft">
-    <!-- JS injects logo + link here -->
-  </div>
-
-  <div class="vsLabel">@</div>
-
-  <div class="scheduleTeam sideRight">
-    <!-- JS injects logo + link here -->
-  </div>
-</div>
+          <div class="scheduleMatchupGrid">
+            <div class="scheduleTeam sideLeft">
+              <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
+                   onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+              ${teamAnchor(aName)}
+            </div>
 
             <div class="scheduleScore">
               ${scoreText || `<span class="vsLabel">@</span>`}
@@ -306,95 +448,590 @@
           <div class="scheduleStatus">
             ${final ? `<span class="pillFinal">Final</span>` : (safe(g.Status) || "Scheduled")}
           </div>
-        `;
+        </div>
+      `;
+    }
 
-        section.appendChild(card);
+    /* -------------------- Standings calcs -------------------- */
+    function toNum(x){
+      const n = Number(safe(x));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function calcPct(W,L,T){
+      const gp = W + L + T;
+      if (!gp) return 0;
+      return (W + 0.5*T) / gp;
+    }
+
+    function fmtPct(p){
+      return (p * 100).toFixed(1);
+    }
+
+    function buildStreaksFromFinals(games){
+      const byTeam = new Map();
+      function pushResult(team, res){
+        if (!team) return;
+        if (!byTeam.has(team)) byTeam.set(team, []);
+        byTeam.get(team).push(res);
       }
 
-      container.appendChild(section);
+      const finals = games
+        .filter(g => isFinal(g.Status))
+        .map(g => ({ g, d: parseDateLoose(g.Date) }))
+        .filter(x => x.d)
+        .sort((a,b)=> a.d - b.d)
+        .map(x => x.g);
+
+      for (const g of finals){
+        const a = safe(g.TeamA), b = safe(g.TeamB);
+        const sa = toNum(g.ScoreA), sb = toNum(g.ScoreB);
+        if (!a || !b || sa===null || sb===null) continue;
+
+        if (sa > sb){ pushResult(a,"W"); pushResult(b,"L"); }
+        else if (sb > sa){ pushResult(b,"W"); pushResult(a,"L"); }
+        else { pushResult(a,"T"); pushResult(b,"T"); }
+      }
+
+      const streak = new Map();
+      for (const [team, arr] of byTeam.entries()){
+        if (!arr.length){ streak.set(team,"—"); continue; }
+        const last = arr[arr.length-1];
+        let n = 1;
+        for (let i=arr.length-2; i>=0; i--){
+          if (arr[i] === last) n++;
+          else break;
+        }
+        streak.set(team, `${last}${n}`);
+      }
+      return streak;
     }
-  }
 
-  async function init(){
-    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-    const teamRows = parseCsv(teamsCsv);
+    /* -------------------- POLL: JSONP (no CORS issues) -------------------- */
+    let POLL = { weekKey:"", question:"", options:[], mode:"realtime" };
 
-    for (const r of teamRows){
-      const name = safe(r.TeamName);
-      if (!name) continue;
+    function pollVoteKey(){ return `wbl_poll_vote_${POLL.weekKey || "week"}`; }
+    function loadMyVote(){ return safe(localStorage.getItem(pollVoteKey())); }
+    function saveMyVote(idx){ localStorage.setItem(pollVoteKey(), String(idx)); }
 
-      teamMeta.set(norm(name), {
-        slug: safe(r.TeamSlug),
-        logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
-        color: safe(r.TeamColor)
+    function getSelectedPollIndex(){
+      const selected = document.querySelector('input[name="pollOpt"]:checked');
+      if (!selected) return null;
+      const idx = Number(selected.value);
+      return Number.isFinite(idx) ? idx : null;
+    }
+
+    function padCountsToOptions(counts){
+      const out = new Array(POLL.options.length).fill(0);
+      for (let i=0; i<out.length; i++) out[i] = Number(counts[i]) || 0;
+      return out;
+    }
+
+    function jsonpCall(baseUrl, params){
+      return new Promise((resolve, reject) => {
+        const cbName = "jsonp_cb_" + Math.random().toString(36).slice(2);
+        const url = new URL(baseUrl);
+
+        Object.entries(params || {}).forEach(([k,v]) => url.searchParams.set(k, String(v)));
+        url.searchParams.set("callback", cbName);
+
+        const script = document.createElement("script");
+        script.src = url.toString();
+        script.async = true;
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("JSONP timeout"));
+        }, 8000);
+
+        function cleanup(){
+          clearTimeout(timeout);
+          if (script.parentNode) script.parentNode.removeChild(script);
+          try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
+        }
+
+        window[cbName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("JSONP load error"));
+        };
+
+        document.head.appendChild(script);
       });
     }
 
-    const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
-    allGames = parseCsv(gamesCsv);
+    async function pollFetchResults(){
+      if (!window.SHEET?.POLL_API_URL) return null;
+      const data = await jsonpCall(window.SHEET.POLL_API_URL, {
+        action: "results",
+        weekKey: POLL.weekKey
+      });
+      if (data && data.ok && Array.isArray(data.counts)) return data.counts;
+      return null;
+    }
 
-    // Team filter
-    const teamNames = teamRows.map(r => safe(r.TeamName)).filter(Boolean).sort();
-    teamNames.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.textContent = t;
-      teamFilter.appendChild(opt);
-    });
+    async function pollSubmitVote(optionIndex){
+      if (!window.SHEET?.POLL_API_URL) throw new Error("Missing POLL_API_URL");
+      const data = await jsonpCall(window.SHEET.POLL_API_URL, {
+        action: "vote",
+        weekKey: POLL.weekKey,
+        optionIndex: optionIndex
+      });
+      if (data && data.ok && Array.isArray(data.counts)) return data.counts;
+      throw new Error(data && data.error ? data.error : "Vote failed");
+    }
 
-    // Date filter (sorted by real date, not strings)
-    const dateSet = new Set(allGames.map(g => safe(g.Date)).filter(Boolean));
-    const dateList = [...dateSet].sort((a,b)=>{
-      const da = parseDateLoose(a);
-      const db = parseDateLoose(b);
-      const ta = da ? da.getTime() : Number.POSITIVE_INFINITY;
-      const tb = db ? db.getTime() : Number.POSITIVE_INFINITY;
-      return ta - tb;
-    });
+    async function loadPollFromSheet(){
+      const url = window.SHEET?.POLL_CSV_URL;
+      if (!url) return false;
 
-    dateList.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d;
-      dateFilter.appendChild(opt);
-    });
+      const csv = await fetchCsv(url);
+      const rows = parseCsv(csv);
+      if (!rows.length) return false;
 
-    teamFilter.addEventListener("change", render);
-    dateFilter.addEventListener("change", render);
+      const active = rows.find(r => ["true","yes","1"].includes(norm(r.Active))) || rows[0];
 
-    clearBtn.addEventListener("click", () => {
-      teamFilter.value = "";
-      dateFilter.value = "";
-      render();
-    });
+      const wk = safe(active.WeekKey);
+      const q  = safe(active.Question);
 
-    toggleAll.addEventListener("click", () => {
-      statusMode = "all";
-      setActiveToggle(toggleAll);
-      render();
-    });
+      const opts = [];
+      for (let i=1; i<=8; i++){
+        const v = safe(active["Option"+i]);
+        if (v) opts.push(v);
+      }
 
-    toggleUpcoming.addEventListener("click", () => {
-      statusMode = "upcoming";
-      setActiveToggle(toggleUpcoming);
-      render();
-    });
+      if (!wk || !q || !opts.length) return false;
 
-    toggleCompleted.addEventListener("click", () => {
-      statusMode = "completed";
-      setActiveToggle(toggleCompleted);
-      render();
-    });
+      POLL.weekKey = wk;
+      POLL.question = q;
+      POLL.options = opts;
+      POLL.mode = window.SHEET?.POLL_API_URL ? "realtime" : "local";
+      return true;
+    }
 
-    render();
-  }
+    function renderPollUI(){
+      const qEl = document.getElementById("pollQuestion");
+      const optEl = document.getElementById("pollOptions");
+      const msgEl = document.getElementById("pollMsg");
+      const resEl = document.getElementById("pollResults");
+      const subEl = document.getElementById("pollSubtitle");
+      const voteBtn = document.getElementById("pollVoteBtn");
 
-  init().catch(err => {
-    console.error(err);
-    msgEl.textContent = "Schedule error: " + err.message;
-  });
-</script>
+      qEl.textContent = POLL.question || "Poll";
+      subEl.textContent = POLL.mode === "realtime"
+        ? `Week: ${POLL.weekKey} • Live totals + percentages`
+        : `Week: ${POLL.weekKey} • Real-time voting not enabled (missing POLL_API_URL)`;
 
-<script src="./nav.js"></script>
+      optEl.innerHTML = "";
+      msgEl.textContent = "";
+      resEl.style.display = "none";
+      resEl.innerHTML = "";
+
+      const myVote = loadMyVote();
+      const myIdx = myVote !== "" ? Number(myVote) : null;
+      const hasVoted = Number.isFinite(myIdx) && myIdx >= 0;
+
+      POLL.options.forEach((label, idx) => {
+        const id = `pollOpt_${idx}`;
+        const wrap = document.createElement("label");
+        wrap.className = "pollOpt";
+        wrap.setAttribute("for", id);
+        wrap.innerHTML = `
+          <input type="radio" name="pollOpt" id="${id}" value="${idx}"
+            ${hasVoted && idx === myIdx ? "checked" : ""} ${hasVoted ? "disabled" : ""}>
+          <span>${label}</span>
+        `;
+        optEl.appendChild(wrap);
+      });
+
+      voteBtn.disabled = hasVoted;
+      if (hasVoted && POLL.options[myIdx]) msgEl.textContent = `You voted: ${POLL.options[myIdx]}`;
+    }
+
+    function renderPollResultsFromCounts(counts){
+      const resEl = document.getElementById("pollResults");
+      const total = counts.reduce((a,b)=>a+(b||0),0);
+
+      resEl.style.display = "";
+      resEl.innerHTML = `
+        <div class="muted small" style="margin-bottom:8px;">Total votes: ${total}</div>
+        ${POLL.options.map((label, idx) => {
+          const c = counts[idx] || 0;
+          const pct = total ? Math.round((c / total) * 100) : 0;
+          return `
+            <div class="pollResultRow">
+              <div class="pollResultTop">
+                <div style="font-weight:800;">${label}</div>
+                <div class="muted small">${c} (${pct}%)</div>
+              </div>
+              <div class="pollBar">
+                <div class="pollBarFill" style="width:${pct}%;"></div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      `;
+    }
+
+    function wirePollButtons(){
+      const voteBtn = document.getElementById("pollVoteBtn");
+      const msgEl = document.getElementById("pollMsg");
+
+      voteBtn.onclick = async () => {
+        msgEl.textContent = "";
+        const idx = getSelectedPollIndex();
+        if (idx === null){
+          msgEl.textContent = "Pick an option first.";
+          return;
+        }
+
+        if (!window.SHEET?.POLL_API_URL){
+          msgEl.textContent = "Voting not enabled yet (missing POLL_API_URL).";
+          return;
+        }
+
+        try{
+          msgEl.textContent = "Submitting vote…";
+          const counts = await pollSubmitVote(idx);
+          saveMyVote(idx);
+          renderPollUI();
+          renderPollResultsFromCounts(padCountsToOptions(counts));
+          msgEl.textContent = "Vote recorded.";
+        } catch(e){
+          console.error(e);
+          msgEl.textContent = "Vote failed. (Make sure POLL_API_URL is the deployed /exec URL.)";
+        }
+      };
+    }
+
+    /* -------------------- Key Dates & News -------------------- */
+    async function loadKeyDatesNews(){
+      const listEl = document.getElementById("newsList");
+      const msgEl = document.getElementById("newsMsg");
+      const url = window.SHEET?.KEY_DATES_CSV_URL;
+
+      if (!url){
+        listEl.innerHTML = `<div class="muted small">Missing <code>window.SHEET.KEY_DATES_CSV_URL</code> in <code>data.js</code>.</div>`;
+        msgEl.textContent = "";
+        return;
+      }
+
+      try{
+        const csv = await fetchCsv(url);
+        const rows = parseCsv(csv);
+
+        const items = rows.map(r => ({
+          date: safe(r.Date),
+          title: safe(r.Title),
+          details: safe(r.Details),
+          link: safe(r.Link)
+        })).filter(x => x.title || x.details);
+
+        const now = new Date();
+        const withDates = items.map((x, idx) => ({...x, _d: parseDateLoose(x.date), _i: idx }));
+
+        withDates.sort((a,b)=>{
+          const ad = a._d ? a._d.getTime() : null;
+          const bd = b._d ? b._d.getTime() : null;
+          if (ad !== null && bd !== null){
+            const aFuture = ad >= now.getTime();
+            const bFuture = bd >= now.getTime();
+            if (aFuture !== bFuture) return aFuture ? -1 : 1;
+            return ad - bd;
+          }
+          if (ad !== null && bd === null) return -1;
+          if (ad === null && bd !== null) return 1;
+          return a._i - b._i;
+        });
+
+        if (!withDates.length){
+          listEl.innerHTML = `<div class="muted small">No news yet.</div>`;
+          msgEl.textContent = "";
+          return;
+        }
+
+        listEl.innerHTML = withDates.slice(0,10).map(item => {
+          const datePart = item.date ? `<div class="muted small">${item.date}</div>` : "";
+          const titlePart = item.title ? `<div style="font-weight:800;">${item.title}</div>` : "";
+          const detailsPart = item.details ? `<div class="muted" style="margin-top:6px;">${item.details}</div>` : "";
+          const linkPart = item.link ? `<div style="margin-top:8px;"><a class="linkPill" href="${item.link}" target="_blank" rel="noopener">Details →</a></div>` : "";
+          return `
+            <div class="card" style="margin-top:10px;">
+              <div class="cardBody">
+                ${datePart}
+                ${titlePart}
+                ${detailsPart}
+                ${linkPart}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        msgEl.textContent = "";
+      } catch(e){
+        console.error(e);
+        listEl.innerHTML = `<div class="muted small">Unable to load key dates/news right now.</div>`;
+        msgEl.textContent = "";
+      }
+    }
+
+    /* -------------------- Home init -------------------- */
+    async function initHome(){
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+
+      // Load poll config first
+      try{
+        const ok = await loadPollFromSheet();
+        if (!ok){
+          POLL.weekKey = "week";
+          POLL.question = "Poll unavailable (check poll sheet headers).";
+          POLL.options = ["OK"];
+        }
+      } catch(e){
+        console.warn(e);
+        POLL.weekKey = "week";
+        POLL.question = "Poll unavailable (check poll CSV URL).";
+        POLL.options = ["OK"];
+      }
+      renderPollUI();
+      wirePollButtons();
+
+      // Preload results if possible
+      if (window.SHEET?.POLL_API_URL && POLL.weekKey && POLL.options.length){
+        const counts = await pollFetchResults().catch(()=>null);
+        if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
+      }
+
+      // News
+      loadKeyDatesNews().catch(()=>{});
+
+      // Teams
+      try{
+        const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+        const teamRows = parseCsv(teamsCsv);
+        for (const r of teamRows){
+          const name = safe(r.TeamName);
+          if (!name) continue;
+          teamMeta.set(norm(name), {
+            slug: safe(r.TeamSlug),
+            logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
+            color: safe(r.TeamColor) || ""
+          });
+        }
+      } catch(e){
+        console.warn("Teams feed unavailable.", e);
+      }
+
+      // Roster map (for POTW names)
+      const rosterMap = new Map();
+      try{
+        const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
+        const roster = parseCsv(rosterCsv);
+        for (const r of roster){
+          const pid = safe(r.PlayerID);
+          if (!pid) continue;
+          rosterMap.set(pid, { name: safe(r.PlayerName || r.Name), photo: safe(r.PhotoURL) });
+        }
+      } catch(e){
+        console.warn("Roster feed unavailable.", e);
+      }
+
+      // Games
+      const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
+      const games = parseCsv(gamesCsv);
+
+      const now = new Date();
+      const thisSat = getDisplaySaturday(now);
+      const lastSat = new Date(thisSat.getFullYear(), thisSat.getMonth(), thisSat.getDate() - 7);
+      lastSat.setHours(0,0,0,0);
+
+      const thisWeekTitle = document.getElementById("thisWeekTitle");
+      const bannerNote = document.getElementById("homeBannerNote");
+
+      const openingSat = new Date(LEAGUE_START_DATE.getFullYear(), LEAGUE_START_DATE.getMonth(), LEAGUE_START_DATE.getDate());
+      openingSat.setHours(0,0,0,0);
+
+      const fmtShort = (d)=> d.toLocaleDateString(undefined, { month:"short", day:"numeric" });
+
+      if (now.getTime() < openingSat.getTime()){
+        thisWeekTitle.textContent = `Opening Day (${fmtShort(thisSat)})`;
+        bannerNote.textContent = `Showing Opening Day games on ${fmtShort(thisSat)}.`;
+        bannerNote.style.display = "";
+      } else {
+        thisWeekTitle.textContent = `This Week (${fmtShort(thisSat)})`;
+        bannerNote.style.display = "none";
+      }
+
+      const thisWeek = [];
+      const lastWeekFinals = [];
+
+      for (const g of games){
+        const d = parseDateLoose(g.Date);
+        if (!d) continue;
+        d.setHours(0,0,0,0);
+
+        if (d.getTime() === thisSat.getTime()) thisWeek.push(g);
+        if (d.getTime() === lastSat.getTime() && isFinal(g.Status)) lastWeekFinals.push(g);
+      }
+
+      document.getElementById("thisWeekGames").innerHTML =
+        thisWeek.length ? thisWeek.map(renderScheduleCard).join("") :
+        `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
+
+      document.getElementById("lastWeekFinals").innerHTML =
+        lastWeekFinals.length ? lastWeekFinals.map(renderScheduleCard).join("") :
+        `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
+
+      // Standings snapshot
+      const teamsSet = new Set();
+      games.forEach(g => { if (safe(g.TeamA)) teamsSet.add(safe(g.TeamA)); if (safe(g.TeamB)) teamsSet.add(safe(g.TeamB)); });
+
+      const table = new Map();
+      for (const t of teamsSet) table.set(t, { team:t, W:0, L:0, T:0 });
+
+      let finalsCount = 0;
+      for (const g of games){
+        if (!isFinal(g.Status)) continue;
+        const a = safe(g.TeamA), b = safe(g.TeamB);
+        const sa = toNum(g.ScoreA), sb = toNum(g.ScoreB);
+        if (!a || !b || sa===null || sb===null) continue;
+
+        if (!table.has(a)) table.set(a,{team:a,W:0,L:0,T:0});
+        if (!table.has(b)) table.set(b,{team:b,W:0,L:0,T:0});
+
+        if (sa > sb){ table.get(a).W++; table.get(b).L++; }
+        else if (sb > sa){ table.get(b).W++; table.get(a).L++; }
+        else { table.get(a).T++; table.get(b).T++; }
+
+        finalsCount++;
+      }
+
+      const rows = Array.from(table.values()).sort((x,y)=>{
+        const xp = calcPct(x.W,x.L,x.T);
+        const yp = calcPct(y.W,y.L,y.T);
+        if (yp !== xp) return yp - xp;
+        if (y.W !== x.W) return y.W - x.W;
+        if (x.L !== y.L) return x.L - y.L;
+        return x.team.localeCompare(y.team);
+      });
+
+      const streakMap = buildStreaksFromFinals(games);
+      const miniBody = document.querySelector("#standingsMini tbody");
+      miniBody.innerHTML = "";
+
+      rows.slice(0,4).forEach((r,idx)=>{
+        const pct = calcPct(r.W, r.L, r.T);
+        const streak = streakMap.get(r.team) || "—";
+        const meta = getMeta(r.team);
+        const href = teamHref(r.team);
+        const style = meta.color ? `style="color:${meta.color}"` : "";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="num">${idx+1}</td>
+          <td>
+            <div class="miniTeamCell">
+              <img class="teamLogoMini" src="${meta.logo}" alt="${r.team} logo"
+                   onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+              <a class="scheduleTeamLink" ${style} href="${href}">${r.team}</a>
+            </div>
+          </td>
+          <td class="num">${r.W}</td>
+          <td class="num">${r.L}</td>
+          <td class="num">${r.T}</td>
+          <td class="num">${fmtPct(pct)}</td>
+          <td class="num">${streak}</td>
+        `;
+        miniBody.appendChild(tr);
+      });
+
+      document.getElementById("standingsMiniMsg").textContent =
+        finalsCount ? `Based on ${finalsCount} final game(s).` : `No final games yet — standings will appear once games are marked Final.`;
+
+      // Players of the Week — show PLAYER NAME (join POTW -> Roster by PlayerID)
+      const potwGrid = document.getElementById("potwGrid");
+      const potwMsg = document.getElementById("potwMsg");
+      potwGrid.innerHTML = "";
+
+      try{
+        const potwCsv = await fetchCsv(window.SHEET?.PLAYERS_OF_WEEK_CSV_URL);
+        const potw = parseCsv(potwCsv);
+
+        const mapped = potw.map(r => {
+          const team = safe(r.TeamName || r.Team);
+          const playerID = safe(r.PlayerID);
+
+          const sheetName = safe(r.PlayerName || r.Name);
+          const rosterInfo = playerID ? rosterMap.get(playerID) : null;
+          const name = sheetName || safe(rosterInfo?.name) || "";
+
+          const photoOverride = safe(r.PhotoURL);
+          const rosterPhoto = safe(rosterInfo?.photo);
+          const localPhoto = playerID ? `./player-photos/${encodeURIComponent(playerID)}.jpg` : "";
+          const photo = photoOverride || rosterPhoto || localPhoto || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
+
+          const blurb = safe(r.Blurb || r.Why || r.Reason || r.Notes);
+          const coach = safe(r.CoachName);
+          const week = safe(r.Week);
+          const weekDate = safe(r.WeekDate);
+
+          return { Team:team, PlayerID:playerID, PlayerName:name, PhotoURL:photo, Blurb:blurb, CoachName:coach, Week:week, WeekDate:weekDate };
+        }).filter(p => p.Team && p.PlayerID);
+
+        const byTeam = new Map();
+        for (const p of mapped){
+          if (!byTeam.has(p.Team)) byTeam.set(p.Team, p);
+        }
+        const onePerTeam = Array.from(byTeam.values());
+
+        onePerTeam.sort((a,b)=>{
+          const ad = parseDateLoose(a.WeekDate);
+          const bd = parseDateLoose(b.WeekDate);
+          if (ad && bd && bd.getTime() !== ad.getTime()) return bd - ad;
+          const aw = Number(a.Week), bw = Number(b.Week);
+          if (Number.isFinite(aw) && Number.isFinite(bw) && bw !== aw) return bw - aw;
+          return a.Team.localeCompare(b.Team);
+        });
+
+        const show = onePerTeam.slice(0,10);
+
+        show.forEach(p=>{
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "potwCardBtn";
+
+          const displayName = p.PlayerName || "Player of the Week";
+
+          btn.innerHTML = `
+            <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}"
+                 onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
+            <div class="potwText">
+              <div class="potwName">${displayName}</div>
+              <div class="potwTeam muted small">${p.Team}</div>
+              <div class="potwLink">Learn more →</div>
+            </div>
+          `;
+          btn.addEventListener("click", ()=> renderPlayerModal(p));
+          potwGrid.appendChild(btn);
+        });
+
+        potwMsg.textContent = show.length ? "" : "Players of the Week will appear here once the sheet is populated.";
+      } catch(e){
+        console.error(e);
+        potwMsg.textContent = "Players of the Week unavailable right now.";
+      }
+    }
+
+    initHome().catch(err => console.error(err));
+  </script>
+
+  <script src="./nav.js"></script>
 </body>
 </html>
+
+
