@@ -143,11 +143,18 @@
     }).filter(o => Object.values(o).some(v => safe(v) !== ""));
   }
 
-  function sortGames(a,b){
-    return safe(a.Date).localeCompare(safe(b.Date)) ||
-           safe(a.Time).localeCompare(safe(b.Time)) ||
-           safe(a.Field).localeCompare(safe(b.Field));
-  }
+ function sortGames(a,b){
+  // Sort by actual Date object first
+  const dateDiff = new Date(a.Date) - new Date(b.Date);
+  if (dateDiff !== 0) return dateDiff;
+
+  // Then by time (string compare is fine for 10:00 AM format)
+  const timeDiff = safe(a.Time).localeCompare(safe(b.Time));
+  if (timeDiff !== 0) return timeDiff;
+
+  // Then by field
+  return safe(a.Field).localeCompare(safe(b.Field));
+}
 
   function groupByDate(games){
     const m = new Map();
