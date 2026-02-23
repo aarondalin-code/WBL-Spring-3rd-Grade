@@ -755,76 +755,6 @@ body.watermarkPage::before{
 .scheduleGameMeta .metaTop{ font-size: 14px; }
 .scheduleGameMeta .metaBottom{ font-size: 13px; margin-top: 6px; }
 
-/* =========================
-   Schedule matchup layout (desktop-first, safe for home snapshot too)
-   Keeps logo + team name together on each side of @/score
-========================= */
-
-.scheduleMatchupGrid{
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  min-width: 0; /* critical: allows ellipsis instead of clipping */
-}
-
-.scheduleTeam{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0; /* critical for text-overflow inside */
-}
-
-.teamLogo{
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-  flex: 0 0 auto;
-}
-
-.scheduleTeamLink{
-  display: inline-block;
-  min-width: 0;
-  max-width: 100%;
-  font-weight: 950;
-  text-decoration: none;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Left side: align toward the center, keep name closest to @/score */
-.scheduleTeam.sideLeft{
-  justify-content: flex-end;
-  text-align: right;
-  flex-direction: row-reverse; /* puts link nearest the center */
-}
-
-/* Right side: normal flow (logo then name), aligned toward the center */
-.scheduleTeam.sideRight{
-  justify-content: flex-start;
-  text-align: left;
-}
-
-.scheduleScore{
-  font-weight: 950;
-  text-align: center;
-  min-width: 64px; /* keeps @/score column stable */
-  font-variant-numeric: tabular-nums;
-}
-
-/* Optional: make the @ read nicely like a pill */
-.vsLabel{
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: #fff;
-  font-weight: 950;
-}
-
-
 
 
 /* Filters (keep) */
@@ -2295,109 +2225,87 @@ body.watermarkPage::before{
   }
 }
 /* =========================================================
-   MATCHUP ALIGNMENT (Schedule + Home schedule snapshots)
-   Goals:
-   - Logos aligned near the @ (both sides)
-   - LEFT team names: first letters aligned (like a column)
-   - More breathing room so left names don’t get chopped
+   MATCHUP ROW REBUILD (desktop-first, safe lanes, no clipping)
+   Applies to schedule page cards only (scheduleGameCard)
 ========================================================= */
 
-:root{
-  --schedLogo: 30px;
-  --schedName: 220px;   /* adjust 200–240 if needed */
-  --schedMid: 34px;     /* width of the @ column */
-}
-
-.scheduleMatchupGrid{
+.scheduleGameCard .scheduleMatchupGrid{
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--schedMid) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 12px;            /* a bit tighter than 14 */
+  column-gap: 14px;
+  width: 100%;
+  min-width: 0; /* critical: allow children to shrink without overflowing */
 }
 
-/* base */
-.scheduleTeam{
-  display: grid;
+.scheduleGameCard .scheduleTeam{
+  display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0;
+  min-width: 0; /* critical for ellipsis */
 }
 
-/* LEFT SIDE:
-   Fixed name gutter, LEFT-aligned text
-   Logo stays closest to the @ (right edge of left block)
-*/
-.scheduleTeam.sideLeft{
-  grid-template-columns: var(--schedName) var(--schedLogo); /* NAME | LOGO */
-  justify-content: end;         /* keep logo pinned near @ */
-  justify-items: start;         /* name text starts at same x for every row */
-  text-align: left;             /* first letters align */
+.scheduleGameCard .scheduleTeam.sideLeft{
+  justify-content: flex-end;
+  text-align: right;
 }
 
-/* RIGHT SIDE:
-   Logo stays closest to the @ (left edge of right block)
-*/
-.scheduleTeam.sideRight{
-  grid-template-columns: var(--schedLogo) var(--schedName); /* LOGO | NAME */
-  justify-content: start;
-  justify-items: start;
+.scheduleGameCard .scheduleTeam.sideRight{
+  justify-content: flex-start;
   text-align: left;
 }
 
-/* Logo never changes size */
-.teamLogo{
-  width: var(--schedLogo);
-  height: var(--schedLogo);
-  object-fit: contain;
+.scheduleGameCard .teamLogo{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex: 0 0 auto;
 }
 
-/* Make the name occupy the full name gutter so alignment is real */
-.scheduleTeamLink{
-  display: block;
+.scheduleGameCard .scheduleTeamLink{
+  display: inline-block;
   min-width: 0;
   max-width: 100%;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-decoration: none;
+  white-space: nowrap; /* desktop: keep one line */
+  font-weight: 900;
 }
 
-.scheduleTeamLink:hover{
-  color: var(--royal);
-}
-
-/* If your markup has a wrapper, keep it harmless */
-.scheduleTeam .teamText{
-  min-width: 0;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* The @ stays centered and doesn’t steal room */
-.vsLabel{
+.scheduleGameCard .scheduleScore{
+  font-weight: 950;
   text-align: center;
   white-space: nowrap;
+  padding: 0 6px;
+  min-width: 44px;
 }
 
-/* Mobile tuning */
+.scheduleGameCard .vsLabel{
+  font-weight: 950;
+}
+
+/* Mobile: stack cleanly */
 @media (max-width: 520px){
-  :root{
-    --schedName: 170px;
-    --schedMid: 28px;
+  .scheduleGameCard .scheduleMatchupGrid{
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+    justify-items: center;
   }
-  .scheduleMatchupGrid{ gap: 10px; }
-}
-/* Ensure logo + name sit on the same baseline in every row */
-.scheduleTeam{
-  align-items: center;
-}
 
-.teamLogo{
-  display: block;
-}
+  .scheduleGameCard .scheduleTeam{
+    justify-content: center;
+    text-align: center;
+  }
 
-.scheduleTeamLink{
-  line-height: 1.15;
+  .scheduleGameCard .scheduleTeamLink{
+    white-space: normal;     /* allow wrapping on small screens */
+    text-overflow: clip;
+    overflow: visible;
+    text-align: center;
+  }
+
+  .scheduleGameCard .scheduleScore{
+    padding: 0;
+  }
 }
