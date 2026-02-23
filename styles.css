@@ -2319,3 +2319,98 @@ body.watermarkPage::before{
     gap: 10px;
   }
 }
+/* =========================================================
+   SCHEDULE + HOME SCHEDULE SNAPSHOT (if it uses same classes)
+   FIX: Left names + left logos aligned (like right side)
+   - Left side becomes:  [NAME (fixed col)][LOGO]
+   - Right side stays:   [LOGO][NAME (fixed col)]
+   - Left name text is LEFT-aligned inside its fixed column
+     so first letters line up (Cubs "C" aligns with Nationals "N")
+========================================================= */
+
+:root{
+  --schedLogoCol: 30px;
+  --schedNameCol: 220px;   /* desktop width for team names */
+  --schedGap: 10px;
+}
+
+@media (max-width: 820px){
+  :root{
+    --schedNameCol: 160px; /* mobile width for team names */
+  }
+}
+
+/* Keep the matchup grid as 3 columns (left / @-score / right) */
+.scheduleMatchupGrid{
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+/* Team blocks become 2-col grids (we control name+logo alignment inside) */
+.scheduleTeam{
+  display: grid !important;
+  align-items: center !important;
+  gap: var(--schedGap) !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* ---- LEFT SIDE: [NAME][LOGO] ---- */
+.scheduleTeam.sideLeft{
+  grid-template-columns: var(--schedNameCol) var(--schedLogoCol) !important;
+  justify-self: end !important;           /* anchor whole block near @ */
+}
+
+/* Put logo in the inside column (near @) */
+.scheduleTeam.sideLeft .teamLogo{
+  grid-column: 2 !important;
+  justify-self: center !important;
+}
+
+/* Put name in the fixed name column and LEFT-align it */
+.scheduleTeam.sideLeft .scheduleTeamLink,
+.scheduleTeam.sideLeft .teamText{
+  grid-column: 1 !important;
+  justify-self: start !important;
+  text-align: left !important;
+}
+
+/* ---- RIGHT SIDE: [LOGO][NAME] (already what you want) ---- */
+.scheduleTeam.sideRight{
+  grid-template-columns: var(--schedLogoCol) var(--schedNameCol) !important;
+  justify-self: start !important;         /* anchor whole block near @ */
+}
+
+.scheduleTeam.sideRight .teamLogo{
+  grid-column: 1 !important;
+  justify-self: center !important;
+}
+
+.scheduleTeam.sideRight .scheduleTeamLink,
+.scheduleTeam.sideRight .teamText{
+  grid-column: 2 !important;
+  justify-self: start !important;
+  text-align: left !important;
+}
+
+/* Logo sizing stays stable */
+.teamLogo{
+  width: var(--schedLogoCol) !important;
+  height: var(--schedLogoCol) !important;
+  object-fit: contain !important;
+  flex: 0 0 auto !important;
+}
+
+/* Name truncation (normal, not "only 1 letter") */
+.scheduleTeamLink,
+.scheduleTeam .teamText{
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-decoration: none !important;
+}
