@@ -2427,12 +2427,12 @@ body.watermarkPage::before{
   text-align: right;
 }
 
-/* Mobile schedule: keep matchup on one row (no stacking) */
+/* Schedule mobile override: do NOT stack matchup in portrait */
 @media (max-width: 520px){
   .scheduleGameCard .scheduleMatchupGrid{
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    row-gap: 0;
-    justify-items: stretch;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    justify-items: stretch !important;
+    row-gap: 0 !important;
     column-gap: 10px;
   }
 
@@ -2446,21 +2446,21 @@ body.watermarkPage::before{
     text-align: left;
   }
 
-  /* Keep names from wrapping to two lines on mobile */
-  .scheduleGameCard .scheduleTeamLink{
-    white-space: nowrap;
-  }
-
-  /* Slightly smaller logos so names fit */
   .scheduleGameCard .teamLogo{
     width: 22px;
     height: 22px;
     border-radius: 7px;
   }
 
-  /* Keep center tight */
   .scheduleGameCard .scheduleScore{
-    min-width: 36px;
+    min-width: 34px;
     padding: 0 4px;
+  }
+
+  .scheduleGameCard .scheduleTeamLink{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 }
