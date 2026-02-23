@@ -2426,3 +2426,41 @@ body.watermarkPage::before{
   margin-top: 6px;
   text-align: right;
 }
+
+/* Mobile schedule: keep matchup on one row (no stacking) */
+@media (max-width: 520px){
+  .scheduleGameCard .scheduleMatchupGrid{
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    row-gap: 0;
+    justify-items: stretch;
+    column-gap: 10px;
+  }
+
+  .scheduleGameCard .scheduleTeam.sideLeft{
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .scheduleGameCard .scheduleTeam.sideRight{
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  /* Keep names from wrapping to two lines on mobile */
+  .scheduleGameCard .scheduleTeamLink{
+    white-space: nowrap;
+  }
+
+  /* Slightly smaller logos so names fit */
+  .scheduleGameCard .teamLogo{
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+  }
+
+  /* Keep center tight */
+  .scheduleGameCard .scheduleScore{
+    min-width: 36px;
+    padding: 0 4px;
+  }
+}
