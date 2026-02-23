@@ -280,24 +280,12 @@
             <div>${safe(g.Field) || ""}</div>
           </div>
 
-         <div class="scheduleMatchupGrid">
-
-  <!-- LEFT TEAM (name then logo, logo near @) -->
-  <div class="scheduleTeam sideLeft">
-    <a class="scheduleTeamLink" href="TEAM_LINK_LEFT">LEFT_TEAM_NAME</a>
-    <img class="teamLogo" src="LEFT_LOGO_SRC" alt="LEFT_TEAM_NAME">
-  </div>
-
-  <!-- CENTER -->
-  <div class="vsLabel">@</div>
-
-  <!-- RIGHT TEAM (logo then name, logo near @) -->
-  <div class="scheduleTeam sideRight">
-    <img class="teamLogo" src="RIGHT_LOGO_SRC" alt="RIGHT_TEAM_NAME">
-    <a class="scheduleTeamLink" href="TEAM_LINK_RIGHT">RIGHT_TEAM_NAME</a>
-  </div>
-
-</div>
+          <div class="scheduleMatchupGrid">
+            <div class="scheduleTeam sideLeft">
+              <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
+                   onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+              ${teamAnchor(aName)}
+            </div>
 
             <div class="scheduleScore">
               ${scoreText || `<span class="vsLabel">@</span>`}
@@ -405,6 +393,5 @@
 <script src="./nav.js"></script>
 </body>
 </html>
-
 
 
