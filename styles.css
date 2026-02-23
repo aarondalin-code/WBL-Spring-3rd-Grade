@@ -755,15 +755,18 @@ body.watermarkPage::before{
 .scheduleGameMeta .metaTop{ font-size: 14px; }
 .scheduleGameMeta .metaBottom{ font-size: 13px; margin-top: 6px; }
 
+/* --- Schedule matchup alignment fix (affects schedule + home snapshots) --- */
 .scheduleMatchupGrid{
   display: grid;
-  grid-template-columns: 1fr 90px 1fr;
+  grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr);
   align-items: center;
   gap: 14px;
 }
 
+/* Each side is a 2-column grid: name + logo (left) and logo + name (right)
+   This keeps ALL logos aligned with each other and ALL names aligned with each other. */
 .scheduleTeam{
-  display: flex;
+  display: grid;
   align-items: center;
   gap: 10px;
   min-width: 0;
@@ -776,21 +779,26 @@ body.watermarkPage::before{
   text-overflow: ellipsis;
 }
 
+/* Left side: NAME column + LOGO column (logo nearest the @) */
 .scheduleTeam.sideLeft{
-  justify-content: flex-end;
+  grid-template-columns: minmax(0, 1fr) 30px;
+  justify-items: end;
   text-align: right;
 }
 
+/* Right side: LOGO column + NAME column (logo nearest the @) */
 .scheduleTeam.sideRight{
-  justify-content: flex-start;
+  grid-template-columns: 30px minmax(0, 1fr);
+  justify-items: start;
   text-align: left;
 }
 
+/* Make sure the logo is always the fixed-width aligned column */
 .teamLogo{
   width: 30px;
   height: 30px;
   object-fit: contain;
-  flex: 0 0 auto;
+  flex: 0 0 auto; /* harmless for grid, but fine to keep */
 }
 
 .scheduleScore{
@@ -816,10 +824,14 @@ body.watermarkPage::before{
   background: rgba(37,99,235,.05);
 }
 
+/* Ensure link/text truncation behaves predictably */
 .scheduleTeamLink{
-  text-decoration: none;
-  font-weight: 950;
-  color: #0f172a; /* overridden inline if TeamColor exists */
+  min-width: 0;
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .scheduleTeamLink:hover{
