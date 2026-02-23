@@ -2255,3 +2255,41 @@ body.watermarkPage::before{
   box-shadow: 0 10px 22px rgba(0,0,0,.08);
   border-color: var(--team-accent, rgba(30,63,168,.55));
 }
+/* =========================
+   MOBILE ONLY: index header fixes + hamburger spacing
+   (safe — does not affect desktop)
+========================= */
+
+@media (max-width: 820px){
+
+  /* 1) Hamburger lines closer together */
+  .navToggle span{
+    margin: 4px 10px;   /* tighter than original 6px */
+  }
+
+  /* 2) Home snapshot headers:
+        Stack title + pill and center them */
+  .homeSectionHead{
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* center everything */
+    justify-content: flex-start;
+    gap: 8px;
+    position: static;         /* cancels absolute positioning */
+    text-align: center;
+  }
+
+  .homeSectionHead h3{
+    width: auto;
+    text-align: center;
+  }
+
+  .homeSectionHead .linkPill{
+    position: static;
+    right: auto;
+    top: auto;
+    transform: none;
+    display: inline-flex;
+    align-self: center;       /* center the pill */
+  }
+}
