@@ -2309,3 +2309,77 @@ body.watermarkPage::before{
     padding: 0;
   }
 }
+/* =========================
+   Matchup row layout (Schedule + Home snapshot)
+   Keeps: [Team A]  [@/score]  [Team B] on ONE ROW (desktop)
+========================= */
+
+.scheduleMatchupGrid{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 14px;
+}
+
+.scheduleTeam{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0; /* allows ellipsis instead of pushing layout */
+}
+
+.scheduleTeam.sideLeft{
+  justify-content: flex-end;
+}
+
+.scheduleTeam.sideRight{
+  justify-content: flex-start;
+}
+
+/* Force logo + name to behave like one unit and not wrap weirdly */
+.scheduleTeamLink{
+  display: inline-block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.teamLogo{
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+/* Center column (@ or score) */
+.scheduleScore{
+  text-align: center;
+  font-weight: 950;
+  min-width: 56px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vsLabel{
+  font-weight: 950;
+}
+
+/* Mobile: stack cleanly */
+@media (max-width: 520px){
+  .scheduleMatchupGrid{
+    grid-template-columns: 1fr;
+    row-gap: 8px;
+    justify-items: center;
+  }
+
+  .scheduleTeam.sideLeft,
+  .scheduleTeam.sideRight{
+    justify-content: center;
+  }
+
+  .scheduleScore{
+    min-width: 0;
+  }
+}
