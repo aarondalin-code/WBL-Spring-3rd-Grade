@@ -416,7 +416,6 @@ function renderScheduleCard(g){
   const hasScores = safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "";
   const scoreText = (final && hasScores) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "@";
 
-  // Small card anchors (avoid scheduleTeamLink styling dependencies)
   function miniTeamLink(teamName){
     const name = safe(teamName) || "TBD";
     const m = getMeta(name);
@@ -428,30 +427,30 @@ function renderScheduleCard(g){
   return `
     <div class="miniGameCard">
       <div class="miniGameMeta muted small">
-        <strong>${safe(g.Time) || ""}</strong> ${safe(g.Field) ? `• ${safe(g.Field)}` : ""}
+        <strong>${safe(g.Time) || ""}</strong>
+        ${safe(g.Field) ? ` • ${safe(g.Field)}` : ""}
       </div>
 
-      <div class="miniGameBody">
-        <div class="miniTeams">
-          <div class="miniTeamRow">
-            <img class="teamLogoMini" src="${aMeta.logo}" alt="${aName} logo"
-                 onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-            ${miniTeamLink(aName)}
-          </div>
-
-          <div class="miniTeamRow">
-            <img class="teamLogoMini" src="${bMeta.logo}" alt="${bName} logo"
-                 onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-            ${miniTeamLink(bName)}
-          </div>
+      <div class="miniMatchupRow">
+        <div class="miniTeamSide miniTeamLeft">
+          <img class="teamLogoMini" src="${aMeta.logo}" alt="${aName} logo"
+               onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+          ${miniTeamLink(aName)}
         </div>
 
-        <div class="miniRight">
-          <div class="miniScore" style="font-weight:950;">${scoreText}</div>
-          <div class="miniStatus muted small">
-            ${final ? "Final" : (safe(g.Status) || "Scheduled")}
-          </div>
+        <div class="miniMid">
+          <div class="miniScore">${scoreText}</div>
         </div>
+
+        <div class="miniTeamSide miniTeamRight">
+          <img class="teamLogoMini" src="${bMeta.logo}" alt="${bName} logo"
+               onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+          ${miniTeamLink(bName)}
+        </div>
+      </div>
+
+      <div class="miniStatus muted small">
+        ${final ? "Final" : (safe(g.Status) || "Scheduled")}
       </div>
     </div>
   `;
