@@ -755,88 +755,7 @@ body.watermarkPage::before{
 .scheduleGameMeta .metaTop{ font-size: 14px; }
 .scheduleGameMeta .metaBottom{ font-size: 13px; margin-top: 6px; }
 
-/* --- Schedule matchup alignment fix (affects schedule + home snapshots) --- */
-.scheduleMatchupGrid{
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr);
-  align-items: center;
-  gap: 14px;
-}
 
-/* Each side is a 2-column grid: name + logo (left) and logo + name (right)
-   This keeps ALL logos aligned with each other and ALL names aligned with each other. */
-.scheduleTeam{
-  display: grid;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.scheduleTeam .teamText{
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Left side: NAME column + LOGO column (logo nearest the @) */
-.scheduleTeam.sideLeft{
-  grid-template-columns: minmax(0, 1fr) 30px;
-  justify-items: end;
-  text-align: right;
-}
-
-/* Right side: LOGO column + NAME column (logo nearest the @) */
-.scheduleTeam.sideRight{
-  grid-template-columns: 30px minmax(0, 1fr);
-  justify-items: start;
-  text-align: left;
-}
-
-/* Make sure the logo is always the fixed-width aligned column */
-.teamLogo{
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-  flex: 0 0 auto; /* harmless for grid, but fine to keep */
-}
-
-.scheduleScore{
-  text-align: center;
-  font-weight: 950;
-  font-size: 18px;
-  letter-spacing: .02em;
-}
-
-.vsLabel{
-  color: var(--muted);
-  font-weight: 800;
-  font-size: 14px;
-}
-
-.scheduleStatus{
-  text-align: right;
-  font-weight: 800;
-  color: var(--muted);
-}
-
-.finalGame{
-  background: rgba(37,99,235,.05);
-}
-
-/* Ensure link/text truncation behaves predictably */
-.scheduleTeamLink{
-  min-width: 0;
-  display: inline-block;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.scheduleTeamLink:hover{
-  color: var(--royal);
-}
 
 /* Filters (keep) */
 .scheduleFilters{
@@ -2304,4 +2223,99 @@ body.watermarkPage::before{
     display: inline-flex;
     align-self: center;       /* center the pill */
   }
+}
+/* =========================================================
+   MATCHUP ALIGNMENT (Schedule + Home schedule snapshots)
+   Goals:
+   - Logos aligned near the @ (both sides)
+   - LEFT team names: first letters aligned (like a column)
+   - More breathing room so left names don’t get chopped
+========================================================= */
+
+:root{
+  --schedLogo: 30px;
+  --schedName: 220px;   /* adjust 200–240 if needed */
+  --schedMid: 34px;     /* width of the @ column */
+}
+
+.scheduleMatchupGrid{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--schedMid) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;            /* a bit tighter than 14 */
+}
+
+/* base */
+.scheduleTeam{
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* LEFT SIDE:
+   Fixed name gutter, LEFT-aligned text
+   Logo stays closest to the @ (right edge of left block)
+*/
+.scheduleTeam.sideLeft{
+  grid-template-columns: var(--schedName) var(--schedLogo); /* NAME | LOGO */
+  justify-content: end;         /* keep logo pinned near @ */
+  justify-items: start;         /* name text starts at same x for every row */
+  text-align: left;             /* first letters align */
+}
+
+/* RIGHT SIDE:
+   Logo stays closest to the @ (left edge of right block)
+*/
+.scheduleTeam.sideRight{
+  grid-template-columns: var(--schedLogo) var(--schedName); /* LOGO | NAME */
+  justify-content: start;
+  justify-items: start;
+  text-align: left;
+}
+
+/* Logo never changes size */
+.teamLogo{
+  width: var(--schedLogo);
+  height: var(--schedLogo);
+  object-fit: contain;
+}
+
+/* Make the name occupy the full name gutter so alignment is real */
+.scheduleTeamLink{
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+.scheduleTeamLink:hover{
+  color: var(--royal);
+}
+
+/* If your markup has a wrapper, keep it harmless */
+.scheduleTeam .teamText{
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The @ stays centered and doesn’t steal room */
+.vsLabel{
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Mobile tuning */
+@media (max-width: 520px){
+  :root{
+    --schedName: 170px;
+    --schedMid: 28px;
+  }
+  .scheduleMatchupGrid{ gap: 10px; }
 }
