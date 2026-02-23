@@ -755,7 +755,14 @@ body.watermarkPage::before{
 .scheduleGameMeta .metaTop{ font-size: 14px; }
 .scheduleGameMeta .metaBottom{ font-size: 13px; margin-top: 6px; }
 
-/* --- Schedule matchup alignment fix (affects schedule + home snapshots) --- */
+/* --- Schedule matchup alignment (Schedule page + Home snapshot cards) --- */
+
+/* Tweak this number if needed:
+   It controls the fixed “name gutter” width so left names all start aligned. */
+:root{
+  --schedNameCol: 190px; /* try 180–220 depending on your longest names */
+}
+
 .scheduleMatchupGrid{
   display: grid;
   grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr);
@@ -765,6 +772,7 @@ body.watermarkPage::before{
 
 /* Each side is a 2-column grid: name + logo (left) and logo + name (right)
    This keeps ALL logos aligned with each other and ALL names aligned with each other. */
+
 .scheduleTeam{
   display: grid;
   align-items: center;
@@ -779,17 +787,21 @@ body.watermarkPage::before{
   text-overflow: ellipsis;
 }
 
-/* Left side: NAME column + LOGO column (logo nearest the @) */
+/* LEFT SIDE (the one you care about):
+   Fixed-width NAME column + fixed LOGO column.
+   The whole block is right-anchored near the @, but the NAME text is left-aligned
+   so the FIRST LETTER lines up for every row. */
 .scheduleTeam.sideLeft{
-  grid-template-columns: minmax(0, 1fr) 30px;
-  justify-items: end;
-  text-align: right;
+  grid-template-columns: var(--schedNameCol) 30px; /* NAME | LOGO (logo near @) */
+  justify-content: end;            /* keeps logo close to the @ consistently */
+  text-align: left;                /* IMPORTANT: first letters align */
 }
 
-/* Right side: LOGO column + NAME column (logo nearest the @) */
+/* RIGHT SIDE:
+   Keep logo near the @ as well, fixed width name gutter for consistency. */
 .scheduleTeam.sideRight{
-  grid-template-columns: 30px minmax(0, 1fr);
-  justify-items: start;
+  grid-template-columns: 30px var(--schedNameCol); /* LOGO | NAME */
+  justify-content: start;
   text-align: left;
 }
 
@@ -798,7 +810,6 @@ body.watermarkPage::before{
   width: 30px;
   height: 30px;
   object-fit: contain;
-  flex: 0 0 auto; /* harmless for grid, but fine to keep */
 }
 
 .scheduleScore{
@@ -824,8 +835,11 @@ body.watermarkPage::before{
   background: rgba(37,99,235,.05);
 }
 
-/* Ensure link/text truncation behaves predictably */
+/* Make sure links never show underline */
 .scheduleTeamLink{
+  text-decoration: none !important;
+  font-weight: 950;
+  color: #0f172a; /* your inline TeamColor can still override */
   min-width: 0;
   display: inline-block;
   max-width: 100%;
