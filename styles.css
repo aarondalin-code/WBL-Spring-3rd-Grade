@@ -2293,3 +2293,65 @@ body.watermarkPage::before{
     align-self: center;       /* center the pill */
   }
 }
+/* =========================================================
+   SCHEDULE + HOME SNAPSHOT MATCHUP ALIGNMENT FIX
+   Anchor both sides on the logo column (prevents "wobble")
+   Applies to:
+     - schedule.html cards
+     - index.html snapshot cards (same classes)
+========================================================= */
+
+/* Keep your matchup grid the same */
+.scheduleMatchupGrid{
+  display: grid;
+  grid-template-columns: 1fr 90px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Make each team block a 2-column grid: [logo][name] */
+.scheduleTeam{
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Left side: right-align the whole block, but keep logo BEFORE name */
+.scheduleTeam.sideLeft{
+  justify-content: end;     /* anchors the block consistently */
+  text-align: right;
+}
+
+/* Right side: normal left alignment */
+.scheduleTeam.sideRight{
+  justify-content: start;
+  text-align: left;
+}
+
+/* Logos: fixed size + stable placement */
+.teamLogo{
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  justify-self: center;
+}
+
+/* Team link/text: stable truncation */
+.scheduleTeamLink{
+  display: inline-block;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* If you have any wrappers like .teamText, ensure they don’t interfere */
+.scheduleTeam .teamText{
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
