@@ -2355,3 +2355,67 @@ body.watermarkPage::before{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* =========================================================
+   MATCHUP ALIGNMENT FIX (Schedule + Home snapshots)
+   Goal:
+   - Left side: [Team Name][Logo] as one unit, right-aligned to the @
+   - Right side: [Logo][Team Name] as one unit, left-aligned from the @
+   - No wobble as names vary in length
+========================================================= */
+
+.scheduleMatchupGrid{
+  display: grid;
+  grid-template-columns: 1fr 90px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Base team row = inline-flex so logo+name stay together */
+.scheduleTeam{
+  display: inline-flex;       /* keeps logo+name as one unit */
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* LEFT side: keep unit near the @ and mirror the order (name then logo) */
+.scheduleTeam.sideLeft{
+  justify-self: end;          /* park the whole unit against the @ column */
+  flex-direction: row-reverse;/* puts logo on the inside (near @) */
+  text-align: right;
+}
+
+/* RIGHT side: keep unit near the @ (logo then name) */
+.scheduleTeam.sideRight{
+  justify-self: start;        /* park the whole unit against the @ column */
+  flex-direction: row;        /* logo then name */
+  text-align: left;
+}
+
+/* Logo fixed size */
+.teamLogo{
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+/* Name truncation */
+.scheduleTeamLink{
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* If present in any markup, keep teamText from forcing weird widths */
+.scheduleTeam .teamText{
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
