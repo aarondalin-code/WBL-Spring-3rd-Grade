@@ -244,11 +244,11 @@
           </div>
 
           <div class="scheduleMatchupGrid">
-          <div class="scheduleTeam sideLeft">
-  <a class="scheduleTeamLink" href="team.html?id=Cubs">Cubs</a>
-  <img class="teamLogo" src="..." alt="Cubs">
+<div class="scheduleTeam sideLeft">
+  <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
+       onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+  ${teamAnchor(aName)}
 </div>
-
             <div class="scheduleScore">
               ${scoreText || `<span class="vsLabel">@</span>`}
             </div>
