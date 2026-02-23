@@ -2225,97 +2225,68 @@ body.watermarkPage::before{
 }
 
 /* =========================================================
-   SCHEDULE + HOME SCHEDULE SNAPSHOT (if it uses same classes)
-   FIX: Left names + left logos aligned (like right side)
-   - Left side becomes:  [NAME (fixed col)][LOGO]
-   - Right side stays:   [LOGO][NAME (fixed col)]
-   - Left name text is LEFT-aligned inside its fixed column
-     so first letters line up (Cubs "C" aligns with Nationals "N")
+   MATCHUP ALIGNMENT (Schedule page + Home snapshot)
+   - Left names start at same x-position (C aligns with N in Nationals)
+   - Left logos aligned and stay next to @
+   - Right side unchanged (logo near @, name after)
 ========================================================= */
 
 :root{
-  --schedLogoCol: 30px;
-  --schedNameCol: 220px;   /* desktop width for team names */
-  --schedGap: 10px;
+  --schedLogo: 30px;
+  --schedName: 220px; /* adjust if needed; should fit "Nationals" comfortably */
 }
 
-@media (max-width: 820px){
-  :root{
-    --schedNameCol: 160px; /* mobile width for team names */
-  }
-}
-
-/* Keep the matchup grid as 3 columns (left / @-score / right) */
 .scheduleMatchupGrid{
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr) !important;
-  align-items: center !important;
-  gap: 14px !important;
+  display: grid;
+  grid-template-columns: 1fr 90px 1fr;
+  align-items: center;
+  gap: 14px;
 }
 
-/* Team blocks become 2-col grids (we control name+logo alignment inside) */
 .scheduleTeam{
-  display: grid !important;
-  align-items: center !important;
-  gap: var(--schedGap) !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-/* ---- LEFT SIDE: [NAME][LOGO] ---- */
+/* LEFT = NAME | LOGO */
 .scheduleTeam.sideLeft{
-  grid-template-columns: var(--schedNameCol) var(--schedLogoCol) !important;
-  justify-self: end !important;           /* anchor whole block near @ */
+  grid-template-columns: var(--schedName) var(--schedLogo);
+  justify-content: end;
+  justify-items: start;
+  text-align: left;
 }
 
-/* Put logo in the inside column (near @) */
-.scheduleTeam.sideLeft .teamLogo{
-  grid-column: 2 !important;
-  justify-self: center !important;
-}
-
-/* Put name in the fixed name column and LEFT-align it */
-.scheduleTeam.sideLeft .scheduleTeamLink,
-.scheduleTeam.sideLeft .teamText{
-  grid-column: 1 !important;
-  justify-self: start !important;
-  text-align: left !important;
-}
-
-/* ---- RIGHT SIDE: [LOGO][NAME] (already what you want) ---- */
+/* RIGHT = LOGO | NAME */
 .scheduleTeam.sideRight{
-  grid-template-columns: var(--schedLogoCol) var(--schedNameCol) !important;
-  justify-self: start !important;         /* anchor whole block near @ */
+  grid-template-columns: var(--schedLogo) var(--schedName);
+  justify-content: start;
+  justify-items: start;
+  text-align: left;
 }
 
-.scheduleTeam.sideRight .teamLogo{
-  grid-column: 1 !important;
-  justify-self: center !important;
-}
-
-.scheduleTeam.sideRight .scheduleTeamLink,
-.scheduleTeam.sideRight .teamText{
-  grid-column: 2 !important;
-  justify-self: start !important;
-  text-align: left !important;
-}
-
-/* Logo sizing stays stable */
 .teamLogo{
-  width: var(--schedLogoCol) !important;
-  height: var(--schedLogoCol) !important;
-  object-fit: contain !important;
-  flex: 0 0 auto !important;
+  width: var(--schedLogo);
+  height: var(--schedLogo);
+  object-fit: contain;
+  display: block;
 }
 
-/* Name truncation (normal, not "only 1 letter") */
-.scheduleTeamLink,
-.scheduleTeam .teamText{
-  display: block !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  text-decoration: none !important;
+.scheduleTeamLink{
+  display: block;
+  line-height: 1.1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+@media (max-width: 520px){
+  :root{ --schedName: 170px; }
+  .scheduleMatchupGrid{
+    grid-template-columns: 1fr 70px 1fr;
+    gap: 10px;
+  }
 }
