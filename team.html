@@ -378,41 +378,122 @@
   // -----------------------------
   // Init
   // -----------------------------
-  (async function init(){
-    const slug = safe(getParam("team"));
-    if (!slug) {
-      alert("Missing team parameter.");
+(async function init(){
+  const slug = safe(getParam("team"));
+  if (!slug) {
+    alert("Missing team parameter.");
+    window.location.href = "./teams.html";
+    return;
+  }
+
+  try {
+    // Load teams CSV and locate this team
+    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+    const teamRows = parseCsv(teamsCsv);
+
+    const teamRow = teamRows.find(r => safe(r.TeamSlug) === slug);
+    if (!teamRow) {
+      alert("Team not found. Check TeamSlug in your Teams tab.");
       window.location.href = "./teams.html";
       return;
     }
 
-    try {
-      // Load teams CSV and locate this team
-      const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-      const teamRows = parseCsv(teamsCsv);
+    setHeaderFromTeamRow(teamRow);
+    const teamDisplayName = safe(teamRow.TeamName) || slug;
 
-      const teamRow = teamRows.find(r => safe(r.TeamSlug) === slug);
-      if (!teamRow) {
-        alert("Team not found. Check TeamSlug in your Teams tab.");
-        window.location.href = "./teams.html";
-        return;
-      }
+    // Load roster
+    const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
+    const rosterRows = parseCsv(rosterCsv);
+    const players = rosterRows.filter(r => safe(r.TeamSlug) === slug);
+    buildRosterGrid(players, teamDisplayName);
 
-      setHeaderFromTeamRow(teamRow);
-      const teamDisplayName = safe(teamRow.TeamName) || slug;
+    // -----------------------
+    // Calendar integration
+    // -----------------------
 
-      // Load roster CSV and filter by TeamSlug
-      const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
-      const rosterRows = parseCsv(rosterCsv);
+    const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
+    const gameRows = parseCsv(gamesCsv);
 
-      const players = rosterRows.filter(r => safe(r.TeamSlug) === slug);
-      buildRosterGrid(players, teamDisplayName);
+    const teamGames = gameRows.filter(g =>
+      safe(g.TeamA) === teamDisplayName ||
+      safe(g.TeamB) === teamDisplayName
+    );
 
-    } catch (err) {
-      console.error(err);
-      alert("Team page error: check TEAMS_CSV_URL / ROSTER_CSV_URL in data.js and confirm your CSV headers.");
+    function formatICSDate(dateStr, timeStr){
+      const date = new Date(`${dateStr} ${timeStr}`);
+      const pad = n => String(n).padStart(2,"0");
+
+      return (
+        date.getUTCFullYear() +
+        pad(date.getUTCMonth()+1) +
+        pad(date.getUTCDate()) + "T" +
+        pad(date.getUTCHours()) +
+        pad(date.getUTCMinutes()) +
+        "00Z"
+      );
     }
-  })();
+
+    function generateTeamICS(teamName, games){
+      const now = new Date();
+      const stamp = now.toISOString().replace(/[-:]/g,"").split(".")[0] + "Z";
+
+      let ics = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//WBL 3rd Grade 2026//Team Schedule//EN"
+      ];
+
+      games.forEach(g => {
+        if (!g.Date || !g.Time) return;
+
+        const start = formatICSDate(g.Date, g.Time);
+
+        const endDate = new Date(new Date(`${g.Date} ${g.Time}`).getTime() + 90*60000);
+        const pad = n => String(n).padStart(2,"0");
+        const end =
+          endDate.getUTCFullYear() +
+          pad(endDate.getUTCMonth()+1) +
+          pad(endDate.getUTCDate()) + "T" +
+          pad(endDate.getUTCHours()) +
+          pad(endDate.getUTCMinutes()) +
+          "00Z";
+
+        const opponent = (g.TeamA === teamName) ? g.TeamB : g.TeamA;
+
+        ics.push(
+          "BEGIN:VEVENT",
+          `UID:${teamName}-${g.Date}-${g.Time}@wbl2026`,
+          `DTSTAMP:${stamp}`,
+          `DTSTART:${start}`,
+          `DTEND:${end}`,
+          `SUMMARY:${teamName} vs ${opponent}`,
+          `LOCATION:${g.Field || ""}`,
+          "END:VEVENT"
+        );
+      });
+
+      ics.push("END:VCALENDAR");
+      return ics.join("\r\n");
+    }
+
+    const calBtn = document.getElementById("addCalendarBtn");
+    if (calBtn){
+      calBtn.addEventListener("click", () => {
+        const icsContent = generateTeamICS(teamDisplayName, teamGames);
+        const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${teamDisplayName}-WBL-2026-Schedule.ics`;
+        link.click();
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Team page error: check CSV URLs in data.js.");
+  }
+})();
 </script>
 
 <script src="./nav.js"></script>
