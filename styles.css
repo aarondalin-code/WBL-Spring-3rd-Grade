@@ -755,6 +755,76 @@ body.watermarkPage::before{
 .scheduleGameMeta .metaTop{ font-size: 14px; }
 .scheduleGameMeta .metaBottom{ font-size: 13px; margin-top: 6px; }
 
+/* =========================
+   Schedule matchup layout (desktop-first, safe for home snapshot too)
+   Keeps logo + team name together on each side of @/score
+========================= */
+
+.scheduleMatchupGrid{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-width: 0; /* critical: allows ellipsis instead of clipping */
+}
+
+.scheduleTeam{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0; /* critical for text-overflow inside */
+}
+
+.teamLogo{
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.scheduleTeamLink{
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  font-weight: 950;
+  text-decoration: none;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Left side: align toward the center, keep name closest to @/score */
+.scheduleTeam.sideLeft{
+  justify-content: flex-end;
+  text-align: right;
+  flex-direction: row-reverse; /* puts link nearest the center */
+}
+
+/* Right side: normal flow (logo then name), aligned toward the center */
+.scheduleTeam.sideRight{
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.scheduleScore{
+  font-weight: 950;
+  text-align: center;
+  min-width: 64px; /* keeps @/score column stable */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Optional: make the @ read nicely like a pill */
+.vsLabel{
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-weight: 950;
+}
+
+
 
 
 /* Filters (keep) */
