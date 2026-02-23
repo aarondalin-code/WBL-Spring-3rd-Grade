@@ -2224,4 +2224,98 @@ body.watermarkPage::before{
   }
 }
 
+/* =========================================================
+   MATCHUP ALIGNMENT (Schedule page + Home snapshot cards)
+   Goals:
+   - Logos stay aligned with each other (next to the @)
+   - Left team NAME first letters align (left-justified name column)
+   - Left side logo position does NOT move
+   - Right side stays as-is (logo near @, name to the right)
+   - Works on desktop + mobile
+========================================================= */
 
+/* 3-column matchup grid: left team | @/score | right team */
+.scheduleMatchupGrid{
+  display: grid;
+  grid-template-columns: 1fr 90px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Shared sizing variables (safe) */
+:root{
+  --schedLogo: 30px;
+  --schedName: 200px; /* width of the name "gutter" — make 200-230 if needed */
+}
+
+/* Base team block: 2-column grid so logos + names align consistently */
+.scheduleTeam{
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* LEFT side:
+   - Logo stays closest to the @ (on the right of the left block)
+   - Name column is fixed width and LEFT-aligned => first letters line up
+   - Whole block is anchored to the @ column */
+.scheduleTeam.sideLeft{
+  grid-template-columns: var(--schedName) var(--schedLogo); /* NAME | LOGO */
+  justify-content: end;            /* anchor block against the @ column */
+  justify-items: start;            /* name text starts at same x-position */
+  text-align: left;                /* key: first letters align */
+}
+
+/* RIGHT side:
+   - Logo stays closest to the @ (on the left of the right block)
+   - Name column fixed width for symmetry */
+.scheduleTeam.sideRight{
+  grid-template-columns: var(--schedLogo) var(--schedName); /* LOGO | NAME */
+  justify-content: start;          /* anchor block against the @ column */
+  justify-items: start;
+  text-align: left;
+}
+
+/* Logo: fixed size, never stretches */
+.teamLogo{
+  width: var(--schedLogo);
+  height: var(--schedLogo);
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+/* Ensure the clickable team name behaves and doesn't collapse weirdly */
+.scheduleTeamLink{
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+.scheduleTeamLink:hover{
+  color: var(--royal);
+}
+
+/* If schedule markup includes a .teamText wrapper, keep it from forcing width */
+.scheduleTeam .teamText{
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mobile: give names a bit more room, shrink center gap slightly */
+@media (max-width: 520px){
+  :root{
+    --schedName: 170px;
+  }
+  .scheduleMatchupGrid{
+    grid-template-columns: 1fr 70px 1fr;
+    gap: 10px;
+  }
+}
