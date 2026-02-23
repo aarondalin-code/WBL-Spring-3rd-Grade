@@ -2383,3 +2383,46 @@ body.watermarkPage::before{
     min-width: 0;
   }
 }
+/* Home snapshot: side-by-side matchup inside miniGameCard */
+.miniMatchupRow{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+  min-width: 0;
+}
+
+.miniTeamSide{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.miniTeamLeft{ justify-content: flex-start; }
+.miniTeamRight{ justify-content: flex-end; }
+
+.miniTeamSide .miniTeamName{
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miniMid{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+}
+
+.miniScore{
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+}
+
+.miniStatus{
+  margin-top: 6px;
+  text-align: right;
+}
