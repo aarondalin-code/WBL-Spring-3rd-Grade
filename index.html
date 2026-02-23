@@ -406,51 +406,57 @@ function updateCountdown(){
       const style = m.color ? `style="color:${m.color}"` : "";
       return `<a class="scheduleTeamLink" ${style} href="${href}">${name}</a>`;
     }
+function renderScheduleCard(g){
+  const aName = safe(g.TeamA);
+  const bName = safe(g.TeamB);
+  const aMeta = getMeta(aName);
+  const bMeta = getMeta(bName);
 
-    /* -------------------- Schedule snapshot cards (match schedule.html) -------------------- */
-    function renderScheduleCard(g){
-      const aName = safe(g.TeamA);
-      const bName = safe(g.TeamB);
-      const aMeta = getMeta(aName);
-      const bMeta = getMeta(bName);
+  const final = isFinal(g.Status);
+  const hasScores = safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "";
+  const scoreText = (final && hasScores) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "@";
 
-      const final = isFinal(g.Status);
-      const hasScores = safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "";
-      const scoreText = (final && hasScores) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "";
+  // Small card anchors (avoid scheduleTeamLink styling dependencies)
+  function miniTeamLink(teamName){
+    const name = safe(teamName) || "TBD";
+    const m = getMeta(name);
+    const href = teamHref(name);
+    const style = m.color ? `style="color:${m.color}"` : "";
+    return `<a class="miniTeamName" ${style} href="${href}">${name}</a>`;
+  }
 
-      const classes = `scheduleGameCard${final ? " finalGame" : ""}`;
+  return `
+    <div class="miniGameCard">
+      <div class="miniGameMeta muted small">
+        <strong>${safe(g.Time) || ""}</strong> ${safe(g.Field) ? `• ${safe(g.Field)}` : ""}
+      </div>
 
-      return `
-        <div class="${classes}">
-          <div class="scheduleGameMeta">
-            <div>${safe(g.Time) || ""}</div>
-            <div>${safe(g.Field) || ""}</div>
+      <div class="miniGameBody">
+        <div class="miniTeams">
+          <div class="miniTeamRow">
+            <img class="teamLogoMini" src="${aMeta.logo}" alt="${aName} logo"
+                 onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+            ${miniTeamLink(aName)}
           </div>
 
-          <div class="scheduleMatchupGrid">
-            <div class="scheduleTeam sideLeft">
-  ${teamAnchor(aName)}
-  <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
-       onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-</div>
-
-            <div class="scheduleScore">
-              ${scoreText || `<span class="vsLabel">@</span>`}
-            </div>
-
-            <div class="scheduleTeam sideRight">
-              <img class="teamLogo" src="${bMeta.logo}" alt="${bName} logo"
-                   onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-              ${teamAnchor(bName)}
-            </div>
-          </div>
-
-          <div class="scheduleStatus">
-            ${final ? `<span class="pillFinal">Final</span>` : (safe(g.Status) || "Scheduled")}
+          <div class="miniTeamRow">
+            <img class="teamLogoMini" src="${bMeta.logo}" alt="${bName} logo"
+                 onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+            ${miniTeamLink(bName)}
           </div>
         </div>
-      `;
-    }
+
+        <div class="miniRight">
+          <div class="miniScore" style="font-weight:950;">${scoreText}</div>
+          <div class="miniStatus muted small">
+            ${final ? "Final" : (safe(g.Status) || "Scheduled")}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 
     /* -------------------- Standings calcs -------------------- */
     function toNum(x){
