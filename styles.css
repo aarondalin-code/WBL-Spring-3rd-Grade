@@ -2516,3 +2516,32 @@ body.watermarkPage::before{
     justify-content:center;
   }
 }
+/* Team page calendar button (safe version) */
+
+.teamCalendarBtn{
+  padding:6px 12px;
+  font-size:14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+}
+
+/* Mobile: turn into square icon without changing layout structure */
+@media (max-width:520px){
+
+  .teamCalendarBtn{
+    width:44px;
+    height:44px;
+    padding:0;
+    font-size:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .teamCalendarBtn::after{
+    content:"📅";
+    font-size:22px;
+  }
+}
