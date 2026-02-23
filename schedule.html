@@ -243,23 +243,23 @@
             <div>${safe(g.Field) || ""}</div>
           </div>
 
-          <div class="scheduleMatchupGrid">
-<div class="scheduleTeam sideLeft">
-  <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
-       onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-  ${teamAnchor(aName)}
+<div class="scheduleMatchupGrid">
+  <div class="scheduleTeam sideLeft">
+    ${teamAnchor(aName)}
+    <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
+         onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+  </div>
+
+  <div class="scheduleScore">
+    ${scoreText || `<span class="vsLabel">@</span>`}
+  </div>
+
+  <div class="scheduleTeam sideRight">
+    <img class="teamLogo" src="${bMeta.logo}" alt="${bName} logo"
+         onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+    ${teamAnchor(bName)}
+  </div>
 </div>
-            <div class="scheduleScore">
-              ${scoreText || `<span class="vsLabel">@</span>`}
-            </div>
-
-            <div class="scheduleTeam sideRight">
-              <img class="teamLogo" src="${bMeta.logo}" alt="${bName} logo"
-                   onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-              ${teamAnchor(bName)}
-            </div>
-          </div>
-
           <div class="scheduleStatus">
             ${final ? `<span class="pillFinal">Final</span>` : (safe(g.Status) || "Scheduled")}
           </div>
