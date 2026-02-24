@@ -158,47 +158,78 @@
       </details>
 
       <!-- PLAYOFFS -->
-      <details class="rulesAcc">
-        <summary class="rulesAccSummary">
-          <div class="rulesAccIcon">🏆</div>
-          <div class="rulesAccText">
-            <span class="rulesAccTitle">Playoffs</span>
-            <span class="rulesAccSub">Seeding, format, tie-breakers</span>
-          </div>
-          <div class="rulesAccChevron">⌄</div>
-        </summary>
-        <div class="rulesAccBody">
+<details class="rulesAcc">
+  <summary class="rulesAccSummary">
+    <span class="rulesAccIcon">🏆</span>
+    <span class="rulesAccText">
+      <span class="rulesAccTitle">Playoffs & Consolation</span>
+      <span class="rulesAccSub muted">Bracket format and seeding</span>
+    </span>
+    <span class="rulesAccChevron" aria-hidden="true">▾</span>
+  </summary>
 
-          <!-- Your 2 bullets added here -->
-          <div class="ruleCardElite ruleImportantElite">
-            <div class="ruleTitleElite">Format</div>
-            <div class="ruleBodyElite">
-              <ul>
-                <li><strong>Top 6 make it</strong>, with <strong>top 2 seeds getting a 1st round bye</strong></li>
-                <li><strong>Consolation games</strong> for seeds <strong>7–10</strong></li>
-              </ul>
-            </div>
-          </div>
+  <div class="rulesAccBody">
+    <div class="ruleCardElite ruleImportantElite">
+      <div class="ruleTitleElite">Championship Bracket</div>
+      <div class="ruleBodyElite">
+        <ul style="margin:0 0 10px 18px;">
+          <li><strong>Top 6 make it</strong>, with <strong>top 2 seeds getting a 1st round bye</strong>.</li>
+        </ul>
 
-          <!-- Keep tie-breakers (do NOT delete these again) -->
-          <div class="ruleCardElite">
-            <div class="ruleTitleElite">Standings Tie-Breakers (for seeding)</div>
-            <div class="ruleBodyElite">
-              <ul>
-                <li>Head-to-head (if applicable)</li>
-                <li>Record vs common opponents (if applicable)</li>
-                <li>Runs allowed (lower is better)</li>
-                <li>Run differential (if used, should be capped per game)</li>
-                <li>Coin flip / commissioner decision if still tied</li>
-              </ul>
-              <div class="muted small" style="margin-top:8px;">
-                Note: If you have a specific official tie-break order you want, paste it and I’ll swap this list 1:1.
-              </div>
-            </div>
-          </div>
+        Top 6 make championship playoffs. Seeds 1–2 receive byes.<br>
+        Round 1: Seed 3 vs 6; Seed 4 vs 5.<br>
+        Semis: Winner(4/5) plays Seed 1; Winner(3/6) plays Seed 2.<br>
+        Championship: Winners of semis.
+      </div>
+    </div>
 
-        </div>
-      </details>
+    <div class="ruleCardElite">
+      <div class="ruleTitleElite">Consolation Bracket</div>
+      <div class="ruleBodyElite">
+        <ul style="margin:0 0 10px 18px;">
+          <li><strong>Consolation games</strong> for seeds <strong>7–10</strong>.</li>
+        </ul>
+
+        Seeds 7–10 (Round 1: 7v10, 8v9; plus follow-on games per your bracket).
+      </div>
+    </div>
+
+    <!-- KEEP THIS EXACTLY (DO NOT EDIT) -->
+    <div class="ruleCardElite">
+      <div class="ruleTitleElite">Playoff Tie Breaker Rules</div>
+      <div class="ruleBodyElite">
+        Seeding for playoffs is determined using the following tiebreakers, in order:
+        <ol style="margin-top:8px;">
+          <li>
+            <strong>Winning Percentage (Win%).</strong>
+            (Wins + 0.5 × Ties) ÷ (Wins + Losses + Ties).
+          </li>
+          <li>
+            <strong>Head-to-Head (two-team tie only).</strong>
+            If exactly two teams are tied in Win%, the higher seed goes to the team that won the head-to-head matchup
+            (only if that game did not end in a tie).
+          </li>
+          <li>
+            <strong>Run Differential (overall).</strong>
+            Runs For − Runs Allowed.
+          </li>
+          <li>
+            <strong>Runs For (overall).</strong>
+            Higher total Runs For.
+          </li>
+          <li>
+            <strong>Runs Allowed (overall).</strong>
+            Lower total Runs Allowed.
+          </li>
+          <li>
+            <strong>Alphabetical Order.</strong>
+            If still tied after all steps above, seeding is determined alphabetically by team name.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</details>
 
       <!-- PITCHING -->
       <details class="rulesAcc">
