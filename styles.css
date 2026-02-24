@@ -2581,3 +2581,47 @@ body.teamPage #addCalendarBtn:active{
   box-shadow: 0 3px 8px rgba(30,63,168,.18);
 }
 body{ outline: 6px solid hotpink; }
+
+/* ===== FORCE STYLE: Add Schedule Button ===== */
+
+body.teamPage button#addCalendarBtn{
+  all: unset;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 10px;
+  padding: 8px 14px;
+
+  border-radius: 999px;
+  border: 1px solid #1e3fa8;
+
+  background: linear-gradient(
+    180deg,
+    rgba(30,63,168,.12),
+    rgba(30,63,168,.05)
+  );
+
+  color: #1e3fa8;
+
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .3px;
+
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition: all .18s ease;
+}
+
+body.teamPage button#addCalendarBtn::before{
+  content: "📅";
+  font-size: 14px;
+}
+
+body.teamPage button#addCalendarBtn:hover{
+  background: #1e3fa8;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(30,63,168,.18);
+}
