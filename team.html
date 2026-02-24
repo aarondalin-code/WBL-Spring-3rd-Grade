@@ -38,14 +38,16 @@
       min-width: 0 !important;
     }
 
-    /* Button row: under logo, left aligned with logo */
-    body.teamPage #addCalendarBtn{
-      grid-column: 1 !important;
-      grid-row: 2 !important;
-      justify-self: start !important;
-      align-self: end !important; /* align to bottom of row 2 */
-    }
 
+body.teamPage #addCalendarBtn{
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  justify-self: start !important;
+
+  /* slightly higher without affecting layout */
+  align-self: end !important;
+  margin-bottom: 6px !important; /* raise button ~6px */
+}
     /* Coach card spans both rows on the right */
     body.teamPage .teamHeaderRight{
       grid-column: 3 !important;
