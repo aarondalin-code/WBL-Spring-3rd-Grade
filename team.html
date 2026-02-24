@@ -7,71 +7,68 @@
 
   <link rel="stylesheet" href="./styles.css?v=wbl2026-cal1" />
 
-  <!-- TEAM PAGE ONLY: stable header layout + calendar button placement -->
+  <!-- TEAM PAGE ONLY: hard-stable header layout (grid, 2 rows) -->
   <style>
     /* =========================================================
-       TEAM HEADER: deterministic layout (no flex side-effects)
-       - Coach stays right on desktop
-       - Team name stays stable
-       - Button under logo, left-aligned with logo
-       - Bottom(button) aligns with bottom(coach pills area)
+       TEAM HEADER: 2-row grid that CANNOT drift
+       Row 1: logo + team text | coach title/name
+       Row 2: button under logo | coach pills (email/phone)
        ========================================================= */
 
-    /* Keep existing 2-col header block; make both cols same height */
     body.teamPage .teamHeaderBlock{
-      align-items: stretch;
+      display: grid !important;
+      grid-template-columns: auto 1fr 300px !important;
+      grid-template-rows: auto auto !important;
+      column-gap: 14px !important;
+      row-gap: 10px !important;
+      align-items: start !important;
     }
 
-    /* LEFT becomes a 2-col / 3-row grid:
-       col1 = logo + button
-       col2 = team text (spans full height)
-       row1 = top content
-       row2 = flexible spacer
-       row3 = button (bottom)
-    */
-    body.teamPage .teamHeaderLeft{
-      display: grid;
-      grid-template-columns: auto 1fr;
-      grid-template-rows: auto 1fr auto;
-      column-gap: 14px;
-      align-items: start; /* prevents any vertical drift of Team name */
-      width: 100%;
-      min-width: 0;
+    /* Left top area: logo + team text on one line */
+    body.teamPage .teamHeaderTopLeft{
+      grid-column: 1 / span 2 !important;
+      grid-row: 1 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      min-width: 0 !important;
     }
 
-    /* Logo cell (top-left) */
-    body.teamPage #teamLogo{
-      grid-column: 1;
-      grid-row: 1;
-      display: block;
+    body.teamPage .teamHeaderTopLeft .teamTextCol{
+      min-width: 0 !important;
     }
 
-    /* Team text stays top-right, spans full height */
-    body.teamPage .teamTextCol{
-      grid-column: 2;
-      grid-row: 1 / span 3;
-      align-self: start;
-      min-width: 0;
-    }
-
-    /* Button is bottom-left under logo */
+    /* Button row: under logo, left aligned with logo */
     body.teamPage #addCalendarBtn{
-      grid-column: 1;
-      grid-row: 3;
-      justify-self: start;
-      margin-top: 10px;
+      grid-column: 1 !important;
+      grid-row: 2 !important;
+      justify-self: start !important;
+      align-self: end !important; /* align to bottom of row 2 */
     }
 
-    /* RIGHT: make coach card a 2-row grid so pills sit at bottom */
+    /* Coach card spans both rows on the right */
+    body.teamPage .teamHeaderRight{
+      grid-column: 3 !important;
+      grid-row: 1 / span 2 !important;
+      align-self: stretch !important;
+    }
+
     body.teamPage .coachCard{
-      display: grid;
-      grid-template-rows: auto 1fr;
-      height: 100%;
+      height: 100% !important;
+      display: grid !important;
+      grid-template-rows: auto 1fr auto !important;
     }
 
-    /* Push pills area to bottom */
+    /* Keep title at top */
+    body.teamPage .coachTitleCenter{
+      grid-row: 1 !important;
+    }
+
+    /* Spacer row 2 is the "1fr" */
+    /* Pills at bottom so they align with button bottom */
     body.teamPage .coachLinks{
-      align-self: end;
+      grid-row: 3 !important;
+      align-self: end !important;
     }
 
     /* =========================================================
@@ -115,6 +112,30 @@
     body.teamPage button#addCalendarBtn:active{
       transform: translateY(0);
     }
+
+    /* Mobile: stack nicely, do not break */
+    @media (max-width: 760px){
+      body.teamPage .teamHeaderBlock{
+        grid-template-columns: auto 1fr !important;
+        grid-template-rows: auto auto auto !important;
+      }
+
+      body.teamPage .teamHeaderTopLeft{
+        grid-column: 1 / span 2 !important;
+        grid-row: 1 !important;
+      }
+
+      body.teamPage #addCalendarBtn{
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        align-self: start !important;
+      }
+
+      body.teamPage .teamHeaderRight{
+        grid-column: 1 / span 2 !important;
+        grid-row: 3 !important;
+      }
+    }
   </style>
 </head>
 
@@ -157,22 +178,25 @@
   <!-- Team header block -->
   <section class="card" style="margin-top:12px;">
     <div class="cardBody">
+
       <div class="teamHeaderBlock">
 
-        <div class="teamHeaderLeft">
+        <!-- Row 1 left: logo + team text (stable) -->
+        <div class="teamHeaderTopLeft">
           <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo">
-
           <div class="teamTextCol">
             <div class="muted small">Team</div>
             <h2 id="teamName" style="margin:0;">Team</h2>
             <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
           </div>
-
-          <button id="addCalendarBtn" type="button" aria-label="Add team schedule to calendar">
-            Add Schedule
-          </button>
         </div>
 
+        <!-- Row 2 left: calendar button under logo -->
+        <button id="addCalendarBtn" type="button" aria-label="Add team schedule to calendar">
+          Add Schedule
+        </button>
+
+        <!-- Right: coach card spans both rows -->
         <div class="teamHeaderRight">
           <div class="coachCard">
             <div class="coachTitleCenter">
@@ -188,6 +212,7 @@
         </div>
 
       </div>
+
     </div>
   </section>
 
@@ -326,7 +351,7 @@
     logoEl.src = logo;
     logoEl.onerror = () => { logoEl.src = window.DEFAULT_TEAM_LOGO || "./logo.png"; };
 
-    subEl.textContent = ""; // reserved
+    subEl.textContent = "";
 
     const coachName = safe(teamRow.CoachName);
     const coachEmail = safe(teamRow.CoachEmail);
@@ -352,7 +377,7 @@
   }
 
   // -----------------------------
-  // Photo logic
+  // Roster grid
   // -----------------------------
   function getPlayerId(player){
     return safe(player.PlayerID || player.PlayerId);
@@ -374,18 +399,6 @@
     return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
   }
 
-  // -----------------------------
-  // Modal content
-  // -----------------------------
-  function line(label, value){
-    return `
-      <div class="profileLine">
-        <span class="profileKey">${label}</span>
-        <span class="profileVal">${value}</span>
-      </div>
-    `;
-  }
-
   function renderPlayerModal(player, teamDisplayName){
     const name = safe(player.PlayerName || player.Name || "Player");
     const num = safe(player.Number);
@@ -397,6 +410,13 @@
     const photo = getPhotoSrc(player);
 
     const lines = [];
+    const line = (label, value) => `
+      <div class="profileLine">
+        <span class="profileKey">${label}</span>
+        <span class="profileVal">${value}</span>
+      </div>
+    `;
+
     if (num) lines.push(line("Number", `#${num}`));
     if (pos) lines.push(line("Position", pos));
     if (bats) lines.push(line("Bats", bats));
@@ -423,9 +443,6 @@
     `);
   }
 
-  // -----------------------------
-  // Roster grid
-  // -----------------------------
   function buildRosterGrid(players, teamDisplayName){
     const grid = document.getElementById("rosterGrid");
     const msg = document.getElementById("rosterMsg");
@@ -487,7 +504,6 @@
   function formatICSDate(dateStr, timeStr){
     const date = new Date(`${dateStr} ${timeStr}`);
     const pad = n => String(n).padStart(2,"0");
-
     return (
       date.getUTCFullYear() +
       pad(date.getUTCMonth()+1) +
@@ -516,7 +532,6 @@
       const startLocal = new Date(`${g.Date} ${g.Time}`);
       const endLocal = new Date(startLocal.getTime() + 90*60000);
       const pad = n => String(n).padStart(2,"0");
-
       const end =
         endLocal.getUTCFullYear() +
         pad(endLocal.getUTCMonth()+1) +
