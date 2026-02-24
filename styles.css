@@ -2467,5 +2467,14 @@ body.watermarkPage::before{
     padding-right: 80px;              /* reserve space so text doesn't run under it */
   }
 
-
+.teamCalendarBtn{
+  margin-top:8px;
+  padding:6px 12px;
+  font-size:13px;
+  font-weight:900;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+}
 
