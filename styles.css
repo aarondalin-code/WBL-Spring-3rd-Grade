@@ -2465,5 +2465,51 @@ body.watermarkPage::before{
   }
 }
 
+/* =========================
+   Team Calendar Button (clean + non-disruptive)
+   Desktop: small pill under team name (does NOT stretch full width)
+   Mobile: square icon to the right, same size as team logo box
+========================= */
 
+.teamPage .teamCalendarBtn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 900;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap; /* prevents stretching/wrapping */
+}
+
+/* Mobile: right aligned, same size box as the team logo */
+@media (max-width: 520px){
+  .teamPage .teamHeaderLeft{
+    position: relative;               /* anchor the absolute button */
+    padding-right: 80px;              /* reserve space so text doesn't run under it */
+  }
+
+  .teamPage .teamCalendarBtn{
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    /* match your team logo size: teamHeaderLogo is 72x72 */
+    width: 72px;
+    height: 72px;
+
+    padding: 0;
+    border-radius: 14px;              /* match logo’s rounded style */
+    font-size: 0;                     /* hide text */
+  }
+
+  .teamPage .teamCalendarBtn::after{
+    content: "📅";
+    font-size: 26px;
+    line-height: 1;
+  }
+}
 
