@@ -6,18 +6,31 @@
   <title>Team Roster • WBL 3rd Grade 2026</title>
   <link rel="stylesheet" href="./styles.css?v=wbl2026-cal1" />
 <style>
-  /* --- Placement: button under logo, aligned left with logo --- */
+  /* Make both header columns equal height */
+  body.teamPage .teamHeaderBlock{
+    align-items: stretch;
+  }
+
+  /* Left side layout */
+  body.teamPage .teamHeaderLeft{
+    display: flex;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  /* Logo column */
   body.teamPage .teamLogoCol{
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* left-align under logo */
+    justify-content: space-between; /* pushes button to bottom */
+    align-items: flex-start;
   }
 
   body.teamPage .teamTextCol{
     min-width: 0;
   }
 
-  /* --- Button styling: calendar action (same look as before) --- */
+  /* Button styling */
   body.teamPage button#addCalendarBtn{
     all: unset;
 
@@ -25,7 +38,6 @@
     align-items: center;
     gap: 8px;
 
-    margin-top: 10px;   /* spacing under logo */
     padding: 8px 14px;
 
     border-radius: 999px;
@@ -58,8 +70,7 @@
   body.teamPage button#addCalendarBtn:active{
     transform: translateY(0);
   }
-</style>
-  </head>
+</style>  </head>
 <body class="watermarkPage teamPage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
@@ -451,11 +462,6 @@
       window.location.href = "./teams.html";
       return;
     }
-// Pin the calendar button after coach pills are shown/hidden
-requestAnimationFrame(pinCalendarToCoachPhone);
-setTimeout(pinCalendarToCoachPhone, 0);
-
-
     
     setHeaderFromTeamRow(teamRow);
     const teamDisplayName = safe(teamRow.TeamName) || slug;
@@ -491,29 +497,6 @@ setTimeout(pinCalendarToCoachPhone, 0);
         "00Z"
       );
     }
-
-function pinCalendarToCoachPhone(){
-  const header = document.querySelector(".teamHeaderBlock");
-  const btn = document.getElementById("addCalendarBtn");
-  const logo = document.getElementById("teamLogo");
-  const phone = document.getElementById("coachPhone");
-  const email = document.getElementById("coachEmail");
-
-  if (!header || !btn || !logo) return;
-
-  // Pick the lowest visible pill on the coach card (phone preferred, else email)
-  const target =
-    (phone && phone.style.display !== "none") ? phone :
-    (email && email.style.display !== "none") ? email :
-    null;
-
-  // If there’s no coach pill visible, don’t pin — let it sit naturally under logo.
-  if (!target) {
-    btn.classList.remove("isPinned");
-    btn.style.left = "";
-    btn.style.top = "";
-    return;
-  }
 
   // Measure
   const headerRect = header.getBoundingClientRect();
@@ -604,11 +587,6 @@ function pinCalendarToCoachPhone(){
     console.error(err);
     alert("Team page error: check TEAMS_CSV_URL / ROSTER_CSV_URL in data.js and confirm your CSV headers.");
   }
-
-  // Re-align calendar button on window resize
-  window.addEventListener("resize", () => {
-    requestAnimationFrame(pinCalendarToCoachPhone);
-  });
 
 })();
 </script>
