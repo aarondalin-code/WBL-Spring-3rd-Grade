@@ -4,15 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Rules • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-rules1" />
 </head>
 
 <body class="watermarkPage rulesPage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
-    <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+    <button
+      class="navToggle"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="siteNav"
+    >
       <span></span><span></span><span></span>
     </button>
+
     <div class="navOverlay" aria-hidden="true"></div>
 
     <nav class="nav" id="siteNav">
@@ -31,122 +38,178 @@
   <div class="brandCenter">
     <img src="./logo.png" alt="WBL Logo" class="logoImage" />
     <h1>WBL 3rd Grade 2026</h1>
-    <div class="tagline">League Rules</div>
+    <div class="tagline">Rules</div>
   </div>
 </header>
 
 <main class="wrap">
   <section class="docSection">
-    <div class="rulesHeroElite centeredRulesHero">
-      League Rules<br>
-      <span class="rulesHeroLine2">Spring Season • Saturdays • T3 / T4 / T5</span>
+    <div class="rulesHeroElite">
+      <div class="centeredRulesHero">
+        League Rules (Spring 2026)
+        <span class="rulesHeroLine2">Quick reference for parents and coaches</span>
+      </div>
     </div>
   </section>
 
-  <section class="docSection">
+  <section class="docSection" style="margin-top:14px;">
     <div class="rulesAccordions">
 
-      <!-- QUICK SUMMARY -->
-      <details class="rulesAcc">
-        <summary class="rulesAccSummary">
-          <span class="rulesAccIcon">📌</span>
-
-          <span class="rulesAccText">
-            <span class="rulesAccTitle">Quick Summary</span>
-            <span class="rulesAccSub muted">The “parent-friendly” version</span>
-          </span>
-
-          <span class="rulesAccChevron" aria-hidden="true">▾</span>
-        </summary>
-
-        <div class="rulesAccBody">
-          <div class="ruleCardElite ruleImportantElite">
-            <div class="ruleTitleElite">Season Format</div>
-            <div class="ruleBodyElite">All teams play each other once (10 teams).</div>
-          </div>
-
-          <div class="ruleCardElite">
-            <div class="ruleTitleElite">Game Times / Fields</div>
-            <div class="ruleBodyElite">
-              Saturdays at <strong>10:00am</strong> and <strong>12:15pm</strong> on fields <strong>T3, T4, T5</strong>.
-            </div>
-          </div>
-
-          <div class="ruleCardElite">
-            <div class="ruleTitleElite">Standings</div>
-            <div class="ruleBodyElite">
-              Standings auto-calculate from games marked <strong>Final</strong>.
-            </div>
-          </div>
-
-          <div class="ruleCardElite">
-            <div class="ruleTitleElite">Playoffs</div>
-            <div class="ruleBodyElite">
-              Top 6 make playoffs (Seeds 1–2 byes). Seeds 7–10 play consolation.
-            </div>
-          </div>
-
-          <div class="ruleCardElite ruleImportantElite">
-            <div class="ruleTitleElite">Sportsmanship</div>
-            <div class="ruleBodyElite">This is 3rd grade baseball — keep it positive.</div>
-          </div>
-        </div>
-      </details>
-
       <!-- GAME FORMAT -->
-      <details class="rulesAcc">
+      <details class="rulesAcc" open>
         <summary class="rulesAccSummary">
-          <span class="rulesAccIcon">⚾</span>
-          <span class="rulesAccText">
+          <div class="rulesAccIcon">⏱️</div>
+          <div class="rulesAccText">
             <span class="rulesAccTitle">Game Format</span>
-            <span class="rulesAccSub muted">Innings, time limits, run rules</span>
-          </span>
-          <span class="rulesAccChevron" aria-hidden="true">▾</span>
+            <span class="rulesAccSub">Time limits, innings, run rules</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
         </summary>
 
         <div class="rulesAccBody">
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Innings / Time Limit</div>
-            <div class="ruleBodyElite">Innings / time limit: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Field / Distance</div>
+            <div class="ruleBodyElite">60’ bases, 46’ pitching distance.</div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Game Length</div>
+            <div class="ruleBodyElite">
+              2:00 time limit or max 6 innings.<br/>
+              No new inning after 1:45. Hard stop at 2:00.<br/>
+              Any inning starting at 1:45 is the last inning.
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Run Limits</div>
-            <div class="ruleBodyElite">Run limits per inning (if any): <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Official Game (Weather)</div>
+            <div class="ruleBodyElite">
+              Official after 4 innings (or 3.5 if home team is winning).
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Mercy Rule</div>
-            <div class="ruleBodyElite">Mercy rule (if any): <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Time Limit Ends Mid-Inning</div>
+            <div class="ruleBodyElite">
+              If the game is stopped due to the time limit, scores revert to the last completed inning.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Run Limit / Mercy</div>
+            <div class="ruleBodyElite">
+              Run limit: 5 per half inning, unlimited in the last inning.<br/>
+              Mercy rule: not in effect.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Sitting / Rotation</div>
+            <div class="ruleBodyElite">
+              Every kid sits one inning before another kid sits twice.<br/>
+              No player should ever sit two innings in a row.
+            </div>
           </div>
         </div>
       </details>
 
-      <!-- LINEUPS -->
+      <!-- EQUIPMENT -->
       <details class="rulesAcc">
         <summary class="rulesAccSummary">
-          <span class="rulesAccIcon">🧤</span>
-          <span class="rulesAccText">
-            <span class="rulesAccTitle">Lineups & Substitutions</span>
-            <span class="rulesAccSub muted">Batting order, field rotations</span>
-          </span>
-          <span class="rulesAccChevron" aria-hidden="true">▾</span>
+          <div class="rulesAccIcon">🧤</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Equipment</span>
+            <span class="rulesAccSub">Required gear + bat rules</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
         </summary>
 
         <div class="rulesAccBody">
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Continuous Batting Order</div>
-            <div class="ruleBodyElite">Continuous batting order: <strong>[Yes/No]</strong></div>
+            <div class="ruleTitleElite">Required</div>
+            <div class="ruleBodyElite">
+              Glove, helmet, baseball pants (required for games/practices; strongly encouraged), cup, heart guard.
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Minimum Play Requirements</div>
-            <div class="ruleBodyElite">Minimum play requirements: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Bat</div>
+            <div class="ruleBodyElite">
+              USA Baseball stamp required. 2 5/8” barrel max.
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Substitutions</div>
-            <div class="ruleBodyElite">Substitution rules: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Cleats</div>
+            <div class="ruleBodyElite">Plastic only.</div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Parents</div>
+            <div class="ruleBodyElite">Please label all equipment with the player’s name.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- BATTING -->
+      <details class="rulesAcc">
+        <summary class="rulesAccSummary">
+          <div class="rulesAccIcon">🏏</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Batting</span>
+            <span class="rulesAccSub">Order, late arrivals, thrown bats</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
+        </summary>
+
+        <div class="rulesAccBody">
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Batting Order</div>
+            <div class="ruleBodyElite">
+              Roster batting: everyone who shows up is in the order. Coaches should rotate lineup as best they can.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Thrown Bats</div>
+            <div class="ruleBodyElite">
+              Each team gets 1 warning per game. Second offense: batter is out.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Late Arrivals</div>
+            <div class="ruleBodyElite">
+              Late arrivals must be placed at the bottom of the order.
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- CATCHING -->
+      <details class="rulesAcc">
+        <summary class="rulesAccSummary">
+          <div class="rulesAccIcon">🥎</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Catching</span>
+            <span class="rulesAccSub">Safety at the plate</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
+        </summary>
+
+        <div class="rulesAccBody">
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Catchers</div>
+            <div class="ruleBodyElite">
+              Kids will be catching and wearing full equipment.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Plays at the Plate</div>
+            <div class="ruleBodyElite">
+              No collisions of any kind.
+            </div>
           </div>
         </div>
       </details>
@@ -154,57 +217,220 @@
       <!-- PITCHING -->
       <details class="rulesAcc">
         <summary class="rulesAccSummary">
-          <span class="rulesAccIcon">🎯</span>
-          <span class="rulesAccText">
+          <div class="rulesAccIcon">⚾</div>
+          <div class="rulesAccText">
             <span class="rulesAccTitle">Pitching</span>
-            <span class="rulesAccSub muted">Limits, rest, eligibility</span>
-          </span>
-          <span class="rulesAccChevron" aria-hidden="true">▾</span>
+            <span class="rulesAccSub">Limits, coach pitch option, mound visits</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
         </summary>
 
         <div class="rulesAccBody">
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Pitch Limits</div>
-            <div class="ruleBodyElite">Pitch count limits: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Distance</div>
+            <div class="ruleBodyElite">Kids must pitch from 46 feet.</div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Limits</div>
+            <div class="ruleBodyElite">
+              Max 75 pitches per game OR 3 innings.
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Rest Rules</div>
-            <div class="ruleBodyElite">Days rest rules: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Warm-Up Pitches</div>
+            <div class="ruleBodyElite">
+              8 warm-up pitches in the 1st inning, then 5 after.
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Pitching Format</div>
-            <div class="ruleBodyElite">Coach pitch / kid pitch details (if applicable): <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Hit By Pitch</div>
+            <div class="ruleBodyElite">
+              If 3 kids are hit in an inning, pitcher must be removed.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Walk Limit + Coach Pitch Option</div>
+            <div class="ruleBodyElite">
+              If a kid walks 4 in an inning, coach has the option to pitch the remainder of the inning to keep the game moving.<br/>
+              Coach must throw overhand from 46 feet.<br/>
+              Kids will continue to field the pitcher position while a coach is pitching.<br/>
+              If the kid has not reached pitch/inning limit, he may be brought back in.<br/>
+              Coach will not ever start an inning.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Mound Visits</div>
+            <div class="ruleBodyElite">
+              Coaches allowed 1 mound visit per pitcher per inning.
+            </div>
           </div>
         </div>
       </details>
 
-      <!-- WEATHER -->
+      <!-- FIELDING -->
       <details class="rulesAcc">
         <summary class="rulesAccSummary">
-          <span class="rulesAccIcon">🌧️</span>
-          <span class="rulesAccText">
-            <span class="rulesAccTitle">Weather & Reschedules</span>
-            <span class="rulesAccSub muted">Rainouts, cancellations, makeups</span>
-          </span>
-          <span class="rulesAccChevron" aria-hidden="true">▾</span>
+          <div class="rulesAccIcon">🧢</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Fielding</span>
+            <span class="rulesAccSub">10 fielders option, errors/advancement</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
         </summary>
 
         <div class="rulesAccBody">
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Cancellation Communication</div>
-            <div class="ruleBodyElite">Cancellation communication: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Fielders</div>
+            <div class="ruleBodyElite">
+              Coaches may play 10 total fielders with 4 outfielders (no short fielder).<br/>
+              Teams may play with a minimum of 8 players in the field.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Errors / Advancement</div>
+            <div class="ruleBodyElite">
+              On an error, players may advance a maximum of 1 base and defense has a free shot to get that baserunner out.<br/>
+              If an outfielder overthrows an infielder, baserunners get a maximum of 1 base (except runner on 3rd — see Locked at 3rd).
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Reschedule Policy</div>
-            <div class="ruleBodyElite">Reschedule policy: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">End of Play</div>
+            <div class="ruleBodyElite">
+              Play ends when the ball is returned to the pitcher’s mound.
+            </div>
           </div>
 
           <div class="ruleCardElite">
-            <div class="ruleTitleElite">Makeup Windows</div>
-            <div class="ruleBodyElite">Makeup game windows: <strong>[Fill in]</strong></div>
+            <div class="ruleTitleElite">Player Development</div>
+            <div class="ruleBodyElite">
+              Coaches should play kids in both infield and outfield each game.<br/>
+              Every player should play 2 innings in the infield and 2 innings in the outfield.
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- COACHING -->
+      <details class="rulesAcc">
+        <summary class="rulesAccSummary">
+          <div class="rulesAccIcon">🎯</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Coaching</span>
+            <span class="rulesAccSub">Where coaches can be during play</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
+        </summary>
+
+        <div class="rulesAccBody">
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">On-Field Positioning</div>
+            <div class="ruleBodyElite">
+              Only allowed on the field during the game in 1st and 3rd base coach’s boxes, except for pitching rules.
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- SPECIAL RULES -->
+      <details class="rulesAcc">
+        <summary class="rulesAccSummary">
+          <div class="rulesAccIcon">📌</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Special Rules</span>
+            <span class="rulesAccSub">No bunting, no tagging up, locked at 3rd</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
+        </summary>
+
+        <div class="rulesAccBody">
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Not in Effect</div>
+            <div class="ruleBodyElite">
+              Dropped 3rd strike (batter is out; no advance).<br/>
+              Infield fly rule.<br/>
+              Balks.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Not Permitted</div>
+            <div class="ruleBodyElite">
+              Bunting is not permitted.<br/>
+              Tagging up is not permitted.<br/>
+              Pitcher pick-off is not allowed.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Catcher Pick-Off</div>
+            <div class="ruleBodyElite">
+              Allowed, but no advance on overthrow.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Locked at 3rd</div>
+            <div class="ruleBodyElite">
+              Runner on 3rd may score only if the ball is put in play.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Slow Down Rule</div>
+            <div class="ruleBodyElite">
+              If ahead by 10+, do not steal or advance on errors.
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- BASE RUNNING -->
+      <details class="rulesAcc">
+        <summary class="rulesAccSummary">
+          <div class="rulesAccIcon">🏃</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Base Running</span>
+            <span class="rulesAccSub">Leading, stealing, sliding</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
+        </summary>
+
+        <div class="rulesAccBody">
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Leading</div>
+            <div class="ruleBodyElite">
+              Leading allowed after the ball hits the catcher’s mitt.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Stealing</div>
+            <div class="ruleBodyElite">
+              Stealing: 3rd base only, and only after the ball hits the catcher’s mitt.<br/>
+              No advance to 2nd or home unless the ball is put in play.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Sliding</div>
+            <div class="ruleBodyElite">
+              Feet-first only. Head-first slide = runner is out.<br/>
+              Failure to slide resulting in a collision: runner may be called out.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Courtesy Runner</div>
+            <div class="ruleBodyElite">
+              Courtesy runner for catcher at any time.
+            </div>
           </div>
         </div>
       </details>
@@ -212,71 +438,22 @@
       <!-- PLAYOFFS -->
       <details class="rulesAcc">
         <summary class="rulesAccSummary">
-          <span class="rulesAccIcon">🏆</span>
-          <span class="rulesAccText">
-            <span class="rulesAccTitle">Playoffs & Consolation</span>
-            <span class="rulesAccSub muted">Bracket format and seeding</span>
-          </span>
-          <span class="rulesAccChevron" aria-hidden="true">▾</span>
+          <div class="rulesAccIcon">🏆</div>
+          <div class="rulesAccText">
+            <span class="rulesAccTitle">Playoffs</span>
+            <span class="rulesAccSub">Qualification + consolation</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
         </summary>
 
         <div class="rulesAccBody">
           <div class="ruleCardElite ruleImportantElite">
-            <div class="ruleTitleElite">Championship Bracket</div>
+            <div class="ruleTitleElite">Format</div>
             <div class="ruleBodyElite">
-              Top 6 make championship playoffs. Seeds 1–2 receive byes.<br>
-              Round 1: Seed 3 vs 6; Seed 4 vs 5.<br>
-              Semis: Winner(4/5) plays Seed 1; Winner(3/6) plays Seed 2.<br>
-              Championship: Winners of semis.
-            </div>
-          </div>
-
-          <div class="ruleCardElite">
-            <div class="ruleTitleElite">Consolation Bracket</div>
-            <div class="ruleBodyElite">
-              Seeds 7–10 (Round 1: 7v10, 8v9; plus follow-on games per your bracket).
-            </div>
-          </div>
-
-          <!-- NEW SECTION -->
-          <div class="ruleCardElite">
-            <div class="ruleTitleElite">Playoff Tie Breaker Rules</div>
-            <div class="ruleBodyElite">
-              Seeding for playoffs is determined using the following tiebreakers, in order:
-              <ol style="margin-top:8px;">
-                <li>
-                  <strong>Winning Percentage (Win%).</strong>
-                  (Wins + 0.5 × Ties) ÷ (Wins + Losses + Ties).
-                </li>
-                <li>
-                  <strong>Head-to-Head (two-team tie only).</strong>
-                  If exactly two teams are tied in Win%, the higher seed goes to the team that won the head-to-head matchup
-                  (only if that game did not end in a tie).
-                </li>
-                <li>
-                  <strong>Run Differential (overall).</strong>
-                  Runs For − Runs Allowed.
-                </li>
-                <li>
-                  <strong>Runs For (overall).</strong>
-                  Higher total Runs For.
-                </li>
-                <li>
-                  <strong>Runs Allowed (overall).</strong>
-                  Lower total Runs Allowed.
-                </li>
-                <li>
-                  <strong>Alphabetical Order.</strong>
-                  If still tied after all steps above, seeding is determined alphabetically by team name.
-                </li>
-              </ol>
-            </div>
-          </div>
-
-          <div class="rulesFooterNoteElite">
-            <div class="rulesFooterLineElite"></div>
-            <div class="muted small">
-              Brackets are shown on the <a href="./playoffs.html">Playoffs</a> page and auto-fill from standings.
+              <ul style="margin:6px 0 0 18px;">
+                <li>Top 6 make it, with top 2 seeds getting a 1st round bye</li>
+                <li>Consolation games for seeds 7-10</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -285,20 +462,51 @@
       <!-- SPORTSMANSHIP -->
       <details class="rulesAcc">
         <summary class="rulesAccSummary">
-          <span class="rulesAccIcon">🤝</span>
-          <span class="rulesAccText">
+          <div class="rulesAccIcon">🤝</div>
+          <div class="rulesAccText">
             <span class="rulesAccTitle">Sportsmanship</span>
-            <span class="rulesAccSub muted">The most important section</span>
-          </span>
-          <span class="rulesAccChevron" aria-hidden="true">▾</span>
+            <span class="rulesAccSub">Umpires, dugouts, parent conduct</span>
+          </div>
+          <div class="rulesAccChevron">⌄</div>
         </summary>
 
         <div class="rulesAccBody">
-          <div class="ruleCardElite ruleImportantElite">
-            <div class="ruleTitleElite">Expectations</div>
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Umpires</div>
             <div class="ruleBodyElite">
-              Respect umpires and opponents. Encourage kids — no negative comments from stands or dugouts.
-              Coaches are responsible for maintaining a positive environment.
+              No arguing balls and strikes.<br/>
+              Cadet umpires — bad calls are expected.<br/>
+              Only head coaches may talk to the umpires.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Cheering / Batter Distraction</div>
+            <div class="ruleBodyElite">
+              Teams should stop cheering when the opposing pitcher starts his windup.<br/>
+              Batter could be called out if this rule is abused.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Player Conduct</div>
+            <div class="ruleBodyElite">
+              If a player argues with an umpire, that player must be removed and sit a mandatory 2 innings in a row.
+            </div>
+          </div>
+
+          <div class="ruleCardElite">
+            <div class="ruleTitleElite">Dugouts</div>
+            <div class="ruleBodyElite">
+              Kids must clean up after themselves and leave a clean dugout for the next game.
+            </div>
+          </div>
+
+          <div class="ruleCardElite ruleImportantElite">
+            <div class="ruleTitleElite">Parent Conduct</div>
+            <div class="ruleBodyElite">
+              If parents are arguing or heckling an umpire, they will be asked to leave the field and sit in their car.
+              There will be no exceptions to this rule.
             </div>
           </div>
         </div>
@@ -307,17 +515,6 @@
     </div>
   </section>
 </main>
-
-<script>
-  // Tournament-style behavior: when one accordion opens, close the others
-  const accs = Array.from(document.querySelectorAll(".rulesAcc"));
-  accs.forEach(d => {
-    d.addEventListener("toggle", () => {
-      if (!d.open) return;
-      accs.forEach(x => { if (x !== d) x.open = false; });
-    });
-  });
-</script>
 
 <script src="./nav.js"></script>
 </body>
