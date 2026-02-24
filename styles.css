@@ -2580,7 +2580,6 @@ body.teamPage #addCalendarBtn:active{
   transform: translateY(0);
   box-shadow: 0 3px 8px rgba(30,63,168,.18);
 }
-body{ outline: 6px solid hotpink; }
 
 /* ===== FORCE STYLE: Add Schedule Button ===== */
 
