@@ -2453,10 +2453,12 @@ body.watermarkPage::before{
   }
 }
 
-/* Remove grey background from schedule snapshot on home */
-#scheduleMini .card,
-#scheduleMini .miniScheduleCard,
-#scheduleMini .miniGameCard {
-  background: transparent !important;
-  box-shadow: none !important;
+/* =========================
+   INDEX: Fix Schedule Snapshot Background (scoped + reliable)
+   ========================= */
+
+#thisWeekGames .scheduleGameCard,
+#lastWeekFinals .scheduleGameCard{
+  background: transparent;   /* removes grey fill if any is being applied */
+  border: 0;
 }
