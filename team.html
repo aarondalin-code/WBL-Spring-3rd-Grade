@@ -451,7 +451,12 @@
       window.location.href = "./teams.html";
       return;
     }
+// Pin the calendar button after coach pills are shown/hidden
+requestAnimationFrame(pinCalendarToCoachPhone);
+setTimeout(pinCalendarToCoachPhone, 0);
 
+
+    
     setHeaderFromTeamRow(teamRow);
     const teamDisplayName = safe(teamRow.TeamName) || slug;
 
@@ -487,6 +492,58 @@
       );
     }
 
+function pinCalendarToCoachPhone(){
+  const header = document.querySelector(".teamHeaderBlock");
+  const btn = document.getElementById("addCalendarBtn");
+  const logo = document.getElementById("teamLogo");
+  const phone = document.getElementById("coachPhone");
+  const email = document.getElementById("coachEmail");
+
+  if (!header || !btn || !logo) return;
+
+  // Pick the lowest visible pill on the coach card (phone preferred, else email)
+  const target =
+    (phone && phone.style.display !== "none") ? phone :
+    (email && email.style.display !== "none") ? email :
+    null;
+
+  // If there’s no coach pill visible, don’t pin — let it sit naturally under logo.
+  if (!target) {
+    btn.classList.remove("isPinned");
+    btn.style.left = "";
+    btn.style.top = "";
+    return;
+  }
+
+  // Measure
+  const headerRect = header.getBoundingClientRect();
+  const logoRect = logo.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+
+  // Temporarily ensure we can measure the button height accurately
+  btn.classList.add("isPinned");
+  btn.style.left = "0px";
+  btn.style.top = "0px";
+
+  const btnRect = btn.getBoundingClientRect();
+
+  // X: align left edge of button with left edge of logo
+  const left = logoRect.left - headerRect.left;
+
+  // Y: set button top so its bottom matches the target pill bottom
+  let top = (targetRect.bottom - headerRect.top) - btnRect.height;
+
+  // Ensure it is still "below the logo" (at least 8px below logo bottom)
+  const minTop = (logoRect.bottom - headerRect.top) + 8;
+  if (top < minTop) top = minTop;
+
+  btn.style.left = `${Math.round(left)}px`;
+  btn.style.top = `${Math.round(top)}px`;
+}
+
+
+
+    
     function generateTeamICS(teamName, games){
       const now = new Date();
       const stamp = now.toISOString().replace(/[-:]/g,"").split(".")[0] + "Z";
@@ -543,10 +600,16 @@
       });
     }
 
-  } catch (err) {
+    } catch (err) {
     console.error(err);
-    alert("Team page error: check CSV URLs in data.js.");
+    alert("Team page error: check TEAMS_CSV_URL / ROSTER_CSV_URL in data.js and confirm your CSV headers.");
   }
+
+  // Re-align calendar button on window resize
+  window.addEventListener("resize", () => {
+    requestAnimationFrame(pinCalendarToCoachPhone);
+  });
+
 })();
 </script>
 
