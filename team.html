@@ -4,73 +4,120 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team Roster • WBL 3rd Grade 2026</title>
+
   <link rel="stylesheet" href="./styles.css?v=wbl2026-cal1" />
-<style>
-  /* Make both header columns equal height */
-  body.teamPage .teamHeaderBlock{
-    align-items: stretch;
-  }
 
-  /* Left side layout */
-  body.teamPage .teamHeaderLeft{
-    display: flex;
-    gap: 14px;
-    align-items: stretch;
-  }
+  <!-- TEAM PAGE ONLY: stable header layout + calendar button placement -->
+  <style>
+    /* =========================================================
+       TEAM HEADER: deterministic layout (no flex side-effects)
+       - Coach stays right on desktop
+       - Team name stays stable
+       - Button under logo, left-aligned with logo
+       - Bottom(button) aligns with bottom(coach pills area)
+       ========================================================= */
 
-  /* Logo column */
-  body.teamPage .teamLogoCol{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* pushes button to bottom */
-    align-items: flex-start;
-  }
+    /* Keep existing 2-col header block; make both cols same height */
+    body.teamPage .teamHeaderBlock{
+      align-items: stretch;
+    }
 
-  body.teamPage .teamTextCol{
-    min-width: 0;
-  }
+    /* LEFT becomes a 2-col / 3-row grid:
+       col1 = logo + button
+       col2 = team text (spans full height)
+       row1 = top content
+       row2 = flexible spacer
+       row3 = button (bottom)
+    */
+    body.teamPage .teamHeaderLeft{
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto 1fr auto;
+      column-gap: 14px;
+      align-items: start; /* prevents any vertical drift of Team name */
+      width: 100%;
+      min-width: 0;
+    }
 
-  /* Button styling */
-  body.teamPage button#addCalendarBtn{
-    all: unset;
+    /* Logo cell (top-left) */
+    body.teamPage #teamLogo{
+      grid-column: 1;
+      grid-row: 1;
+      display: block;
+    }
 
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    /* Team text stays top-right, spans full height */
+    body.teamPage .teamTextCol{
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      align-self: start;
+      min-width: 0;
+    }
 
-    padding: 8px 14px;
+    /* Button is bottom-left under logo */
+    body.teamPage #addCalendarBtn{
+      grid-column: 1;
+      grid-row: 3;
+      justify-self: start;
+      margin-top: 10px;
+    }
 
-    border-radius: 999px;
-    border: 1px solid #1e3fa8;
+    /* RIGHT: make coach card a 2-row grid so pills sit at bottom */
+    body.teamPage .coachCard{
+      display: grid;
+      grid-template-rows: auto 1fr;
+      height: 100%;
+    }
 
-    background: linear-gradient(180deg, rgba(30,63,168,.12), rgba(30,63,168,.05));
-    color: #1e3fa8;
+    /* Push pills area to bottom */
+    body.teamPage .coachLinks{
+      align-self: end;
+    }
 
-    font-weight: 900;
-    font-size: 13px;
-    letter-spacing: .3px;
+    /* =========================================================
+       BUTTON LOOK (calendar action)
+       ========================================================= */
+    body.teamPage button#addCalendarBtn{
+      all: unset;
 
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all .18s ease;
-  }
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
 
-  body.teamPage button#addCalendarBtn::before{
-    content: "📅";
-    font-size: 14px;
-  }
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #1e3fa8;
 
-  body.teamPage button#addCalendarBtn:hover{
-    background: #1e3fa8;
-    color: #fff;
-    box-shadow: 0 8px 18px rgba(30,63,168,.18);
-    transform: translateY(-1px);
-  }
+      background: linear-gradient(180deg, rgba(30,63,168,.12), rgba(30,63,168,.05));
+      color: #1e3fa8;
 
-  body.teamPage button#addCalendarBtn:active{
-    transform: translateY(0);
-  }
-</style>  </head>
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: .3px;
+
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .18s ease;
+    }
+
+    body.teamPage button#addCalendarBtn::before{
+      content: "📅";
+      font-size: 14px;
+    }
+
+    body.teamPage button#addCalendarBtn:hover{
+      background: #1e3fa8;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(30,63,168,.18);
+      transform: translateY(-1px);
+    }
+
+    body.teamPage button#addCalendarBtn:active{
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
 <body class="watermarkPage teamPage hasHamburger">
 <header class="siteHeader">
   <div class="navWrap">
@@ -111,21 +158,20 @@
   <section class="card" style="margin-top:12px;">
     <div class="cardBody">
       <div class="teamHeaderBlock">
-<div class="teamHeaderLeft">
-  <div class="teamLogoCol">
-    <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo">
 
-    <button id="addCalendarBtn" class="teamCalendarBtn" type="button" aria-label="Add team schedule to calendar">
-      Add Schedule
-    </button>
-  </div>
+        <div class="teamHeaderLeft">
+          <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo">
 
-  <div class="teamTextCol">
-    <div class="muted small">Team</div>
-    <h2 id="teamName" style="margin:0;">Team</h2>
-    <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
-  </div>
-</div>
+          <div class="teamTextCol">
+            <div class="muted small">Team</div>
+            <h2 id="teamName" style="margin:0;">Team</h2>
+            <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
+          </div>
+
+          <button id="addCalendarBtn" type="button" aria-label="Add team schedule to calendar">
+            Add Schedule
+          </button>
+        </div>
 
         <div class="teamHeaderRight">
           <div class="coachCard">
@@ -306,30 +352,25 @@
   }
 
   // -----------------------------
-  // Photo logic (PlayerID-first, PhotoURL override)
+  // Photo logic
   // -----------------------------
   function getPlayerId(player){
-    // Support either "PlayerID" or "PlayerId"
     return safe(player.PlayerID || player.PlayerId);
   }
 
   function playerPhotoFromId(playerId){
     if (!playerId) return "";
-    // Assumes you upload jpgs named exactly like Or-01.jpg
     return `./player-photos/${encodeURIComponent(playerId)}.jpg`;
   }
 
   function getPhotoSrc(player){
-    // 1) PhotoURL override if filled (lets you hot-fix)
     const url = safe(player.PhotoURL);
     if (url) return url;
 
-    // 2) PlayerID -> local file
     const pid = getPlayerId(player);
     const local = playerPhotoFromId(pid);
     if (local) return local;
 
-    // 3) fallback
     return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
   }
 
@@ -441,154 +482,125 @@
   }
 
   // -----------------------------
-  // Init
+  // Calendar integration (ICS)
   // -----------------------------
-(async function init(){
-  const slug = safe(getParam("team"));
-  if (!slug) {
-    alert("Missing team parameter.");
-    window.location.href = "./teams.html";
-    return;
+  function formatICSDate(dateStr, timeStr){
+    const date = new Date(`${dateStr} ${timeStr}`);
+    const pad = n => String(n).padStart(2,"0");
+
+    return (
+      date.getUTCFullYear() +
+      pad(date.getUTCMonth()+1) +
+      pad(date.getUTCDate()) + "T" +
+      pad(date.getUTCHours()) +
+      pad(date.getUTCMinutes()) +
+      "00Z"
+    );
   }
 
-  try {
-    // Load teams CSV and locate this team
-    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-    const teamRows = parseCsv(teamsCsv);
+  function generateTeamICS(teamName, games){
+    const now = new Date();
+    const stamp = now.toISOString().replace(/[-:]/g,"").split(".")[0] + "Z";
 
-    const teamRow = teamRows.find(r => safe(r.TeamSlug) === slug);
-    if (!teamRow) {
-      alert("Team not found. Check TeamSlug in your Teams tab.");
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//WBL 3rd Grade 2026//Team Schedule//EN"
+    ];
+
+    games.forEach(g => {
+      if (!g.Date || !g.Time) return;
+
+      const start = formatICSDate(g.Date, g.Time);
+
+      const startLocal = new Date(`${g.Date} ${g.Time}`);
+      const endLocal = new Date(startLocal.getTime() + 90*60000);
+      const pad = n => String(n).padStart(2,"0");
+
+      const end =
+        endLocal.getUTCFullYear() +
+        pad(endLocal.getUTCMonth()+1) +
+        pad(endLocal.getUTCDate()) + "T" +
+        pad(endLocal.getUTCHours()) +
+        pad(endLocal.getUTCMinutes()) +
+        "00Z";
+
+      const opponent = (g.TeamA === teamName) ? g.TeamB : g.TeamA;
+
+      ics.push(
+        "BEGIN:VEVENT",
+        `UID:${teamName}-${g.Date}-${g.Time}@wbl2026`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART:${start}`,
+        `DTEND:${end}`,
+        `SUMMARY:${teamName} vs ${opponent}`,
+        `LOCATION:${g.Field || ""}`,
+        "END:VEVENT"
+      );
+    });
+
+    ics.push("END:VCALENDAR");
+    return ics.join("\r\n");
+  }
+
+  // -----------------------------
+  // Init
+  // -----------------------------
+  (async function init(){
+    const slug = safe(getParam("team"));
+    if (!slug) {
+      alert("Missing team parameter.");
       window.location.href = "./teams.html";
       return;
     }
-    
-    setHeaderFromTeamRow(teamRow);
-    const teamDisplayName = safe(teamRow.TeamName) || slug;
 
-    // Load roster
-    const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
-    const rosterRows = parseCsv(rosterCsv);
-    const players = rosterRows.filter(r => safe(r.TeamSlug) === slug);
-    buildRosterGrid(players, teamDisplayName);
+    try {
+      const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+      const teamRows = parseCsv(teamsCsv);
 
-    // -----------------------
-    // Calendar integration
-    // -----------------------
+      const teamRow = teamRows.find(r => safe(r.TeamSlug) === slug);
+      if (!teamRow) {
+        alert("Team not found. Check TeamSlug in your Teams tab.");
+        window.location.href = "./teams.html";
+        return;
+      }
 
-    const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
-    const gameRows = parseCsv(gamesCsv);
+      setHeaderFromTeamRow(teamRow);
+      const teamDisplayName = safe(teamRow.TeamName) || slug;
 
-    const teamGames = gameRows.filter(g =>
-      safe(g.TeamA) === teamDisplayName ||
-      safe(g.TeamB) === teamDisplayName
-    );
+      const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
+      const rosterRows = parseCsv(rosterCsv);
 
-    function formatICSDate(dateStr, timeStr){
-      const date = new Date(`${dateStr} ${timeStr}`);
-      const pad = n => String(n).padStart(2,"0");
+      const players = rosterRows.filter(r => safe(r.TeamSlug) === slug);
+      buildRosterGrid(players, teamDisplayName);
 
-      return (
-        date.getUTCFullYear() +
-        pad(date.getUTCMonth()+1) +
-        pad(date.getUTCDate()) + "T" +
-        pad(date.getUTCHours()) +
-        pad(date.getUTCMinutes()) +
-        "00Z"
+      // games -> calendar
+      const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
+      const gameRows = parseCsv(gamesCsv);
+
+      const teamGames = gameRows.filter(g =>
+        safe(g.TeamA) === teamDisplayName ||
+        safe(g.TeamB) === teamDisplayName
       );
-    }
 
-  // Measure
-  const headerRect = header.getBoundingClientRect();
-  const logoRect = logo.getBoundingClientRect();
-  const targetRect = target.getBoundingClientRect();
+      const calBtn = document.getElementById("addCalendarBtn");
+      if (calBtn){
+        calBtn.addEventListener("click", () => {
+          const icsContent = generateTeamICS(teamDisplayName, teamGames);
+          const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
 
-  // Temporarily ensure we can measure the button height accurately
-  btn.classList.add("isPinned");
-  btn.style.left = "0px";
-  btn.style.top = "0px";
-
-  const btnRect = btn.getBoundingClientRect();
-
-  // X: align left edge of button with left edge of logo
-  const left = logoRect.left - headerRect.left;
-
-  // Y: set button top so its bottom matches the target pill bottom
-  let top = (targetRect.bottom - headerRect.top) - btnRect.height;
-
-  // Ensure it is still "below the logo" (at least 8px below logo bottom)
-  const minTop = (logoRect.bottom - headerRect.top) + 8;
-  if (top < minTop) top = minTop;
-
-  btn.style.left = `${Math.round(left)}px`;
-  btn.style.top = `${Math.round(top)}px`;
-}
-
-
-
-    
-    function generateTeamICS(teamName, games){
-      const now = new Date();
-      const stamp = now.toISOString().replace(/[-:]/g,"").split(".")[0] + "Z";
-
-      let ics = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//WBL 3rd Grade 2026//Team Schedule//EN"
-      ];
-
-      games.forEach(g => {
-        if (!g.Date || !g.Time) return;
-
-        const start = formatICSDate(g.Date, g.Time);
-
-        const endDate = new Date(new Date(`${g.Date} ${g.Time}`).getTime() + 90*60000);
-        const pad = n => String(n).padStart(2,"0");
-        const end =
-          endDate.getUTCFullYear() +
-          pad(endDate.getUTCMonth()+1) +
-          pad(endDate.getUTCDate()) + "T" +
-          pad(endDate.getUTCHours()) +
-          pad(endDate.getUTCMinutes()) +
-          "00Z";
-
-        const opponent = (g.TeamA === teamName) ? g.TeamB : g.TeamA;
-
-        ics.push(
-          "BEGIN:VEVENT",
-          `UID:${teamName}-${g.Date}-${g.Time}@wbl2026`,
-          `DTSTAMP:${stamp}`,
-          `DTSTART:${start}`,
-          `DTEND:${end}`,
-          `SUMMARY:${teamName} vs ${opponent}`,
-          `LOCATION:${g.Field || ""}`,
-          "END:VEVENT"
-        );
-      });
-
-      ics.push("END:VCALENDAR");
-      return ics.join("\r\n");
-    }
-
-    const calBtn = document.getElementById("addCalendarBtn");
-    if (calBtn){
-      calBtn.addEventListener("click", () => {
-        const icsContent = generateTeamICS(teamDisplayName, teamGames);
-        const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `${teamDisplayName}-WBL-2026-Schedule.ics`;
-        link.click();
-      });
-    }
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `${teamDisplayName}-WBL-2026-Schedule.ics`;
+          link.click();
+        });
+      }
 
     } catch (err) {
-    console.error(err);
-    alert("Team page error: check TEAMS_CSV_URL / ROSTER_CSV_URL in data.js and confirm your CSV headers.");
-  }
-
-})();
+      console.error(err);
+      alert("Team page error: check TEAMS_CSV_URL / ROSTER_CSV_URL / GAMES_CSV_URL in data.js and confirm your CSV headers.");
+    }
+  })();
 </script>
 
 <script src="./nav.js"></script>
