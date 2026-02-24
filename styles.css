@@ -2453,3 +2453,10 @@ body.watermarkPage::before{
   }
 }
 
+/* Remove grey background from schedule snapshot on home */
+#scheduleMini .card,
+#scheduleMini .miniScheduleCard,
+#scheduleMini .miniGameCard {
+  background: transparent !important;
+  box-shadow: none !important;
+}
