@@ -985,20 +985,20 @@ function renderScheduleCard(g){
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td class="num">${idx+1}</td>
-          <td>
-            <div class="miniTeamCell">
-              <img class="teamLogoMini" src="${meta.logo}" alt="${r.team} logo"
-                   onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-              <a class="scheduleTeamLink" ${style} href="${href}">${r.team}</a>
-            </div>
-          </td>
-          <td class="num">${r.W}</td>
-          <td class="num">${r.L}</td>
-          <td class="num">${r.T}</td>
-          <td class="num">${fmtPct(pct)}</td>
-          <td class="num">${streak}</td>
-        `;
+  <td class="num">${idx+1}</td>
+  <td>
+    <div class="miniTeamCell">
+      <img class="teamLogoMini teamLogoMini--standings" src="${meta.logo}" alt="${r.team} logo"
+           onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+      <a class="miniTeamCellName teamNameColored miniTeamName--standings" ${style} href="${href}">${r.team}</a>
+    </div>
+  </td>
+  <td class="num">${r.W}</td>
+  <td class="num">${r.L}</td>
+  <td class="num">${r.T}</td>
+  <td class="num">${fmtPct(pct)}</td>
+  <td class="num">${streak}</td>
+`;
         miniBody.appendChild(tr);
       });
 
