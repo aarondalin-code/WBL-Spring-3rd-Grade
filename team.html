@@ -5,6 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team Roster • WBL 3rd Grade 2026</title>
   <link rel="stylesheet" href="./styles.css?v=wbl2026-cal1" />
+<style>
+  /* Team page — Add Schedule button (inline override) */
+  body.teamPage button#addCalendarBtn{
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 10px;
+    padding: 8px 14px;
+
+    border-radius: 999px;
+    border: 1px solid #1e3fa8;
+
+    background: linear-gradient(180deg, rgba(30,63,168,.12), rgba(30,63,168,.05));
+    color: #1e3fa8;
+
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: .3px;
+
+    cursor: pointer;
+    white-space: nowrap;
+
+    transition: all .18s ease;
+  }
+
+  body.teamPage button#addCalendarBtn::before{
+    content: "📅";
+    font-size: 14px;
+  }
+
+  body.teamPage button#addCalendarBtn:hover{
+    background: #1e3fa8;
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(30,63,168,.18);
+    transform: translateY(-1px);
+  }
+
+  body.teamPage button#addCalendarBtn:active{
+    transform: translateY(0);
+  }
+</style>
   </head>
 <body class="watermarkPage teamPage hasHamburger">
 <header class="siteHeader">
