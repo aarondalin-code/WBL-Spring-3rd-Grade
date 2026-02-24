@@ -2453,21 +2453,9 @@ body.watermarkPage::before{
   }
 }
 
-/* =========================
-   INDEX: Schedule snapshot cards should be white (not grey)
-   Targets only the home page snapshot containers.
-========================= */
-
-#thisWeekGames .scheduleGameCard,
-#lastWeekFinals .scheduleGameCard{
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px;
-  padding: 12px 12px;
-  margin-top: 10px; /* gives separation between stacked games */
-}
-
-#thisWeekGames .scheduleGameCard:first-child,
-#lastWeekFinals .scheduleGameCard:first-child{
-  margin-top: 0;
+/* INDEX ONLY: make schedule snapshot cards white */
+#thisWeekGames .miniGameCard,
+#lastWeekFinals .miniGameCard{
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
 }
