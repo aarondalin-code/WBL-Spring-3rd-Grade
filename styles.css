@@ -2478,7 +2478,7 @@ body.watermarkPage::before{
   align-items:center;
 }
 
-/* Match your schedule filter “pill” feel */
+/* Filter pills */
 .drillsFilters select,
 .drillsFilters input{
   padding: 8px 12px;
@@ -2488,22 +2488,21 @@ body.watermarkPage::before{
   background: white;
 }
 
-.drillsFilters input{
-  font-weight: 700;
-  min-width: min(320px, 72vw);
-}
-
-/* Clean square thumbnail cards */
+/* 4-across grid (desktop) */
 .drillsGrid{
   display:grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
-@media (max-width: 980px){
+/* Responsive fallbacks */
+@media (max-width: 1200px){
+  .drillsGrid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 900px){
   .drillsGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 640px){
+@media (max-width: 600px){
   .drillsGrid{ grid-template-columns: 1fr; }
 }
 
@@ -2525,8 +2524,9 @@ body.watermarkPage::before{
   border-color: rgba(30,63,168,.45);
 }
 
+/* Keep square thumbnails (you can change to 4/3 later if desired) */
 .drillThumb{
-  aspect-ratio: 1 / 1;   /* square */
+  aspect-ratio: 1 / 1;
   background: rgba(37,99,235,.06);
 }
 
@@ -2537,21 +2537,22 @@ body.watermarkPage::before{
   display:block;
 }
 
+/* Slightly smaller card body */
 .drillBody{
-  padding: 12px;
+  padding: 10px;
 }
 
 .drillMetaRow{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .drillPill{
   display:inline-flex;
   align-items:center;
-  padding: 3px 9px;
+  padding: 2px 8px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 950;
@@ -2567,9 +2568,10 @@ body.watermarkPage::before{
   color: var(--muted);
 }
 
+/* Slightly smaller typography */
 .drillTitle{
   font-weight: 950;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.25;
 }
 
