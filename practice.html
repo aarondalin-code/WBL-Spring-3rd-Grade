@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Practice Drills</title>
+  <link rel="stylesheet" href="./styles.css?v=wbl-practice-v1" />
+</head>
 
+<body class="watermarkPage hasHamburger">
+  <header class="siteHeader">
+    <div class="navWrap">
+      <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="navOverlay" aria-hidden="true"></div>
+
+      <nav class="nav" id="siteNav">
+        <a href="./">Home</a>
+        <a href="./schedule.html">Schedule/Scores</a>
+        <a href="./standings.html">Standings</a>
+        <a href="./teams.html">Teams</a>
+        <a href="./playoffs.html">Playoffs</a>
+        <a href="./practice.html" class="active">Practice Drills</a>
+        <a href="./rules.html">Rules</a>
+        <a href="./contacts.html">Contacts</a>
+        <a href="./gallery.html">Gallery</a>
+        <a href="./uploads.html">Uploads</a>
+      </nav>
+    </div>
+
+    <div class="brandCenter">
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+      <h1>Practice Drills</h1>
+      <div class="tagline">Weekly pitching • hitting • fielding</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="docSection">
+      <div class="card">
+        <div class="cardBody">
+          <div class="homeSectionHead">
+            <h3 style="margin:0;">Browse Drills</h3>
+          </div>
+
+          <div class="drillsTopBar">
+            <div class="drillsFilters">
+              <select id="weekFilter" aria-label="Filter by week"></select>
+
+              <select id="typeFilter" aria-label="Filter by drill type">
+                <option value="all">All Types</option>
+                <option value="pitching">Pitching</option>
+                <option value="hitting">Hitting</option>
+                <option value="fielding">Fielding</option>
+              </select>
+
+              <input id="qFilter" type="search" placeholder="Search drills…" aria-label="Search drills" />
+            </div>
+
+            <div id="drillsMeta" class="muted small"></div>
+          </div>
+
+          <div id="drillsGrid" class="drillsGrid" style="margin-top:12px;">
+            <div class="muted small">Loading…</div>
+          </div>
+
+          <div id="drillsEmpty" class="muted small" style="margin-top:12px; display:none;">
+            No drills match your filters yet.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./data.js"></script>
+  <script src="./practice.js"></script>
+  <script src="./nav.js"></script>
+</body>
+</html>
