@@ -85,7 +85,6 @@ function resolveThumb(videoUrl, thumbUrl){
 /* -------------------- Render -------------------- */
 const weekEl = document.getElementById("weekFilter");
 const typeEl = document.getElementById("typeFilter");
-const qEl    = document.getElementById("qFilter");
 const gridEl = document.getElementById("drillsGrid");
 const emptyEl= document.getElementById("drillsEmpty");
 const metaEl = document.getElementById("drillsMeta");
@@ -148,16 +147,12 @@ function cardHtml(d){
 function applyFilters(){
   const w = weekEl.value;
   const t = typeEl.value;
-  const q = norm(qEl.value);
 
   const filtered = all.filter(d=>{
     const wOk = (w === "all") || String(d.week) === String(w);
     const tOk = (t === "all") || norm(d.type) === t;
-    if (!wOk || !tOk) return false;
-
-    if (!q) return true;
-    const blob = `${d.title} ${d.description} ${d.type}`.toLowerCase();
-    return blob.includes(q);
+    return wOk && tOk;
+ 
   });
 
   gridEl.innerHTML = filtered.map(cardHtml).join("");
@@ -201,7 +196,6 @@ async function initPractice(){
 
     weekEl.addEventListener("change", applyFilters);
     typeEl.addEventListener("change", applyFilters);
-    qEl.addEventListener("input", applyFilters);
 
   }catch(e){
     console.error(e);
