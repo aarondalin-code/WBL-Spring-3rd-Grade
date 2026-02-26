@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-3" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-4" />
   <meta name="robots" content="noindex,nofollow" />
 
   <style>
@@ -127,6 +127,7 @@
     </button>
     <div class="navOverlay" aria-hidden="true"></div>
 
+    <!-- Draft intentionally omitted from nav -->
     <nav class="nav" id="siteNav">
       <a href="./">Home</a>
       <a href="./schedule.html">Schedule/Scores</a>
@@ -202,7 +203,8 @@
               <span class="pill" id="pickPill">Pick —</span>
             </div>
             <div class="smallMuted">
-              Up next: <span id="upNext">—</span> • Round: <span id="round">—</span> / <span id="totalRounds">12</span>
+              Up next: <span id="upNext">—</span>
+              • Round: <span id="round">—</span> / <span id="totalRounds">12</span>
               • Picks made: <span id="picksMade">0</span>
             </div>
             <div class="smallMuted" id="forfeitLine" style="margin-top:6px;"></div>
@@ -269,6 +271,7 @@
     return await res.text();
   }
 
+  // Robust CSV parser (handles quotes/commas)
   function parseCsv(text){
     const rows = [];
     let row = [], cur = "", inQuotes = false;
@@ -304,7 +307,7 @@
     return safe(r.PlayerName || r.Name);
   }
 
-  // DraftPool map: Name -> TravelLevel, Pitcher, Travel, etc.
+  // DraftPool map: Name -> full DraftPool row
   function buildPlayerMap(pool){
     const m = new Map();
     for (const p of pool){
@@ -315,11 +318,10 @@
     return m;
   }
 
-  // Forfeit assignment algorithm per team:
-  // For each CoachKid A -> needs an early forfeit starting round 1
-  // For each CoachKid B -> needs an early forfeit starting round 2
-  // If multiple, we assign them to the earliest available rounds >= base, so:
-  // A+A => R1,R2 ; A+B => R1,R2 ; B+B => R2,R3
+  // Forfeit assignment per team:
+  // CoachKid A => base round 1
+  // CoachKid B => base round 2
+  // If multiple, assign earliest available rounds >= base (A+A => 1,2; A+B => 1,2; B+B => 2,3)
   function assignForfeitsForTeam(baseRounds){
     const used = new Set();
     const out = [];
@@ -333,16 +335,8 @@
     return out;
   }
 
-  // Build forfeits map: teamSlug -> Set(roundNumbers)
   function computeForfeits(teams, roster, playerMap){
-    const coachKids = [];
-    for (const [k, p] of playerMap.entries()){
-      if (norm(p.CoachKid) === "y"){
-        coachKids.push(p);
-      }
-    }
-
-    // Map coach kid -> teamSlug by scanning roster for their name
+    // Map rostered name -> teamSlug
     const nameToSlug = new Map();
     for (const r of roster){
       const nm = norm(getRosterName(r));
@@ -350,11 +344,12 @@
       if (nm && slug) nameToSlug.set(nm, slug);
     }
 
+    // Gather coach kids (from DraftPool) that are already placed on roster
     const baseByTeam = new Map(); // teamSlug -> [baseRound,...]
-    for (const p of coachKids){
-      const nm = norm(p.Name);
+    for (const [nm, p] of playerMap.entries()){
+      if (norm(p.CoachKid) !== "y") continue;
       const slug = nameToSlug.get(nm);
-      if (!slug) continue; // if not prefilled yet, it won't forfeit yet
+      if (!slug) continue; // not prefilled yet => no forfeit yet
       const lvl = norm(p.TravelLevel);
       if (lvl === "a"){
         if (!baseByTeam.has(slug)) baseByTeam.set(slug, []);
@@ -369,15 +364,12 @@
     for (const t of teams){
       const slug = safe(t.TeamSlug);
       if (!slug) continue;
-      const baseRounds = baseByTeam.get(slug) || [];
-      const assigned = assignForfeitsForTeam(baseRounds);
+      const assigned = assignForfeitsForTeam(baseByTeam.get(slug) || []);
       forfeits.set(slug, new Set(assigned));
     }
     return forfeits;
   }
 
-  // Create full snake pick sequence (excluding forfeited picks)
-  // Each element: { round, teamSlug, teamName, overallPickNumberIncludingSkipped? }
   function buildPickSequenceSnake(teams, forfeits){
     const order = teams
       .map(t => ({ slug: safe(t.TeamSlug), name: safe(t.TeamName) || safe(t.TeamSlug) }))
@@ -391,7 +383,7 @@
         const idx = isOdd ? pos : (n - 1 - pos);
         const team = order[idx];
         const fset = forfeits.get(team.slug) || new Set();
-        if (fset.has(round)) continue; // skip forfeited slot
+        if (fset.has(round)) continue;
         seq.push({ round, teamSlug: team.slug, teamName: team.name });
       }
     }
@@ -557,13 +549,11 @@
       const picks = byTeam.get(t.slug) || [];
       picks.sort((a,b) => a.slot.localeCompare(b.slot));
 
-      // A-count for this team (includes coach kids, since they’re on roster)
       let aCount = 0;
       for (const p of picks){
         const dp = playerMap.get(norm(p.name));
         if (dp && norm(dp.TravelLevel) === "a") aCount++;
       }
-
       const aBadge =
         aCount > 2
           ? `<span class="pill bad">A: ${aCount}/2</span>`
@@ -603,7 +593,7 @@
   }
 
   function computeClockFromSequence(pickSeq, picksMade){
-    document.getElementById("picksMade").textContent = String(picksMade);
+    document.getElementById("picksMade").textContent = String(Math.max(0, picksMade));
     document.getElementById("totalRounds").textContent = String(TOTAL_ROUNDS);
 
     const cur = pickSeq[picksMade];
@@ -617,16 +607,20 @@
     pickPill.textContent = "Pick " + (picksMade + 1);
 
     if (!cur) pickPill.className = "pill bad";
-    else if (cur.round > TOTAL_ROUNDS) pickPill.className = "pill bad";
     else pickPill.className = "pill";
   }
 
-  function parsePicksMade(draftMetaRows){
-    // Expect a CSV with header PicksMade and at least one row
-    if (!draftMetaRows || !draftMetaRows.length) return 0;
-    const pm = safe(draftMetaRows[0].PicksMade);
-    const n = Number(pm);
-    return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+  function computePicksMadeAutomatically(rosterRows, playerMap){
+    const rosteredNames = rosterRows.map(getRosterName).filter(Boolean);
+
+    let coachKidsOnRoster = 0;
+    for (const name of rosteredNames){
+      const p = playerMap.get(norm(name));
+      if (p && norm(p.CoachKid) === "y") coachKidsOnRoster++;
+    }
+
+    // Live picks = total rostered minus prefilled coach kids
+    return Math.max(0, rosteredNames.length - coachKidsOnRoster);
   }
 
   let autoTimer = null;
@@ -635,17 +629,15 @@
     const meta = document.getElementById("meta");
     meta.textContent = "Loading…";
 
-    const [teamsCsv, rosterCsv, poolCsv, metaCsv] = await Promise.all([
+    const [teamsCsv, rosterCsv, poolCsv] = await Promise.all([
       fetchCsv(window.SHEET?.TEAMS_CSV_URL),
       fetchCsv(window.SHEET?.ROSTER_CSV_URL),
       fetchCsv(window.SHEET?.DRAFTPOOL_CSV_URL),
-      fetchCsv(window.SHEET?.DRAFTMETA_CSV_URL),
     ]);
 
     const teams = parseCsv(teamsCsv);
     const roster = parseCsv(rosterCsv);
     const poolRaw = parseCsv(poolCsv);
-    const draftMeta = parseCsv(metaCsv);
 
     // Keep all DraftPool columns
     const pool = poolRaw.map(p => {
@@ -666,15 +658,15 @@
     // deterministic sort for the room
     availableFiltered.sort((a,b) => safe(a.Name).localeCompare(safe(b.Name)));
 
-    // forfeits based on coach kids and their TravelLevel A/B, per team
+    // forfeits computed from coach kids (already on roster) + their TravelLevel
     const forfeits = computeForfeits(teams, roster, playerMap);
     renderForfeitsLine(teams, forfeits);
 
     // build snake sequence for 12 rounds, skipping forfeits
     const pickSeq = buildPickSequenceSnake(teams, forfeits);
 
-    // picksMade from DraftMeta (excludes coach-kid pre-fills)
-    const picksMade = parsePicksMade(draftMeta);
+    // picksMade computed automatically (no extra tab)
+    const picksMade = computePicksMadeAutomatically(roster, playerMap);
     computeClockFromSequence(pickSeq, picksMade);
 
     renderAvailable(availableFiltered);
@@ -695,6 +687,7 @@
     });
 
     autoTimer = setInterval(() => loadAndRender().catch(()=>{}), 8000);
+
     loadAndRender().catch(err => {
       console.error(err);
       alert("Draft page error: " + err.message);
