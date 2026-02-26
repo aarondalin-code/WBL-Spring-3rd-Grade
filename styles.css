@@ -2579,3 +2579,8 @@ body.watermarkPage::before{
   margin-top: 6px;
   line-height: 1.35;
 }
+.siteHeader h1 {
+  color: #1e40af;              /* darker royal blue */
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+}
