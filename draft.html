@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-6" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-8" />
   <meta name="robots" content="noindex,nofollow" />
 
   <style>
@@ -28,20 +28,33 @@
     }
     @media (max-width: 980px) { .draftPage .grid2 { grid-template-columns: 1fr; } }
 
-    .draftPage .toolbar {
-      display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;
+    /* Filters: compact grid */
+    .draftPage .filtersWrap{
+      display:grid;
+      gap:10px;
     }
-    .draftPage .field {
-      display:flex; flex-direction:column; gap:6px;
-      min-width: 200px;
+    .draftPage .filtersGrid{
+      display:grid;
+      gap:10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      align-items:end;
     }
+    @media (max-width: 520px){
+      .draftPage .filtersGrid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .draftPage .field { display:flex; flex-direction:column; gap:6px; min-width:0; }
     .draftPage .field .lbl { font-size:12px; font-weight:900; color: rgba(0,0,0,.55); }
+
     .draftPage input[type="text"], .draftPage select {
-      padding:10px 12px;
+      width:100%;
+      padding:9px 10px;
       border-radius:12px;
       border:1px solid rgba(0,0,0,.12);
       background: rgba(255,255,255,.95);
+      font-size:14px;
     }
+
     .draftPage .btnSecondary {
       padding:10px 12px;
       border-radius:12px;
@@ -49,6 +62,25 @@
       background: rgba(255,255,255,.9);
       font-weight:900;
       cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .draftPage .btnRow{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* Search moved below, centered */
+    .draftPage .searchRow{
+      display:flex;
+      justify-content:center;
+      margin-top:6px;
+    }
+    .draftPage .searchRow .field{
+      width:min(520px, 100%);
     }
 
     .draftPage .smallMuted { font-size:12px; color: rgba(0,0,0,.55); font-weight:700; }
@@ -86,7 +118,7 @@
     .draftPage .k { color: rgba(0,0,0,.55); font-size:12px; font-weight:900; }
     .draftPage .v { color: rgba(0,0,0,.88); font-size:12px; }
 
-    /* NEW: Two-column field layout for hover + modal details */
+    /* Two-column field layout for hover + modal details */
     .draftPage .kv2 {
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -113,7 +145,7 @@
     }
     .draftPage .modalBackdrop.open { display:flex; align-items:flex-start; justify-content:center; }
     .draftPage .modalCard {
-      width:min(780px, 96vw);
+      width:min(860px, 96vw);
       background:#fff;
       border-radius:18px;
       border:1px solid rgba(0,0,0,.16);
@@ -171,56 +203,104 @@
 
     <div class="card">
       <div class="cardBody">
-        <div class="toolbar">
-          <div class="field" style="flex:1; min-width:240px;">
-            <div class="lbl">Search</div>
-            <input id="q" type="text" placeholder="Type a name…" />
+
+        <div class="filtersWrap">
+          <div class="filtersGrid">
+            <div class="field">
+              <div class="lbl">Pitcher</div>
+              <select id="pitcherFilter">
+                <option value="">All</option>
+                <option value="y">Pitcher (Y)</option>
+                <option value="n">Not marked</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">Travel</div>
+              <select id="travelFilter">
+                <option value="">All</option>
+                <option value="y">Travel (Y)</option>
+                <option value="n">Non-travel (N)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">Travel Level</div>
+              <select id="levelFilter">
+                <option value="">All</option>
+                <option value="a">A</option>
+                <option value="b">B</option>
+                <option value="c">C</option>
+                <option value="none">None</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">School</div>
+              <select id="schoolFilter">
+                <option value="">All</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">Taken team</div>
+              <select id="takenTeamFilter">
+                <option value="">All teams</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">Spring Pitching</div>
+              <select id="springPitchingFilter">
+                <option value="">All</option>
+                <option value="Developing">Developing</option>
+                <option value="Age Appropriate">Age Appropriate</option>
+                <option value="Above Age Level">Above Age Level</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">Spring Hitting</div>
+              <select id="springHittingFilter">
+                <option value="">All</option>
+                <option value="Developing">Developing</option>
+                <option value="Age Appropriate">Age Appropriate</option>
+                <option value="Above Age Level">Above Age Level</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">Spring Throwing</div>
+              <select id="springThrowingFilter">
+                <option value="">All</option>
+                <option value="Developing">Developing</option>
+                <option value="Age Appropriate">Age Appropriate</option>
+                <option value="Above Age Level">Above Age Level</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="lbl">Spring Fielding</div>
+              <select id="springFieldingFilter">
+                <option value="">All</option>
+                <option value="Developing">Developing</option>
+                <option value="Age Appropriate">Age Appropriate</option>
+                <option value="Above Age Level">Above Age Level</option>
+              </select>
+            </div>
           </div>
 
-          <div class="field">
-            <div class="lbl">Pitcher</div>
-            <select id="pitcherFilter">
-              <option value="">All</option>
-              <option value="y">Pitcher (Y)</option>
-              <option value="n">Not marked</option>
-            </select>
+          <div class="btnRow">
+            <button id="clearBtn" class="btnSecondary" type="button">Clear filters</button>
+            <button id="refreshBtn" class="btnSecondary" type="button">Refresh</button>
           </div>
 
-          <div class="field">
-            <div class="lbl">Travel</div>
-            <select id="travelFilter">
-              <option value="">All</option>
-              <option value="y">Travel (Y)</option>
-              <option value="n">Non-travel (N)</option>
-            </select>
+          <div class="searchRow">
+            <div class="field">
+              <div class="lbl">Search</div>
+              <input id="q" type="text" placeholder="Type a name…" />
+            </div>
           </div>
-
-          <div class="field">
-            <div class="lbl">Travel Level</div>
-            <select id="levelFilter">
-              <option value="">All</option>
-              <option value="a">A</option>
-              <option value="b">B</option>
-              <option value="c">C</option>
-              <option value="none">None</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <div class="lbl">School</div>
-            <select id="schoolFilter">
-              <option value="">All</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <div class="lbl">Taken team</div>
-            <select id="takenTeamFilter">
-              <option value="">All teams</option>
-            </select>
-          </div>
-
-          <button id="refreshBtn" class="btnSecondary" type="button">Refresh</button>
         </div>
 
         <div class="smallMuted" id="meta" style="margin-top:10px;"></div>
@@ -285,7 +365,6 @@
 <script>
   const TOTAL_ROUNDS = 12;
 
-  // TeamSlug -> TeamColor
   let slugToColor = new Map();
 
   function safe(v){ return String(v ?? "").trim(); }
@@ -425,6 +504,11 @@
     const pitcher = norm(document.getElementById("pitcherFilter").value);
     const school = norm(document.getElementById("schoolFilter").value);
 
+    const sp = norm(document.getElementById("springPitchingFilter").value);
+    const sh = norm(document.getElementById("springHittingFilter").value);
+    const st = norm(document.getElementById("springThrowingFilter").value);
+    const sf = norm(document.getElementById("springFieldingFilter").value);
+
     return players.filter(p => {
       const name = norm(p.Name);
       if (q && !name.includes(q)) return false;
@@ -447,24 +531,61 @@
       const sc = norm(p.School);
       if (school && sc !== school) return false;
 
+      if (sp && norm(p.SpringPitching) !== sp) return false;
+      if (sh && norm(p.SpringHitting)  !== sh) return false;
+      if (st && norm(p.SpringThrowing) !== st) return false;
+      if (sf && norm(p.SpringFielding) !== sf) return false;
+
       return true;
     });
   }
 
-  // EASIEST place to hide fields:
-  // Add column headers (exactly as in your DraftPool sheet) to this set.
+  // Hide fields from hover+modal details by adding their exact column header here
   const HIDE_FIELDS = new Set([
-    // Examples (uncomment/add what you want to hide):
-    // "Notes",
     // "LockedTeamsSlug",
-    // "SomeInternalField",
+    // "Notes",
   ]);
+
+  // Optional: override specific display names (only if the auto-format isn't perfect)
+  const DISPLAY_NAME_OVERRIDES = {
+    // Example:
+    // Spring2025HeadCoach: "Spring 2025 Head Coach",
+    // PlayerID: "Player ID",
+  };
+
+  function titleCaseWords(s){
+    return s.split(" ").map(w => {
+      if (!w) return w;
+      // keep common acronyms
+      const upper = w.toUpperCase();
+      if (["ID","URL","DOB","WBL","MLB"].includes(upper)) return upper;
+      // keep years
+      if (/^\d{4}$/.test(w)) return w;
+      return w[0].toUpperCase() + w.slice(1).toLowerCase();
+    }).join(" ");
+  }
+
+  function displayKey(key){
+    if (DISPLAY_NAME_OVERRIDES[key]) return DISPLAY_NAME_OVERRIDES[key];
+
+    // Insert spaces between letter<->digit and lower<->upper boundaries
+    let s = String(key);
+
+    s = s.replaceAll("_"," ");
+    s = s.replace(/([a-z])([A-Z])/g, "$1 $2");
+    s = s.replace(/([A-Z])([A-Z][a-z])/g, "$1 $2"); // "URLValue" -> "URL Value"
+    s = s.replace(/([A-Za-z])(\d)/g, "$1 $2");      // "Spring2025" -> "Spring 2025"
+    s = s.replace(/(\d)([A-Za-z])/g, "$1 $2");      // "2025Head" -> "2025 Head"
+    s = s.replace(/\s+/g, " ").trim();
+
+    return titleCaseWords(s);
+  }
 
   function buildDetailRows(p){
     const keys = Object.keys(p).filter(k => k !== "Name");
     return keys
       .filter(k => !HIDE_FIELDS.has(k))
-      .map(k => ({ k, v: safe(p[k]) }))
+      .map(k => ({ k, label: displayKey(k), v: safe(p[k]) }))
       .filter(x => x.v);
   }
 
@@ -478,7 +599,7 @@
     const renderCol = (rows) => `
       <div class="kvCol">
         ${rows.map(x => `
-          <div class="k">${escapeHtml(x.k)}</div>
+          <div class="k">${escapeHtml(x.label)}</div>
           <div class="v">${escapeHtml(x.v)}</div>
         `).join("")}
       </div>
@@ -691,7 +812,6 @@
       const p = playerMap.get(norm(name));
       if (p && norm(p.CoachKid) === "y") coachKidsOnRoster++;
     }
-
     return Math.max(0, rosteredNames.length - coachKidsOnRoster);
   }
 
@@ -726,6 +846,19 @@
 
     if (opts.some(t => t.slug === prev)) sel.value = prev;
     else sel.value = "";
+  }
+
+  function clearFilters(){
+    document.getElementById("pitcherFilter").value = "";
+    document.getElementById("travelFilter").value = "";
+    document.getElementById("levelFilter").value = "";
+    document.getElementById("schoolFilter").value = "";
+    document.getElementById("takenTeamFilter").value = "";
+    document.getElementById("springPitchingFilter").value = "";
+    document.getElementById("springHittingFilter").value = "";
+    document.getElementById("springThrowingFilter").value = "";
+    document.getElementById("springFieldingFilter").value = "";
+    document.getElementById("q").value = "";
   }
 
   let autoTimer = null;
@@ -788,7 +921,17 @@
     document.getElementById("refreshBtn")
       .addEventListener("click", () => loadAndRender().catch(err => alert(err.message)));
 
-    ["q","pitcherFilter","travelFilter","levelFilter","schoolFilter","takenTeamFilter"].forEach(id => {
+    document.getElementById("clearBtn")
+      .addEventListener("click", () => {
+        clearFilters();
+        loadAndRender().catch(()=>{});
+      });
+
+    [
+      "q",
+      "pitcherFilter","travelFilter","levelFilter","schoolFilter","takenTeamFilter",
+      "springPitchingFilter","springHittingFilter","springThrowingFilter","springFieldingFilter"
+    ].forEach(id => {
       const el = document.getElementById(id);
       el.addEventListener("input", () => loadAndRender().catch(()=>{}));
       el.addEventListener("change", () => loadAndRender().catch(()=>{}));
