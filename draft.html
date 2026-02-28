@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-11" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-12" />
   <meta name="robots" content="noindex,nofollow" />
 
   <style>
@@ -31,15 +31,121 @@
     .draftPage .smallMuted{ font-size:12px; color: rgba(0,0,0,.55); font-weight:700; }
     .draftPage .bigLine{ font-weight:1000; }
 
-    /* Center and “pop” the clock */
+    /* -----------------------------
+       ON THE CLOCK (NEW STYLING)
+       ----------------------------- */
+    .draftPage .clockCard{
+      position:relative;
+      overflow:hidden;
+    }
+    .draftPage .clockCard::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: var(--teamWash, transparent);
+      opacity: .14;
+      pointer-events:none;
+    }
+    .draftPage .clockCard .cardBody{ position:relative; }
+
     .draftPage .clockLine{
       display:flex; flex-wrap:wrap; gap:10px;
       align-items:baseline; justify-content:center; text-align:center;
     }
     .draftPage .clockLine > div{ width:100%; }
-    .draftPage #onClock{ font-size:28px; font-weight:1000; }
-    @media (max-width: 520px){ .draftPage #onClock{ font-size:22px; } }
 
+    .draftPage .clockHeadline{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      align-items:baseline;
+      gap:8px;
+      margin-bottom:6px;
+    }
+    .draftPage .clockHeadline .label{
+      font-size:28px;
+      font-weight:1000;
+      color: rgba(0,0,0,.85);
+    }
+    .draftPage .clockHeadline .team{
+      font-size:28px;
+      font-weight:1000;
+    }
+    @media (max-width: 520px){
+      .draftPage .clockHeadline .label,
+      .draftPage .clockHeadline .team{ font-size:22px; }
+    }
+
+    /* Last 5 picks ticker */
+    .draftPage .tickerWrap{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:10px;
+      justify-items:center;
+    }
+    .draftPage .ticker{
+      width:min(820px, 100%);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:14px;
+      background: rgba(255,255,255,.75);
+      padding:10px 10px;
+    }
+    .draftPage .tickerHdr{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      margin-bottom:6px;
+    }
+    .draftPage .tickerTitle{
+      font-weight:1000;
+      font-size:12px;
+      color: rgba(0,0,0,.70);
+      letter-spacing:.02em;
+      text-transform: uppercase;
+    }
+    .draftPage .tickerSub{
+      font-size:12px;
+      font-weight:800;
+      color: rgba(0,0,0,.55);
+    }
+    .draftPage .tickerList{
+      max-height: 110px;
+      overflow:auto;
+      display:grid;
+      gap:6px;
+      padding-right:6px;
+    }
+    .draftPage .tickRow{
+      display:flex;
+      gap:8px;
+      justify-content:space-between;
+      align-items:baseline;
+      font-size:12px;
+    }
+    .draftPage .tickPick{
+      font-weight:1000;
+      color:#1e40af;
+      white-space:nowrap;
+    }
+    .draftPage .tickName{
+      font-weight:800;
+      color: rgba(0,0,0,.85);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      flex: 1;
+      text-align:left;
+    }
+    .draftPage .tickTeam{
+      font-weight:800;
+      color: rgba(0,0,0,.55);
+      white-space:nowrap;
+    }
+
+    /* -----------------------------
+       PLAYER CARD/DETAILS
+       ----------------------------- */
     .draftPage .tightRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .draftPage .tightLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
     .draftPage .tightName{ font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -67,7 +173,6 @@
     .draftPage .v{ color: rgba(0,0,0,.88); font-size:12px; }
     .draftPage .na{ color: rgba(0,0,0,.45); font-style:italic; }
 
-    /* 3-column fixed layout for hover + modal details */
     .draftPage .kv3{
       display:grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -83,6 +188,9 @@
     }
     @media (max-width: 520px){ .draftPage .kvCol3{ grid-template-columns: 140px 1fr; } }
 
+    /* -----------------------------
+       MODAL
+       ----------------------------- */
     .draftPage .modalBackdrop{
       display:none;
       position:fixed; inset:0;
@@ -116,19 +224,14 @@
     }
 
     /* -----------------------------
-       FILTER BOX (NEW LAYOUT/POLISH)
+       FILTER BOX (5 + 4 + actions row)
        ----------------------------- */
+    .draftPage .filtersCard .cardBody{ padding:12px; }
 
-    /* Make the filters card tighter and nicer */
-    .draftPage .filtersCard .cardBody{
-      padding:12px;           /* tighter vertical */
-    }
-
-    /* Watermark / design feature inside filter box */
     .draftPage .filtersShell{
       position:relative;
       border-radius:14px;
-      padding:10px;           /* inner padding */
+      padding:10px;
       background:
         linear-gradient(180deg, rgba(30,64,175,.06), rgba(30,64,175,0) 55%),
         repeating-linear-gradient(135deg,
@@ -141,8 +244,6 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
       overflow:hidden;
     }
-
-    /* Optional subtle watermark text */
     .draftPage .filtersShell::after{
       content:"DRAFT ROOM";
       position:absolute;
@@ -158,12 +259,7 @@
       text-transform: uppercase;
     }
 
-    /* Filter layout: fixed 5 + 4 */
-    .draftPage .filtersWrap{
-      display:grid;
-      gap:10px;
-    }
-
+    .draftPage .filtersWrap{ display:grid; gap:10px; }
     .draftPage .filtersGrid5{
       display:grid;
       gap:10px;
@@ -176,8 +272,6 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
       align-items:end;
     }
-
-    /* Responsive fallback */
     @media (max-width: 980px){
       .draftPage .filtersGrid5{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .draftPage .filtersGrid4{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -187,12 +281,8 @@
       .draftPage .filtersGrid4{ grid-template-columns: 1fr 1fr; }
     }
 
-    .draftPage .field{
-      display:flex; flex-direction:column; gap:5px; min-width:0;
-    }
-    .draftPage .field .lbl{
-      font-size:12px; font-weight:900; color: rgba(0,0,0,.55);
-    }
+    .draftPage .field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+    .draftPage .field .lbl{ font-size:12px; font-weight:900; color: rgba(0,0,0,.55); }
 
     .draftPage input[type="text"], .draftPage select{
       width:100%;
@@ -201,23 +291,6 @@
       border:1px solid rgba(0,0,0,.12);
       background: rgba(255,255,255,.92);
       font-size:14px;
-    }
-
-    /* Search + buttons in one row */
-    .draftPage .actionsRow{
-      display:grid;
-      grid-template-columns: 1fr auto auto;
-      gap:10px;
-      align-items:center;
-      margin-top:2px;
-    }
-    @media (max-width: 720px){
-      .draftPage .actionsRow{
-        grid-template-columns: 1fr;
-      }
-      .draftPage .actionsRow .btnGroup{
-        justify-content:stretch;
-      }
     }
 
     .draftPage .btnSecondary{
@@ -229,6 +302,17 @@
       cursor:pointer;
       white-space:nowrap;
     }
+
+    .draftPage .actionsRow{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      align-items:center;
+      margin-top:2px;
+    }
+    @media (max-width: 720px){
+      .draftPage .actionsRow{ grid-template-columns: 1fr; }
+    }
     .draftPage .btnGroup{
       display:flex;
       gap:10px;
@@ -237,10 +321,7 @@
       align-items:center;
     }
 
-    /* Remove extra vertical space from meta line spacing under filters */
-    .draftPage #meta{
-      margin-top:8px !important;
-    }
+    .draftPage #meta{ margin-top:8px !important; }
   </style>
 </head>
 
@@ -280,7 +361,6 @@
         <div class="filtersShell">
           <div class="filtersWrap">
 
-            <!-- Row 1: 5 filters -->
             <div class="filtersGrid5">
               <div class="field">
                 <div class="lbl">Pitcher</div>
@@ -326,7 +406,6 @@
               </div>
             </div>
 
-            <!-- Row 2: 4 filters -->
             <div class="filtersGrid4">
               <div class="field">
                 <div class="lbl">Spring Pitching</div>
@@ -369,7 +448,6 @@
               </div>
             </div>
 
-            <!-- Row 3: Search + buttons (horizontal) -->
             <div class="actionsRow">
               <div class="field" style="gap:0;">
                 <input id="q" type="text" placeholder="Search player name…" />
@@ -388,20 +466,34 @@
       </div>
     </div>
 
-    <div class="card" style="margin-top:14px;">
+    <div class="card clockCard" style="margin-top:14px;">
       <div class="cardBody">
         <div class="clockLine">
           <div>
-            <div class="bigLine">
-              On the clock: <span id="onClock">—</span>
+
+            <div class="clockHeadline">
+              <span class="label">On the clock:</span>
+              <span class="team" id="onClock">—</span>
               <span class="pill" id="pickPill">Pick —</span>
             </div>
+
             <div class="smallMuted">
               Up next: <span id="upNext">—</span>
               • Round: <span id="round">—</span> / <span id="totalRounds">12</span>
               • Picks made: <span id="picksMade">0</span>
             </div>
             <div class="smallMuted" id="forfeitLine" style="margin-top:6px;"></div>
+
+            <div class="tickerWrap">
+              <div class="ticker">
+                <div class="tickerHdr">
+                  <div class="tickerTitle">Last 5 picks</div>
+                  <div class="tickerSub" id="lastPicksMeta">—</div>
+                </div>
+                <div class="tickerList" id="lastPicks"></div>
+              </div>
+            </div>
+
           </div>
           <div class="smallMuted">Auto-refresh: <span id="autoRefreshState">ON</span></div>
         </div>
@@ -447,9 +539,7 @@
   const TOTAL_ROUNDS = 12;
   let slugToColor = new Map();
 
-  // Fixed 3-column schema (5 fields per column)
   const DETAIL_SCHEMA = [
-    // Column 1
     [
       ["Travel", "Travel"],
       ["TravelTeam", "Travel Team"],
@@ -457,15 +547,13 @@
       ["Pitcher", "Pitcher"],
       ["CoachKid", "Coach Kid"]
     ],
-    // Column 2
     [
-      ["Spring2025HeadCoach", "2025 Spring Coach"],
+      ["Spring2025HeadCoach", "2025 Spring Head Coach"],
       ["SpringPitching", "Spring Pitching"],
       ["SpringHitting", "Spring Hitting"],
       ["SpringThrowing", "Spring Throwing"],
       ["SpringFielding", "Spring Fielding"]
     ],
-    // Column 3
     [
       ["School", "School"],
       ["CoachRequest", "Coach Request"],
@@ -666,7 +754,6 @@
         }).join("")}
       </div>
     `;
-
     return `
       <div class="kv3">
         ${renderCol(DETAIL_SCHEMA[0])}
@@ -674,6 +761,63 @@
         ${renderCol(DETAIL_SCHEMA[2])}
       </div>
     `;
+  }
+
+  // --- Team wash helpers (for clock card background) ---
+  function hexToRgb(hex){
+    const h = safe(hex).replace("#","").trim();
+    if (![3,6].includes(h.length)) return null;
+    const full = h.length === 3 ? h.split("").map(c => c+c).join("") : h;
+    const n = parseInt(full, 16);
+    if (Number.isNaN(n)) return null;
+    return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
+  }
+
+  function setTeamWash(teamSlug){
+    const card = document.querySelector(".clockCard");
+    const hex = slugToColor.get(teamSlug) || "";
+    const rgb = hexToRgb(hex);
+    if (!card || !rgb) {
+      if (card) card.style.setProperty("--teamWash", "transparent");
+      return;
+    }
+    card.style.setProperty(
+      "--teamWash",
+      `linear-gradient(135deg, rgba(${rgb.r},${rgb.g},${rgb.b},0.55), rgba(${rgb.r},${rgb.g},${rgb.b},0.0) 65%)`
+    );
+  }
+
+  // --- Last 5 picks ---
+  function renderLastPicks(rosterRows, teamsRows){
+    const el = document.getElementById("lastPicks");
+    const meta = document.getElementById("lastPicksMeta");
+    if (!el || !meta) return;
+
+    const slugToName = new Map();
+    for (const t of teamsRows){
+      const slug = safe(t.TeamSlug);
+      if (slug) slugToName.set(slug, safe(t.TeamName) || slug);
+    }
+
+    const taken = rosterRows
+      .map(r => ({
+        slot: safe(r.PlayerID),
+        name: getRosterName(r),
+        slug: safe(r.TeamSlug)
+      }))
+      .filter(x => x.slot && x.name && x.slug)
+      .sort((a,b) => a.slot.localeCompare(b.slot));
+
+    const last = taken.slice(-5).reverse();
+
+    meta.textContent = taken.length ? `${taken.length} total` : "—";
+    el.innerHTML = last.length ? last.map(x => `
+      <div class="tickRow">
+        <span class="tickPick">${escapeHtml(x.slot)}</span>
+        <span class="tickName">${escapeHtml(x.name)}</span>
+        <span class="tickTeam">${escapeHtml(slugToName.get(x.slug) || x.slug)}</span>
+      </div>
+    `).join("") : `<div class="smallMuted">No picks yet.</div>`;
   }
 
   // Modal
@@ -878,8 +1022,8 @@
 
   function populateSchoolOptions(pool){
     const sel = document.getElementById("schoolFilter");
-
     const prev = sel.value;
+
     const schools = Array.from(new Set(
       pool.map(p => safe(p.School)).filter(Boolean)
     )).sort((a,b) => a.localeCompare(b));
@@ -967,9 +1111,14 @@
     renderForfeitsLine(teams, forfeits);
 
     const pickSeq = buildPickSequenceSnake(teams, forfeits);
-
     const picksMade = computePicksMadeAutomatically(roster, playerMap);
+
     computeClockFromSequence(pickSeq, picksMade);
+
+    // NEW: header polish pieces
+    renderLastPicks(roster, teams);
+    const cur = pickSeq[picksMade];
+    setTeamWash(cur?.teamSlug);
 
     renderAvailable(availableFiltered);
     renderTakenByTeam(roster, teams, playerMap);
