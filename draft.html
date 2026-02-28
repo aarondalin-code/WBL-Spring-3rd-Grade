@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-12" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-13" />
   <meta name="robots" content="noindex,nofollow" />
 
   <style>
@@ -29,10 +29,9 @@
     @media (max-width: 980px){ .draftPage .grid2{ grid-template-columns: 1fr; } }
 
     .draftPage .smallMuted{ font-size:12px; color: rgba(0,0,0,.55); font-weight:700; }
-    .draftPage .bigLine{ font-weight:1000; }
 
     /* -----------------------------
-       ON THE CLOCK (NEW STYLING)
+       ON THE CLOCK (STYLING + WASH)
        ----------------------------- */
     .draftPage .clockCard{
       position:relative;
@@ -76,7 +75,9 @@
       .draftPage .clockHeadline .team{ font-size:22px; }
     }
 
-    /* Last 5 picks ticker */
+    /* -----------------------------
+       ESPN-STYLE LAST 5 PICKS TICKER
+       ----------------------------- */
     .draftPage .tickerWrap{
       display:grid;
       grid-template-columns: 1fr;
@@ -109,42 +110,69 @@
       font-weight:800;
       color: rgba(0,0,0,.55);
     }
-    .draftPage .tickerList{
-      max-height: 110px;
-      overflow:auto;
-      display:grid;
-      gap:6px;
-      padding-right:6px;
-    }
-    .draftPage .tickRow{
-      display:flex;
-      gap:8px;
-      justify-content:space-between;
-      align-items:baseline;
-      font-size:12px;
-    }
-    .draftPage .tickPick{
-      font-weight:1000;
-      color:#1e40af;
-      white-space:nowrap;
-    }
-    .draftPage .tickName{
-      font-weight:800;
-      color: rgba(0,0,0,.85);
+
+    .draftPage .tickerMarquee{
+      width:100%;
       overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      flex: 1;
-      text-align:left;
+      border-radius:12px;
+      background: rgba(255,255,255,.55);
+      border:1px solid rgba(0,0,0,.08);
     }
-    .draftPage .tickTeam{
-      font-weight:800;
-      color: rgba(0,0,0,.55);
+
+    .draftPage .tickerTrack{
+      display:inline-flex;
+      align-items:center;
+      gap:22px;
+      padding:10px 12px;
       white-space:nowrap;
+      will-change: transform;
+      animation: tickerScroll var(--tickerSpeed, 18s) linear infinite;
+    }
+
+    @media (hover:hover) and (pointer:fine){
+      .draftPage .tickerMarquee:hover .tickerTrack{
+        animation-play-state: paused;
+      }
+    }
+
+    .draftPage .tickItem{
+      display:inline-flex;
+      align-items:baseline;
+      gap:8px;
+      font-size:12px;
+      font-weight:900;
+    }
+    .draftPage .tickSlot{
+      color:#1e40af;
+      font-weight:1000;
+    }
+    .draftPage .tickText{
+      color: rgba(0,0,0,.88);
+      font-weight:900;
+    }
+    .draftPage .tickSep{
+      color: rgba(0,0,0,.30);
+      font-weight:1000;
+    }
+
+    @keyframes tickerScroll{
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* Mobile: swipe instead of animation */
+    @media (max-width: 520px){
+      .draftPage .tickerMarquee{
+        overflow-x:auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .draftPage .tickerTrack{
+        animation: none;
+      }
     }
 
     /* -----------------------------
-       PLAYER CARD/DETAILS
+       PLAYER CARDS / DETAILS
        ----------------------------- */
     .draftPage .tightRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .draftPage .tightLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
@@ -490,7 +518,10 @@
                   <div class="tickerTitle">Last 5 picks</div>
                   <div class="tickerSub" id="lastPicksMeta">—</div>
                 </div>
-                <div class="tickerList" id="lastPicks"></div>
+
+                <div class="tickerMarquee" id="lastPicksMarquee">
+                  <div class="tickerTrack" id="lastPicksTrack"></div>
+                </div>
               </div>
             </div>
 
@@ -548,7 +579,7 @@
       ["CoachKid", "Coach Kid"]
     ],
     [
-      ["Spring2025HeadCoach", "2025 Spring Coach"],
+      ["Spring2025HeadCoach", "2025 Spring Head Coach"],
       ["SpringPitching", "Spring Pitching"],
       ["SpringHitting", "Spring Hitting"],
       ["SpringThrowing", "Spring Throwing"],
@@ -763,7 +794,9 @@
     `;
   }
 
-  // --- Team wash helpers (for clock card background) ---
+  /* -----------------------------
+     Team wash helpers
+     ----------------------------- */
   function hexToRgb(hex){
     const h = safe(hex).replace("#","").trim();
     if (![3,6].includes(h.length)) return null;
@@ -787,11 +820,13 @@
     );
   }
 
-  // --- Last 5 picks ---
+  /* -----------------------------
+     ESPN-style last 5 picks ticker
+     ----------------------------- */
   function renderLastPicks(rosterRows, teamsRows){
-    const el = document.getElementById("lastPicks");
+    const track = document.getElementById("lastPicksTrack");
     const meta = document.getElementById("lastPicksMeta");
-    if (!el || !meta) return;
+    if (!track || !meta) return;
 
     const slugToName = new Map();
     for (const t of teamsRows){
@@ -808,19 +843,38 @@
       .filter(x => x.slot && x.name && x.slug)
       .sort((a,b) => a.slot.localeCompare(b.slot));
 
-    const last = taken.slice(-5).reverse();
+    const last = taken.slice(-5); // oldest -> newest among the last 5
 
     meta.textContent = taken.length ? `${taken.length} total` : "—";
-    el.innerHTML = last.length ? last.map(x => `
-      <div class="tickRow">
-        <span class="tickPick">${escapeHtml(x.slot)}</span>
-        <span class="tickName">${escapeHtml(x.name)}</span>
-        <span class="tickTeam">${escapeHtml(slugToName.get(x.slug) || x.slug)}</span>
-      </div>
-    `).join("") : `<div class="smallMuted">No picks yet.</div>`;
+
+    if (!last.length){
+      track.innerHTML = `<span class="smallMuted" style="padding:10px 12px; display:inline-block;">No picks yet.</span>`;
+      track.style.setProperty("--tickerSpeed", "0s");
+      return;
+    }
+
+    const strip = last.map(x => {
+      const teamName = slugToName.get(x.slug) || x.slug;
+      return `
+        <span class="tickItem">
+          <span class="tickSlot">${escapeHtml(x.slot)}</span>
+          <span class="tickText">${escapeHtml(x.name)} (${escapeHtml(teamName)})</span>
+        </span>
+      `;
+    }).join(`<span class="tickSep">•</span>`);
+
+    // Duplicate for seamless loop (animation moves -50%)
+    track.innerHTML = strip + `<span class="tickSep" style="margin:0 6px;">•</span>` + strip;
+
+    // Set speed based on content length
+    const approxChars = strip.replace(/<[^>]*>/g,"").length;
+    const seconds = Math.min(28, Math.max(14, Math.round(approxChars / 18)));
+    track.style.setProperty("--tickerSpeed", `${seconds}s`);
   }
 
-  // Modal
+  /* -----------------------------
+     Modal
+     ----------------------------- */
   const modalBackdrop = document.getElementById("modalBackdrop");
   const modalTitle = document.getElementById("modalTitle");
   const modalTags = document.getElementById("modalTags");
@@ -852,6 +906,9 @@
   modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closeModal(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
+  /* -----------------------------
+     Available + Taken rendering
+     ----------------------------- */
   function renderAvailable(list){
     const el = document.getElementById("available");
     const msg = document.getElementById("availMsg");
@@ -1115,7 +1172,7 @@
 
     computeClockFromSequence(pickSeq, picksMade);
 
-    // NEW: header polish pieces
+    // Header enhancements
     renderLastPicks(roster, teams);
     const cur = pickSeq[picksMade];
     setTeamWash(cur?.teamSlug);
