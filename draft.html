@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-9" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-10" />
   <meta name="robots" content="noindex,nofollow" />
 
   <style>
@@ -114,11 +114,11 @@
       .draftPage .playerRow:hover .hoverCard{ display:block; }
     }
 
-    .draftPage .k{ color: rgba(0,0,0,.55); font-size:12px; font-weight:900; }
+    .draftPage .k{ color:#1e40af; font-size:12px; font-weight:900; }
     .draftPage .v{ color: rgba(0,0,0,.88); font-size:12px; }
     .draftPage .na{ color: rgba(0,0,0,.45); font-style:italic; }
 
-    /* NEW: 3-column fixed layout for hover + modal details */
+    /* 3-column fixed layout for hover + modal details */
     .draftPage .kv3{
       display:grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -364,14 +364,15 @@
   const TOTAL_ROUNDS = 12;
   let slugToColor = new Map();
 
-  // Fixed 3-column schema
+  // Fixed 3-column schema (5 fields per column)
   const DETAIL_SCHEMA = [
     // Column 1
     [
       ["Travel", "Travel"],
       ["TravelTeam", "Travel Team"],
       ["TravelLevel", "Travel Level"],
-      ["Pitcher", "Pitcher"]
+      ["Pitcher", "Pitcher"],
+      ["CoachKid", "Coach Kid"]
     ],
     // Column 2
     [
@@ -385,7 +386,9 @@
     [
       ["School", "School"],
       ["CoachRequest", "Coach Request"],
-      ["FriendRequest", "Friend Request"]
+      ["FriendRequest", "Friend Request"],
+      ["OtherSpringSport", "Other Spring Sport"],
+      ["Conflict", "Conflict"]
     ]
   ];
 
