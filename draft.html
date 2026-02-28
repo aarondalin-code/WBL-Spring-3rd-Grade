@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-8" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-9" />
   <meta name="robots" content="noindex,nofollow" />
 
   <style>
-    .draftPage .pill {
+    .draftPage .pill{
       display:inline-flex; align-items:center; gap:6px;
       padding:4px 10px; border-radius:999px;
       border:1px solid rgba(0,0,0,.12);
@@ -17,22 +17,19 @@
       background: rgba(255,255,255,.8);
       white-space:nowrap;
     }
-    .draftPage .pill.good { border-color: rgba(0,150,80,.35); }
-    .draftPage .pill.warn { border-color: rgba(200,120,0,.45); }
-    .draftPage .pill.bad  { border-color: rgba(190,40,40,.45); }
+    .draftPage .pill.good{ border-color: rgba(0,150,80,.35); }
+    .draftPage .pill.warn{ border-color: rgba(200,120,0,.45); }
+    .draftPage .pill.bad { border-color: rgba(190,40,40,.45); }
 
-    .draftPage .grid2 {
+    .draftPage .grid2{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:14px;
     }
-    @media (max-width: 980px) { .draftPage .grid2 { grid-template-columns: 1fr; } }
+    @media (max-width: 980px){ .draftPage .grid2{ grid-template-columns: 1fr; } }
 
     /* Filters: compact grid */
-    .draftPage .filtersWrap{
-      display:grid;
-      gap:10px;
-    }
+    .draftPage .filtersWrap{ display:grid; gap:10px; }
     .draftPage .filtersGrid{
       display:grid;
       gap:10px;
@@ -43,10 +40,10 @@
       .draftPage .filtersGrid{ grid-template-columns: 1fr 1fr; }
     }
 
-    .draftPage .field { display:flex; flex-direction:column; gap:6px; min-width:0; }
-    .draftPage .field .lbl { font-size:12px; font-weight:900; color: rgba(0,0,0,.55); }
+    .draftPage .field{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .draftPage .field .lbl{ font-size:12px; font-weight:900; color: rgba(0,0,0,.55); }
 
-    .draftPage input[type="text"], .draftPage select {
+    .draftPage input[type="text"], .draftPage select{
       width:100%;
       padding:9px 10px;
       border-radius:12px;
@@ -55,7 +52,7 @@
       font-size:14px;
     }
 
-    .draftPage .btnSecondary {
+    .draftPage .btnSecondary{
       padding:10px 12px;
       border-radius:12px;
       border:1px solid rgba(0,0,0,.12);
@@ -64,7 +61,6 @@
       cursor:pointer;
       white-space:nowrap;
     }
-
     .draftPage .btnRow{
       display:flex;
       gap:10px;
@@ -83,27 +79,30 @@
       width:min(520px, 100%);
     }
 
-    .draftPage .smallMuted { font-size:12px; color: rgba(0,0,0,.55); font-weight:700; }
-    .draftPage .bigLine { font-weight:1000; }
+    .draftPage .smallMuted{ font-size:12px; color: rgba(0,0,0,.55); font-weight:700; }
+    .draftPage .bigLine{ font-weight:1000; }
 
     /* Center and “pop” the clock */
-    .draftPage .clockLine { display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; justify-content:center; text-align:center; }
-    .draftPage .clockLine > div { width:100%; }
-    .draftPage #onClock { font-size: 28px; font-weight: 1000; }
-    @media (max-width: 520px){ .draftPage #onClock { font-size: 22px; } }
+    .draftPage .clockLine{
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-items:baseline; justify-content:center; text-align:center;
+    }
+    .draftPage .clockLine > div{ width:100%; }
+    .draftPage #onClock{ font-size:28px; font-weight:1000; }
+    @media (max-width: 520px){ .draftPage #onClock{ font-size:22px; } }
 
-    .draftPage .tightRow { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .draftPage .tightLeft { display:flex; flex-direction:column; gap:4px; min-width:0; }
-    .draftPage .tightName { font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .draftPage .tightMeta { display:flex; flex-wrap:wrap; gap:6px; }
+    .draftPage .tightRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .draftPage .tightLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .draftPage .tightName{ font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .draftPage .tightMeta{ display:flex; flex-wrap:wrap; gap:6px; }
 
-    .draftPage .playerRow { position: relative; cursor:pointer; }
-    .draftPage .hoverCard {
+    .draftPage .playerRow{ position:relative; cursor:pointer; }
+    .draftPage .hoverCard{
       display:none;
       position:absolute;
       left:0; top:100%;
       margin-top:10px;
-      width:min(760px, 92vw);
+      width:min(860px, 92vw);
       background:#fff;
       border:1px solid rgba(0,0,0,.14);
       border-radius:16px;
@@ -111,58 +110,57 @@
       box-shadow: 0 14px 32px rgba(0,0,0,.14);
       z-index: 50;
     }
-    @media (hover:hover) and (pointer:fine) {
-      .draftPage .playerRow:hover .hoverCard { display:block; }
+    @media (hover:hover) and (pointer:fine){
+      .draftPage .playerRow:hover .hoverCard{ display:block; }
     }
 
-    .draftPage .k { color: rgba(0,0,0,.55); font-size:12px; font-weight:900; }
-    .draftPage .v { color: rgba(0,0,0,.88); font-size:12px; }
+    .draftPage .k{ color: rgba(0,0,0,.55); font-size:12px; font-weight:900; }
+    .draftPage .v{ color: rgba(0,0,0,.88); font-size:12px; }
+    .draftPage .na{ color: rgba(0,0,0,.45); font-style:italic; }
 
-    /* Two-column field layout for hover + modal details */
-    .draftPage .kv2 {
+    /* NEW: 3-column fixed layout for hover + modal details */
+    .draftPage .kv3{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px 18px;
     }
-    @media (max-width: 640px){
-      .draftPage .kv2 { grid-template-columns: 1fr; }
-    }
-    .draftPage .kvCol {
-      display:grid;
-      grid-template-columns: 180px 1fr;
-      gap: 8px 14px;
-    }
-    @media (max-width: 520px){
-      .draftPage .kvCol { grid-template-columns: 140px 1fr; }
-    }
+    @media (max-width: 980px){ .draftPage .kv3{ grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px){ .draftPage .kv3{ grid-template-columns: 1fr; } }
 
-    .draftPage .modalBackdrop {
+    .draftPage .kvCol3{
+      display:grid;
+      grid-template-columns: 150px 1fr;
+      gap: 8px 12px;
+    }
+    @media (max-width: 520px){ .draftPage .kvCol3{ grid-template-columns: 140px 1fr; } }
+
+    .draftPage .modalBackdrop{
       display:none;
       position:fixed; inset:0;
       background: rgba(0,0,0,.45);
       z-index: 1000;
       padding: 18px;
     }
-    .draftPage .modalBackdrop.open { display:flex; align-items:flex-start; justify-content:center; }
-    .draftPage .modalCard {
-      width:min(860px, 96vw);
+    .draftPage .modalBackdrop.open{ display:flex; align-items:flex-start; justify-content:center; }
+    .draftPage .modalCard{
+      width:min(920px, 96vw);
       background:#fff;
       border-radius:18px;
       border:1px solid rgba(0,0,0,.16);
       box-shadow: 0 18px 50px rgba(0,0,0,.22);
       overflow:hidden;
     }
-    .draftPage .modalHdr {
+    .draftPage .modalHdr{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:14px 14px;
       border-bottom:1px solid rgba(0,0,0,.10);
     }
-    .draftPage .modalTitle { font-weight:1000; }
-    .draftPage .modalBody { padding:14px; }
-    .draftPage .xBtn {
+    .draftPage .modalTitle{ font-weight:1000; }
+    .draftPage .modalBody{ padding:14px; }
+    .draftPage .xBtn{
       border:1px solid rgba(0,0,0,.14);
       background: rgba(255,255,255,.9);
-      border-radius: 12px;
+      border-radius:12px;
       padding:8px 10px;
       font-weight:900;
       cursor:pointer;
@@ -364,8 +362,32 @@
 <script src="./data.js"></script>
 <script>
   const TOTAL_ROUNDS = 12;
-
   let slugToColor = new Map();
+
+  // Fixed 3-column schema
+  const DETAIL_SCHEMA = [
+    // Column 1
+    [
+      ["Travel", "Travel"],
+      ["TravelTeam", "Travel Team"],
+      ["TravelLevel", "Travel Level"],
+      ["Pitcher", "Pitcher"]
+    ],
+    // Column 2
+    [
+      ["Spring2025HeadCoach", "2025 Spring Head Coach"],
+      ["SpringPitching", "Spring Pitching"],
+      ["SpringHitting", "Spring Hitting"],
+      ["SpringThrowing", "Spring Throwing"],
+      ["SpringFielding", "Spring Fielding"]
+    ],
+    // Column 3
+    [
+      ["School", "School"],
+      ["CoachRequest", "Coach Request"],
+      ["FriendRequest", "Friend Request"]
+    ]
+  ];
 
   function safe(v){ return String(v ?? "").trim(); }
   function norm(v){ return safe(v).toLowerCase(); }
@@ -540,75 +562,30 @@
     });
   }
 
-  // Hide fields from hover+modal details by adding their exact column header here
-  const HIDE_FIELDS = new Set([
-    // "LockedTeamsSlug",
-    // "Notes",
-  ]);
-
-  // Optional: override specific display names (only if the auto-format isn't perfect)
-  const DISPLAY_NAME_OVERRIDES = {
-    // Example:
-    // Spring2025HeadCoach: "Spring 2025 Head Coach",
-    // PlayerID: "Player ID",
-  };
-
-  function titleCaseWords(s){
-    return s.split(" ").map(w => {
-      if (!w) return w;
-      // keep common acronyms
-      const upper = w.toUpperCase();
-      if (["ID","URL","DOB","WBL","MLB"].includes(upper)) return upper;
-      // keep years
-      if (/^\d{4}$/.test(w)) return w;
-      return w[0].toUpperCase() + w.slice(1).toLowerCase();
-    }).join(" ");
+  function getValOrNA(p, key){
+    const v = safe(p[key]);
+    return v ? v : "n/a";
   }
 
-  function displayKey(key){
-    if (DISPLAY_NAME_OVERRIDES[key]) return DISPLAY_NAME_OVERRIDES[key];
-
-    // Insert spaces between letter<->digit and lower<->upper boundaries
-    let s = String(key);
-
-    s = s.replaceAll("_"," ");
-    s = s.replace(/([a-z])([A-Z])/g, "$1 $2");
-    s = s.replace(/([A-Z])([A-Z][a-z])/g, "$1 $2"); // "URLValue" -> "URL Value"
-    s = s.replace(/([A-Za-z])(\d)/g, "$1 $2");      // "Spring2025" -> "Spring 2025"
-    s = s.replace(/(\d)([A-Za-z])/g, "$1 $2");      // "2025Head" -> "2025 Head"
-    s = s.replace(/\s+/g, " ").trim();
-
-    return titleCaseWords(s);
-  }
-
-  function buildDetailRows(p){
-    const keys = Object.keys(p).filter(k => k !== "Name");
-    return keys
-      .filter(k => !HIDE_FIELDS.has(k))
-      .map(k => ({ k, label: displayKey(k), v: safe(p[k]) }))
-      .filter(x => x.v);
-  }
-
-  function renderDetailsTwoCols(detailRows){
-    if (!detailRows.length) return `<div class="smallMuted">No extra info.</div>`;
-
-    const mid = Math.ceil(detailRows.length / 2);
-    const left = detailRows.slice(0, mid);
-    const right = detailRows.slice(mid);
-
-    const renderCol = (rows) => `
-      <div class="kvCol">
-        ${rows.map(x => `
-          <div class="k">${escapeHtml(x.label)}</div>
-          <div class="v">${escapeHtml(x.v)}</div>
-        `).join("")}
+  function renderDetailsThreeCols(p){
+    const renderCol = (pairs) => `
+      <div class="kvCol3">
+        ${pairs.map(([key, label]) => {
+          const v = getValOrNA(p, key);
+          const isNA = (v === "n/a");
+          return `
+            <div class="k">${escapeHtml(label)}</div>
+            <div class="v ${isNA ? "na" : ""}">${escapeHtml(v)}</div>
+          `;
+        }).join("")}
       </div>
     `;
 
     return `
-      <div class="kv2">
-        ${renderCol(left)}
-        ${renderCol(right)}
+      <div class="kv3">
+        ${renderCol(DETAIL_SCHEMA[0])}
+        ${renderCol(DETAIL_SCHEMA[1])}
+        ${renderCol(DETAIL_SCHEMA[2])}
       </div>
     `;
   }
@@ -622,6 +599,7 @@
 
   function openModalForPlayer(p){
     modalTitle.textContent = safe(p.Name);
+
     const tags = [];
     if (norm(p.Pitcher) === "y") tags.push("Pitcher");
     if (norm(p.Travel) === "y") tags.push("Travel");
@@ -631,8 +609,7 @@
     if (norm(p.CoachKid) === "y") tags.push("Coach kid");
     modalTags.textContent = tags.join(" • ");
 
-    const detailRows = buildDetailRows(p);
-    modalKV.innerHTML = renderDetailsTwoCols(detailRows);
+    modalKV.innerHTML = renderDetailsThreeCols(p);
 
     modalBackdrop.classList.add("open");
     modalBackdrop.setAttribute("aria-hidden", "false");
@@ -666,8 +643,7 @@
         tags.push(`<span class="pill ${lvl === "A" ? "warn" : ""}">Travel${lvl ? " " + lvl : ""}</span>`);
       }
 
-      const detailRows = buildDetailRows(p);
-      const hoverKV = renderDetailsTwoCols(detailRows);
+      const hoverKV = renderDetailsThreeCols(p);
 
       const div = document.createElement("div");
       div.className = "card playerRow";
@@ -806,7 +782,6 @@
 
   function computePicksMadeAutomatically(rosterRows, playerMap){
     const rosteredNames = rosterRows.map(getRosterName).filter(Boolean);
-
     let coachKidsOnRoster = 0;
     for (const name of rosteredNames){
       const p = playerMap.get(norm(name));
