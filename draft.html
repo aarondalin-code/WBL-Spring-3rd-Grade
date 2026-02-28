@@ -352,7 +352,7 @@
     .draftPage #meta{ margin-top:8px !important; }
 
     /* -----------------------------
-       NEW: Taken toggle tabs + Draft Order board
+       Taken toggle tabs + Draft Order board
        ----------------------------- */
     .draftPage .takenHdrRow{
       display:flex;
@@ -991,7 +991,6 @@
       .sort((a,b) => a.slot.localeCompare(b.slot));
 
     const last = taken.slice(-5); // oldest -> newest among the last 5
-
     meta.textContent = taken.length ? `${taken.length} total` : "—";
 
     if (!last.length){
@@ -1010,10 +1009,8 @@
       `;
     }).join(`<span class="tickSep">•</span>`);
 
-    // Duplicate for seamless loop (animation moves -50%)
     track.innerHTML = strip + `<span class="tickSep" style="margin:0 6px;">•</span>` + strip;
 
-    // Set speed based on content length
     const approxChars = strip.replace(/<[^>]*>/g,"").length;
     const seconds = Math.min(28, Math.max(14, Math.round(approxChars / 18)));
     track.style.setProperty("--tickerSpeed", `${seconds}s`);
@@ -1072,6 +1069,16 @@
     b.classList.toggle("active", !isTeam);
     a.setAttribute("aria-pressed", isTeam ? "true" : "false");
     b.setAttribute("aria-pressed", !isTeam ? "true" : "false");
+  }
+
+  // ✅ Auto-jump helper (smooth scroll to on-clock row)
+  function scrollBoardToClock(){
+    if (TAKEN_VIEW !== "board") return;
+    requestAnimationFrame(() => {
+      const el = document.getElementById("boardOnClockRow");
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   }
 
   /* -----------------------------
@@ -1296,7 +1303,6 @@
   }
 
   function computeRosterIndexByTeamRound(rosterRows){
-    // Map `${slug}|${round}` -> player name, based on PlayerID like "Or-01".."Or-12"
     const m = new Map();
     for (const r of rosterRows){
       const slug = safe(r.TeamSlug);
@@ -1322,7 +1328,6 @@
     const curSlug = onClockPick?.teamSlug || "";
     const curRound = onClockPick?.round || 0;
 
-    // group by round
     const byRound = new Map();
     for (const s of slots){
       if (!byRound.has(s.round)) byRound.set(s.round, []);
@@ -1362,6 +1367,10 @@
 
         const row = document.createElement("div");
         row.className = "boardRow" + (s.isForfeit ? " forfeit" : "");
+
+        // ✅ Give the on-clock row a stable ID for scrollIntoView()
+        if (isClock) row.id = "boardOnClockRow";
+
         if (isClock){
           row.style.borderColor = tc;
           row.style.borderWidth = "2px";
@@ -1433,20 +1442,21 @@
     const picksMade = computePicksMadeAutomatically(roster, playerMap);
     const onClockPick = computeClockFromSequence(pickSeq, picksMade);
 
-    // Header enhancements
     renderLastPicks(roster, teams);
     setTeamWash(onClockPick?.teamSlug);
 
     renderAvailable(availableFiltered);
     renderTakenByTeam(roster, teams, playerMap);
 
-    // Draft order view (board)
     const rosterByTeamRound = computeRosterIndexByTeamRound(roster);
     const boardSlots = buildBoardSlotsSnake(teams, forfeits);
     renderDraftBoard(boardSlots, rosterByTeamRound, onClockPick);
 
     meta.textContent =
       `Available: ${availableAll.length} • Showing: ${availableFiltered.length} • Taken: ${takenNames.size} • Updated: ${new Date().toLocaleTimeString()}`;
+
+    // ✅ If user is already in Draft order, keep the on-clock row centered after refresh
+    scrollBoardToClock();
   }
 
   function init(){
@@ -1470,7 +1480,13 @@
     });
 
     document.getElementById("viewTakenBtn")?.addEventListener("click", () => setTakenView("team"));
-    document.getElementById("viewBoardBtn")?.addEventListener("click", () => setTakenView("board"));
+
+    // ✅ When switching to Draft order, jump to on-the-clock row automatically
+    document.getElementById("viewBoardBtn")?.addEventListener("click", () => {
+      setTakenView("board");
+      scrollBoardToClock();
+    });
+
     setTakenView("team");
 
     autoTimer = setInterval(() => loadAndRender().catch(()=>{}), 8000);
