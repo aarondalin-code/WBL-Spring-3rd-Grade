@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-5" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-6" />
   <meta name="robots" content="noindex,nofollow" />
 
   <style>
@@ -71,7 +71,7 @@
       position:absolute;
       left:0; top:100%;
       margin-top:10px;
-      width:min(720px, 92vw);
+      width:min(760px, 92vw);
       background:#fff;
       border:1px solid rgba(0,0,0,.14);
       border-radius:16px;
@@ -82,13 +82,27 @@
     @media (hover:hover) and (pointer:fine) {
       .draftPage .playerRow:hover .hoverCard { display:block; }
     }
-    .draftPage .kv {
-      display:grid;
-      grid-template-columns: 180px 1fr;
-      gap:8px 14px;
-    }
+
     .draftPage .k { color: rgba(0,0,0,.55); font-size:12px; font-weight:900; }
     .draftPage .v { color: rgba(0,0,0,.88); font-size:12px; }
+
+    /* NEW: Two-column field layout for hover + modal details */
+    .draftPage .kv2 {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 18px;
+    }
+    @media (max-width: 640px){
+      .draftPage .kv2 { grid-template-columns: 1fr; }
+    }
+    .draftPage .kvCol {
+      display:grid;
+      grid-template-columns: 180px 1fr;
+      gap: 8px 14px;
+    }
+    @media (max-width: 520px){
+      .draftPage .kvCol { grid-template-columns: 140px 1fr; }
+    }
 
     .draftPage .modalBackdrop {
       display:none;
@@ -132,7 +146,6 @@
     </button>
     <div class="navOverlay" aria-hidden="true"></div>
 
-    <!-- Draft intentionally omitted from nav -->
     <nav class="nav" id="siteNav">
       <a href="./">Home</a>
       <a href="./schedule.html">Schedule/Scores</a>
@@ -148,8 +161,8 @@
 
   <div class="brandCenter">
     <img src="./logo.png" alt="WBL Logo" class="logoImage" />
-    <h1>Draft Board</h1>
-    <div class="tagline">WBL 3rd Grade</div>
+    <h1>WBL 3rd Grade 2026</h1>
+    <div class="tagline">Draft Board</div>
   </div>
 </header>
 
@@ -193,7 +206,6 @@
             </select>
           </div>
 
-          <!-- NEW: School filter -->
           <div class="field">
             <div class="lbl">School</div>
             <select id="schoolFilter">
@@ -201,7 +213,6 @@
             </select>
           </div>
 
-          <!-- NEW: Taken team filter -->
           <div class="field">
             <div class="lbl">Taken team</div>
             <select id="takenTeamFilter">
@@ -265,7 +276,7 @@
     </div>
     <div class="modalBody">
       <div id="modalTags" class="smallMuted" style="margin-bottom:10px;"></div>
-      <div class="kv" id="modalKV"></div>
+      <div id="modalKV"></div>
     </div>
   </div>
 </div>
@@ -274,7 +285,7 @@
 <script>
   const TOTAL_ROUNDS = 12;
 
-  // NEW: team color lookup (TeamSlug -> TeamColor)
+  // TeamSlug -> TeamColor
   let slugToColor = new Map();
 
   function safe(v){ return String(v ?? "").trim(); }
@@ -440,9 +451,45 @@
     });
   }
 
+  // EASIEST place to hide fields:
+  // Add column headers (exactly as in your DraftPool sheet) to this set.
+  const HIDE_FIELDS = new Set([
+    // Examples (uncomment/add what you want to hide):
+    // "Notes",
+    // "LockedTeamsSlug",
+    // "SomeInternalField",
+  ]);
+
   function buildDetailRows(p){
     const keys = Object.keys(p).filter(k => k !== "Name");
-    return keys.map(k => ({ k, v: safe(p[k]) })).filter(x => x.v);
+    return keys
+      .filter(k => !HIDE_FIELDS.has(k))
+      .map(k => ({ k, v: safe(p[k]) }))
+      .filter(x => x.v);
+  }
+
+  function renderDetailsTwoCols(detailRows){
+    if (!detailRows.length) return `<div class="smallMuted">No extra info.</div>`;
+
+    const mid = Math.ceil(detailRows.length / 2);
+    const left = detailRows.slice(0, mid);
+    const right = detailRows.slice(mid);
+
+    const renderCol = (rows) => `
+      <div class="kvCol">
+        ${rows.map(x => `
+          <div class="k">${escapeHtml(x.k)}</div>
+          <div class="v">${escapeHtml(x.v)}</div>
+        `).join("")}
+      </div>
+    `;
+
+    return `
+      <div class="kv2">
+        ${renderCol(left)}
+        ${renderCol(right)}
+      </div>
+    `;
   }
 
   // Modal
@@ -464,10 +511,7 @@
     modalTags.textContent = tags.join(" • ");
 
     const detailRows = buildDetailRows(p);
-    modalKV.innerHTML = detailRows.map(x => `
-      <div class="k">${escapeHtml(x.k)}</div>
-      <div class="v">${escapeHtml(x.v)}</div>
-    `).join("") || `<div class="smallMuted">No extra info.</div>`;
+    modalKV.innerHTML = renderDetailsTwoCols(detailRows);
 
     modalBackdrop.classList.add("open");
     modalBackdrop.setAttribute("aria-hidden", "false");
@@ -502,10 +546,7 @@
       }
 
       const detailRows = buildDetailRows(p);
-      const hoverKV = detailRows.map(x => `
-        <div class="k">${escapeHtml(x.k)}</div>
-        <div class="v">${escapeHtml(x.v)}</div>
-      `).join("");
+      const hoverKV = renderDetailsTwoCols(detailRows);
 
       const div = document.createElement("div");
       div.className = "card playerRow";
@@ -521,7 +562,7 @@
 
           <div class="hoverCard" aria-hidden="true">
             <div style="font-weight:1000; margin-bottom:10px;">${escapeHtml(name)}</div>
-            <div class="kv">${hoverKV || '<div class="smallMuted">No extra info.</div>'}</div>
+            ${hoverKV}
           </div>
         </div>
       `;
@@ -627,7 +668,6 @@
     const onEl = document.getElementById("onClock");
     onEl.textContent = cur?.teamName || "—";
 
-    // NEW: color the on-clock team name using Teams.TeamColor
     if (cur?.teamSlug) {
       const c = slugToColor.get(cur.teamSlug);
       onEl.style.color = c ? c : "";
@@ -667,7 +707,6 @@
       `<option value="">All</option>` +
       schools.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
 
-    // keep selection if still present
     if (schools.includes(prev)) sel.value = prev;
     else sel.value = "";
   }
@@ -705,21 +744,18 @@
     const roster = parseCsv(rosterCsv);
     const poolRaw = parseCsv(poolCsv);
 
-    // NEW: build team color map from Teams.TeamColor
     slugToColor = new Map(
       teams
         .map(t => [safe(t.TeamSlug), safe(t.TeamColor)])
         .filter(([slug, color]) => slug && color)
     );
 
-    // Keep all DraftPool columns
     const pool = poolRaw.map(p => {
       const out = {};
       for (const k of Object.keys(p)) out[k] = safe(p[k]);
       return out;
     });
 
-    // Populate dropdown options (school + taken team)
     populateSchoolOptions(pool);
     populateTakenTeamOptions(teams);
 
@@ -731,8 +767,6 @@
 
     const availableAll = pool.filter(p => p.Name && !takenNames.has(norm(p.Name)));
     const availableFiltered = applyFilters(availableAll);
-
-    // deterministic sort for the room
     availableFiltered.sort((a,b) => safe(a.Name).localeCompare(safe(b.Name)));
 
     const forfeits = computeForfeits(teams, roster, playerMap);
