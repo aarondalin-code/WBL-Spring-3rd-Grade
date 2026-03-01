@@ -2650,3 +2650,64 @@ body.watermarkPage::before{
 .siteHeader .brandCenter{
   margin-top: 18px;
 }
+
+/* =========================================
+   HEADER POLISH – Optional Enhancement
+   Delete this entire block to revert
+========================================= */
+
+/* 1) Slightly stronger title presence */
+.siteHeader h1{
+  font-size: 30px;
+  letter-spacing: .04em;
+}
+
+/* 2) Subtle divider under title */
+.siteHeader .brandCenter{
+  position: relative;
+}
+
+.siteHeader .brandCenter::after{
+  content:"";
+  display:block;
+  width: 60px;
+  height: 3px;
+  background: #1e40af;
+  margin: 14px auto 0 auto;
+  border-radius: 3px;
+  opacity: .35;
+}
+
+/* 3) Refine watermark layering */
+.siteHeader::before{
+  background-position: center 65%;
+  opacity: .10;
+}
+
+/* 4) Modern nav hover effect */
+.siteHeader .nav a{
+  position: relative;
+  transition: color .2s ease;
+}
+
+.siteHeader .nav a::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-6px;
+  width:100%;
+  height:2px;
+  background:#1e40af;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .2s ease;
+  opacity:.6;
+}
+
+.siteHeader .nav a:hover{
+  color:#1e40af;
+}
+
+.siteHeader .nav a:hover::after{
+  transform:scaleX(1);
+}
