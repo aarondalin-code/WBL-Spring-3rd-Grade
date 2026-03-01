@@ -2711,3 +2711,85 @@ body.watermarkPage::before{
 .siteHeader .nav a:hover::after{
   transform:scaleX(1);
 }
+
+/* =========================================
+   HEADER EXTRA POLISH – Optional Add-on
+   Delete this entire block to revert
+========================================= */
+
+/* 1) Very subtle watermark motion (desktop), respects reduced motion */
+@media (prefers-reduced-motion: no-preference){
+  .siteHeader::before{
+    animation: headerWatermarkDrift 26s ease-in-out infinite;
+  }
+  @keyframes headerWatermarkDrift{
+    0%   { transform: rotate(-8deg) translate(0px, 0px) scale(1); }
+    50%  { transform: rotate(-8deg) translate(10px, -6px) scale(1.02); }
+    100% { transform: rotate(-8deg) translate(0px, 0px) scale(1); }
+  }
+}
+
+/* 2) Mobile tuning: slightly tighter header + better type balance */
+@media (max-width: 520px){
+  .siteHeader{
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .siteHeader h1{
+    font-size: 22px;   /* overrides the 30px polish on small screens */
+    letter-spacing: .03em;
+  }
+
+  .siteHeader .tagline{
+    font-size: 12px;
+  }
+
+  /* keep divider a touch closer on mobile */
+  .siteHeader .brandCenter::after{
+    margin-top: 10px;
+  }
+
+  /* watermark slightly smaller/softer on mobile */
+  .siteHeader::before{
+    background-size: 210px 210px;
+    opacity: .08;
+  }
+}
+
+/* 3) CSS-only season badge (no HTML changes)
+   Adds a small pill before the tagline */
+.siteHeader .tagline{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.siteHeader .tagline::before{
+  content: "2026 SEASON";
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(30,64,175,.22);
+  background: rgba(255,255,255,.55);
+  color: rgba(30,64,175,.88);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* 4) Slightly more premium nav spacing + hit area */
+.siteHeader .nav{
+  gap: 14px;              /* if your nav uses flex gap */
+}
+
+.siteHeader .nav a{
+  padding: 8px 10px;      /* improves tap targets */
+  border-radius: 10px;
+}
+
+.siteHeader .nav a:hover{
+  background: rgba(255,255,255,.35); /* subtle, clean hover “chip” */
+}
