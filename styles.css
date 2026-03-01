@@ -2586,40 +2586,53 @@ body.watermarkPage::before{
 }
 
 /* =========================================
-   WBL HEADER – Clean Modern Upgrade
-   Safe single-block override
+   WBL HEADER – Modern Brand Bar Version
 ========================================= */
 
 .siteHeader{
   position: relative;
-  background:
-    linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%),
-    repeating-linear-gradient(
-      135deg,
-      rgba(30,64,175,0.04) 0px,
-      rgba(30,64,175,0.04) 12px,
-      rgba(30,64,175,0.0) 12px,
-      rgba(30,64,175,0.0) 32px
-    );
-  border-top: 4px solid #1e40af; /* navy accent line */
-  border-bottom: 1px solid rgba(0,0,0,.08);
-  box-shadow: 0 4px 14px rgba(0,0,0,.06);
-}
-
-/* tighten vertical spacing slightly */
-.siteHeader .brandCenter{
-  padding-top: 20px;
+  padding-top: 10px;
   padding-bottom: 20px;
+
+  /* Stronger gradient */
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #e8effa 55%,
+      #e1eaf7 100%
+    );
+
+  border-top: 4px solid #1e40af;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
 }
 
-/* stronger title presence */
+/* Centered brand bar */
+.siteHeader .brandCenter{
+  background: #ffffff;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 18px 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 8px 22px rgba(0,0,0,.08);
+}
+
+/* Make logo slightly more defined */
+.siteHeader .logoImage{
+  height: 46px;
+  margin-bottom: 8px;
+}
+
+/* Stronger main title */
 .siteHeader h1{
   font-weight: 900;
-  letter-spacing: .02em;
+  letter-spacing: .03em;
 }
 
-/* cleaner tagline tone */
+/* Cleaner tagline */
 .siteHeader .tagline{
-  color: rgba(0,0,0,.65);
   font-weight: 700;
+  color: rgba(0,0,0,.65);
 }
