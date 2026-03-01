@@ -2640,3 +2640,8 @@ body.watermarkPage::before{
   color: rgba(0,0,0,.65);
   font-weight: 700;
 }
+
+/* Hide centered logo since we now use watermark */
+.siteHeader .logoImage{
+  display: none;
+}
