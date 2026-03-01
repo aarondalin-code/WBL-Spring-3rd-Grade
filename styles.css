@@ -2586,53 +2586,57 @@ body.watermarkPage::before{
 }
 
 /* =========================================
-   WBL HEADER – Modern Brand Bar Version
+   WBL HEADER – Gradient + Watermark Logo
+   Paste at bottom of styles.css
 ========================================= */
 
 .siteHeader{
   position: relative;
   padding-top: 10px;
-  padding-bottom: 20px;
+  padding-bottom: 18px;
 
-  /* Stronger gradient */
+  /* Soft but stronger gradient */
   background:
-    linear-gradient(
-      180deg,
-      #ffffff 0%,
-      #e8effa 55%,
-      #e1eaf7 100%
-    );
-
+    linear-gradient(180deg, #ffffff 0%, #e8effa 55%, #e1eaf7 100%);
   border-top: 4px solid #1e40af;
   border-bottom: 1px solid rgba(0,0,0,.08);
   box-shadow: 0 6px 18px rgba(0,0,0,.08);
+
+  overflow: hidden; /* important so watermark doesn't spill */
 }
 
-/* Centered brand bar */
-.siteHeader .brandCenter{
-  background: #ffffff;
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 18px 28px;
-  border-radius: 18px;
-  border: 1px solid rgba(0,0,0,.08);
-  box-shadow: 0 8px 22px rgba(0,0,0,.08);
+/* Watermark logo (behind header content) */
+.siteHeader::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+
+  /* watermark image */
+  background: url("./logo.png") center 55% / 260px 260px no-repeat;
+
+  /* watermark strength */
+  opacity: .08;
+
+  /* keep it clean/modern */
+  filter: grayscale(10%);
+  transform: rotate(-8deg);
 }
 
-/* Make logo slightly more defined */
-.siteHeader .logoImage{
-  height: 46px;
-  margin-bottom: 8px;
+/* Ensure header content stays above the watermark */
+.siteHeader > *{
+  position: relative;
+  z-index: 1;
 }
 
-/* Stronger main title */
+/* Optional: slightly stronger title */
 .siteHeader h1{
   font-weight: 900;
   letter-spacing: .03em;
 }
 
-/* Cleaner tagline */
+/* Optional: soften tagline */
 .siteHeader .tagline{
-  font-weight: 700;
   color: rgba(0,0,0,.65);
+  font-weight: 700;
 }
