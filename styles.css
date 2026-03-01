@@ -2613,7 +2613,7 @@ body.watermarkPage::before{
   pointer-events:none;
 
   /* watermark image */
-  background: url("./logo.png") center 55% / 260px 260px no-repeat;
+  background: url("./logo.png") center 55% / 220px 220px no-repeat;
 
   /* watermark strength */
   opacity: .08;
