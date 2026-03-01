@@ -5,363 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draft • WBL 3rd Grade 2026</title>
 
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-draft-13" />
-  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css?v=wbl2026-draft-13" />
 
   <style>
-    .draftPage .pill{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:4px 10px; border-radius:999px;
-      border:1px solid rgba(0,0,0,.12);
-      font-size:12px; font-weight:800;
-      background: rgba(255,255,255,.8);
-      white-space:nowrap;
-    }
-    .draftPage .pill.good{ border-color: rgba(0,150,80,.35); }
-    .draftPage .pill.warn{ border-color: rgba(200,120,0,.45); }
-    .draftPage .pill.bad { border-color: rgba(190,40,40,.45); }
-
-    .draftPage .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-    }
-    @media (max-width: 980px){ .draftPage .grid2{ grid-template-columns: 1fr; } }
-
-    .draftPage .smallMuted{ font-size:12px; color: rgba(0,0,0,.55); font-weight:700; }
-
-    /* -----------------------------
-       ON THE CLOCK (STYLING + WASH)
-       ----------------------------- */
-    .draftPage .clockCard{
-      position:relative;
-      overflow:hidden;
-    }
-    .draftPage .clockCard::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: var(--teamWash, transparent);
-      opacity: .14;
-      pointer-events:none;
-    }
-    .draftPage .clockCard .cardBody{ position:relative; }
-
-    .draftPage .clockLine{
-      display:flex; flex-wrap:wrap; gap:10px;
-      align-items:baseline; justify-content:center; text-align:center;
-    }
-    .draftPage .clockLine > div{ width:100%; }
-
-    .draftPage .clockHeadline{
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      align-items:baseline;
-      gap:8px;
-      margin-bottom:6px;
-    }
-    .draftPage .clockHeadline .label{
-      font-size:28px;
-      font-weight:1000;
-      color: rgba(0,0,0,.85);
-    }
-    .draftPage .clockHeadline .team{
-      font-size:28px;
-      font-weight:1000;
-    }
-    @media (max-width: 520px){
-      .draftPage .clockHeadline .label,
-      .draftPage .clockHeadline .team{ font-size:22px; }
-    }
-
-    /* -----------------------------
-       ESPN-STYLE LAST 5 PICKS TICKER
-       ----------------------------- */
-    .draftPage .tickerWrap{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      margin-top:10px;
-      justify-items:center;
-    }
-    .draftPage .ticker{
-      width:min(820px, 100%);
-      border:1px solid rgba(0,0,0,.10);
-      border-radius:14px;
-      background: rgba(255,255,255,.75);
-      padding:10px 10px;
-    }
-    .draftPage .tickerHdr{
-      display:flex;
-      justify-content:space-between;
-      align-items:baseline;
-      margin-bottom:6px;
-    }
-    .draftPage .tickerTitle{
-      font-weight:1000;
-      font-size:12px;
-      color: rgba(0,0,0,.70);
-      letter-spacing:.02em;
-      text-transform: uppercase;
-    }
-    .draftPage .tickerSub{
-      font-size:12px;
-      font-weight:800;
-      color: rgba(0,0,0,.55);
-    }
-
-    .draftPage .tickerMarquee{
-      width:100%;
-      overflow:hidden;
-      border-radius:12px;
-      background: rgba(255,255,255,.55);
-      border:1px solid rgba(0,0,0,.08);
-    }
-
-    .draftPage .tickerTrack{
-      display:inline-flex;
-      align-items:center;
-      gap:22px;
-      padding:10px 12px;
-      white-space:nowrap;
-      will-change: transform;
-      animation: tickerScroll var(--tickerSpeed, 18s) linear infinite;
-    }
-
-    @media (hover:hover) and (pointer:fine){
-      .draftPage .tickerMarquee:hover .tickerTrack{
-        animation-play-state: paused;
-      }
-    }
-
-    .draftPage .tickItem{
-      display:inline-flex;
-      align-items:baseline;
-      gap:8px;
-      font-size:12px;
-      font-weight:900;
-    }
-    .draftPage .tickSlot{
-      color:#1e40af;
-      font-weight:1000;
-    }
-    .draftPage .tickText{
-      color: rgba(0,0,0,.88);
-      font-weight:900;
-    }
-    .draftPage .tickSep{
-      color: rgba(0,0,0,.30);
-      font-weight:1000;
-    }
-
-    @keyframes tickerScroll{
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-
-    /* Mobile: swipe instead of animation */
-    @media (max-width: 520px){
-      .draftPage .tickerMarquee{
-        overflow-x:auto;
-        -webkit-overflow-scrolling: touch;
-      }
-      .draftPage .tickerTrack{
-        animation: none;
-      }
-    }
-
-    /* -----------------------------
-       PLAYER CARDS / DETAILS
-       ----------------------------- */
-    .draftPage .tightRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .draftPage .tightLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
-    .draftPage .tightName{ font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .draftPage .tightMeta{ display:flex; flex-wrap:wrap; gap:6px; }
-
-    .draftPage .playerRow{ position:relative; cursor:pointer; }
-    .draftPage .hoverCard{
-      display:none;
-      position:absolute;
-      left:0; top:100%;
-      margin-top:10px;
-      width:min(860px, 92vw);
-      background:#fff;
-      border:1px solid rgba(0,0,0,.14);
-      border-radius:16px;
-      padding:14px;
-      box-shadow: 0 14px 32px rgba(0,0,0,.14);
-      z-index: 50;
-    }
-    @media (hover:hover) and (pointer:fine){
-      .draftPage .playerRow:hover .hoverCard{ display:block; }
-    }
-
-    .draftPage .k{ color:#1e40af; font-size:12px; font-weight:900; }
-    .draftPage .v{ color: rgba(0,0,0,.88); font-size:12px; }
-    .draftPage .na{ color: rgba(0,0,0,.45); font-style:italic; }
-
-    .draftPage .kv3{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px 18px;
-    }
-    @media (max-width: 980px){ .draftPage .kv3{ grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 640px){ .draftPage .kv3{ grid-template-columns: 1fr; } }
-
-    .draftPage .kvCol3{
-      display:grid;
-      grid-template-columns: 150px 1fr;
-      gap: 8px 12px;
-    }
-    @media (max-width: 520px){ .draftPage .kvCol3{ grid-template-columns: 140px 1fr; } }
-
-    /* -----------------------------
-       MODAL
-       ----------------------------- */
-    .draftPage .modalBackdrop{
-      display:none;
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.45);
-      z-index: 1000;
-      padding: 18px;
-    }
-    .draftPage .modalBackdrop.open{ display:flex; align-items:flex-start; justify-content:center; }
-    .draftPage .modalCard{
-      width:min(920px, 96vw);
-      background:#fff;
-      border-radius:18px;
-      border:1px solid rgba(0,0,0,.16);
-      box-shadow: 0 18px 50px rgba(0,0,0,.22);
-      overflow:hidden;
-    }
-    .draftPage .modalHdr{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:14px 14px;
-      border-bottom:1px solid rgba(0,0,0,.10);
-    }
-    .draftPage .modalTitle{ font-weight:1000; }
-    .draftPage .modalBody{ padding:14px; }
-    .draftPage .xBtn{
-      border:1px solid rgba(0,0,0,.14);
-      background: rgba(255,255,255,.9);
-      border-radius:12px;
-      padding:8px 10px;
-      font-weight:900;
-      cursor:pointer;
-    }
-
-    /* -----------------------------
-       FILTER BOX (5 + 4 + actions row)
-       ----------------------------- */
-    .draftPage .filtersCard .cardBody{ padding:12px; }
-
-    .draftPage .filtersShell{
-      position:relative;
-      border-radius:14px;
-      padding:10px;
-      background:
-        linear-gradient(180deg, rgba(30,64,175,.06), rgba(30,64,175,0) 55%),
-        repeating-linear-gradient(135deg,
-          rgba(30,64,175,.045) 0px,
-          rgba(30,64,175,.045) 10px,
-          rgba(30,64,175,0) 10px,
-          rgba(30,64,175,0) 28px
-        );
-      border: 1px solid rgba(0,0,0,.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
-      overflow:hidden;
-    }
-    .draftPage .filtersShell::after{
-      content:"DRAFT ROOM";
-      position:absolute;
-      right:14px;
-      top:10px;
-      font-weight:1000;
-      letter-spacing:.18em;
-      font-size:12px;
-      color: rgba(30,64,175,.22);
-      transform: rotate(-6deg);
-      pointer-events:none;
-      user-select:none;
-      text-transform: uppercase;
-    }
-
-    .draftPage .filtersWrap{ display:grid; gap:10px; }
-    .draftPage .filtersGrid5{
-      display:grid;
-      gap:10px;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      align-items:end;
-    }
-    .draftPage .filtersGrid4{
-      display:grid;
-      gap:10px;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      align-items:end;
-    }
-    @media (max-width: 980px){
-      .draftPage .filtersGrid5{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .draftPage .filtersGrid4{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (max-width: 520px){
-      .draftPage .filtersGrid5{ grid-template-columns: 1fr 1fr; }
-      .draftPage .filtersGrid4{ grid-template-columns: 1fr 1fr; }
-    }
-
-    .draftPage .field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
-    .draftPage .field .lbl{ font-size:12px; font-weight:900; color: rgba(0,0,0,.55); }
-
-    .draftPage input[type="text"], .draftPage select{
-      width:100%;
-      padding:9px 10px;
-      border-radius:12px;
-      border:1px solid rgba(0,0,0,.12);
-      background: rgba(255,255,255,.92);
-      font-size:14px;
-    }
-
-    .draftPage .btnSecondary{
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(0,0,0,.12);
-      background: rgba(255,255,255,.92);
-      font-weight:900;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-
-    .draftPage .actionsRow{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:10px;
-      align-items:center;
-      margin-top:2px;
-    }
-    @media (max-width: 720px){
-      .draftPage .actionsRow{ grid-template-columns: 1fr; }
-    }
-    .draftPage .btnGroup{
-      display:flex;
-      gap:10px;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
-    .draftPage #meta{ margin-top:8px !important; }
-
-    /* -----------------------------
-       Taken toggle tabs + Draft Order board
-       ----------------------------- */
-    .draftPage .takenHdrRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      margin:0 0 10px 0;
-    }
+    /* Minimal local styles; main layout in styles.css */
     .draftPage .pillTabs{
       display:flex;
       gap:6px;
@@ -376,7 +23,7 @@
       background: transparent;
       padding:7px 10px;
       border-radius:999px;
-      font-weight:1000;
+      font-weight:900;
       font-size:12px;
       cursor:pointer;
       color: rgba(0,0,0,.75);
@@ -386,7 +33,6 @@
       box-shadow: 0 1px 2px rgba(0,0,0,.10);
       color: rgba(0,0,0,.92);
     }
-
     .draftPage .boardRoundTitle{
       font-weight:1000;
       margin: 2px 0 10px 0;
@@ -409,234 +55,443 @@
       font-variant-numeric: tabular-nums;
       font-weight:900;
       color: rgba(0,0,0,.65);
-      min-width: 88px;
+      min-width: 86px;
     }
     .draftPage .boardTeam{
       font-weight:1000;
       white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 210px;
     }
     .draftPage .boardPlayer{
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
       color: rgba(0,0,0,.85);
-      font-weight:900;
-      max-width: 320px;
-      text-align:right;
+      font-weight:800;
     }
     .draftPage .boardPlayer.muted{
       color: rgba(0,0,0,.40);
-      font-weight:900;
+      font-weight:800;
+    }
+    .draftPage .boardRow.onclock{
+      outline: none;
     }
     .draftPage .boardRow.forfeit{
       background: rgba(0,0,0,.03);
     }
+    .draftPage .pill.good{ border-color: rgba(0,150,80,.35); }
+    .draftPage .pill.warn{ border-color: rgba(200,120,0,.45); }
+    .draftPage .pill.bad { border-color: rgba(190,40,40,.45); }
+
+    .draftPage .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .draftPage .grid3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .draftPage .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .draftPage .ticker{
+      overflow:hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.10);
+      background:#fff;
+      box-shadow: 0 6px 16px rgba(0,0,0,.06);
+    }
+    .draftPage .tickerRow{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:10px 12px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+
+      /* ✅ default: start-aligned so overflow doesn't drift */
+      justify-content:flex-start;
+    }
+    /* ✅ when content fits (no horizontal overflow), we center */
+    .draftPage .tickerRow.center{
+      justify-content:center;
+    }
+    .draftPage .tickerRow::-webkit-scrollbar{ display:none; }
+    .draftPage .tick{
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-weight: 900;
+      background: rgba(0,0,0,.02);
+      min-width: 220px;
+    }
+    .draftPage .tick .team{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 110px;
+    }
+    .draftPage .tick .player{
+      color: rgba(0,0,0,.72);
+      font-weight: 800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 140px;
+    }
+    .draftPage .tick .sep{ color: rgba(0,0,0,.28); }
+
+    /* Modal */
+    .modalBackdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .modalBackdrop.open{ display:flex; }
+    .modalCard{
+      width: min(880px, 100%);
+      max-height: min(84vh, 820px);
+      background:#fff;
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 18px 48px rgba(0,0,0,.32);
+      display:flex;
+      flex-direction:column;
+    }
+    .modalHdr{
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+    .modalTitle{
+      font-weight: 1000;
+      font-size: 18px;
+      margin-right: 10px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .xBtn{
+      appearance:none;
+      border:1px solid rgba(0,0,0,.15);
+      background: rgba(0,0,0,.02);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-weight: 900;
+      cursor:pointer;
+    }
+    .modalBody{
+      padding: 14px 16px;
+      overflow:auto;
+    }
+    .kvGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 820px){
+      .kvGrid{ grid-template-columns: 1fr; }
+    }
+    .kvCol{
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(0,0,0,.015);
+    }
+    .kvRow{
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px dashed rgba(0,0,0,.10);
+    }
+    .kvRow:last-child{ border-bottom:0; }
+    .k{ color: rgba(0,0,0,.55); font-weight: 900; }
+    .v{ color: rgba(0,0,0,.86); font-weight: 900; text-align:right; }
+    .smallMuted{ color: rgba(0,0,0,.55); font-weight: 800; font-size: 12px; }
+
+    /* Player cards */
+    .playerCard{
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 14px;
+      background:#fff;
+      box-shadow: 0 6px 16px rgba(0,0,0,.06);
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .12s ease;
+    }
+    .playerCard:hover{ transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,.10); }
+    .pName{ font-weight: 1000; font-size: 16px; }
+    .pMeta{ display:flex; flex-wrap:wrap; gap: 6px; }
+    .pill{
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-weight: 900;
+      font-size: 12px;
+      background: rgba(0,0,0,.02);
+      color: rgba(0,0,0,.78);
+    }
+    .pill.muted{
+      color: rgba(0,0,0,.45);
+      background: rgba(0,0,0,.015);
+    }
+
+    /* Taken */
+    .takenTeamCard{
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 16px;
+      background:#fff;
+      box-shadow: 0 6px 16px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    .takenHdr{
+      padding: 12px 12px 10px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+      gap: 10px;
+    }
+    .takenHdr .tName{
+      font-weight: 1000;
+      font-size: 15px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .takenList{
+      padding: 8px 12px 12px 12px;
+      display:grid;
+      gap: 6px;
+    }
+    .takenItem{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(0,0,0,.01);
+    }
+    .takenItem .idx{
+      font-variant-numeric: tabular-nums;
+      font-weight: 1000;
+      color: rgba(0,0,0,.55);
+      min-width: 22px;
+    }
+    .takenItem .nm{
+      flex:1;
+      font-weight: 900;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color: rgba(0,0,0,.80);
+    }
+    .takenItem .tag{
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(0,0,0,.55);
+      white-space:nowrap;
+    }
   </style>
 </head>
 
-<body class="watermarkPage draftPage hasHamburger">
-<header class="siteHeader">
-  <div class="navWrap">
-    <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="navOverlay" aria-hidden="true"></div>
+<body class="draftPage">
+<main class="wrap" style="max-width: 1180px; margin: 0 auto; padding: 18px 14px 50px 14px;">
 
-    <nav class="nav" id="siteNav">
-      <a href="./">Home</a>
-      <a href="./schedule.html">Schedule/Scores</a>
-      <a href="./standings.html">Standings</a>
-      <a href="./teams.html">Teams</a>
-      <a href="./playoffs.html">Playoffs</a>
-      <a href="./rules.html">Rules</a>
-      <a href="./contacts.html">Contacts</a>
-      <a href="./gallery.html">Gallery</a>
-      <a href="./uploads.html">Uploads</a>
-    </nav>
-  </div>
+  <section style="display:grid; gap: 12px;">
 
-  <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
-    <h1>WBL 3rd Grade 2026</h1>
-    <div class="tagline">Draft Board</div>
-  </div>
-</header>
-
-<main class="wrap">
-  <section class="docSection">
-
-    <div class="card filtersCard">
-      <div class="cardBody">
-        <div class="filtersShell">
-          <div class="filtersWrap">
-
-            <div class="filtersGrid5">
-              <div class="field">
-                <div class="lbl">Pitcher</div>
-                <select id="pitcherFilter">
-                  <option value="">All</option>
-                  <option value="y">Pitcher (Y)</option>
-                  <option value="n">Not marked</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Travel</div>
-                <select id="travelFilter">
-                  <option value="">All</option>
-                  <option value="y">Travel (Y)</option>
-                  <option value="n">Non-travel (N)</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Travel Level</div>
-                <select id="levelFilter">
-                  <option value="">All</option>
-                  <option value="a">A</option>
-                  <option value="b">B</option>
-                  <option value="c">C</option>
-                  <option value="none">None</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">School</div>
-                <select id="schoolFilter">
-                  <option value="">All</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Taken team</div>
-                <select id="takenTeamFilter">
-                  <option value="">All teams</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="filtersGrid4">
-              <div class="field">
-                <div class="lbl">Spring Pitching</div>
-                <select id="springPitchingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Spring Hitting</div>
-                <select id="springHittingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Spring Throwing</div>
-                <select id="springThrowingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Spring Fielding</div>
-                <select id="springFieldingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="actionsRow">
-              <div class="field" style="gap:0;">
-                <input id="q" type="text" placeholder="Search player name…" />
-              </div>
-
-              <div class="btnGroup">
-                <button id="clearBtn" class="btnSecondary" type="button">Clear filters</button>
-                <button id="refreshBtn" class="btnSecondary" type="button">Refresh</button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <div class="smallMuted" id="meta" style="margin-top:10px;"></div>
-      </div>
-    </div>
-
-    <div class="card clockCard" style="margin-top:14px;">
-      <div class="cardBody">
-        <div class="clockLine">
+    <!-- Header -->
+    <div class="card">
+      <div class="cardBody" style="padding: 14px 14px 12px 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 10px; flex-wrap:wrap;">
           <div>
+            <div class="smallMuted">WBL 3rd Grade 2026 • Draft</div>
+            <div style="font-weight: 1100; font-size: 22px; line-height:1.1; margin-top: 6px;">Live Draft Board</div>
+          </div>
 
-            <div class="clockHeadline">
-              <span class="label">On the clock:</span>
-              <span class="team" id="onClock">—</span>
-              <span class="pill" id="pickPill">Pick —</span>
-            </div>
+          <div style="display:flex; gap: 8px; align-items:center; flex-wrap:wrap;">
+            <button id="refreshBtn" class="xBtn" type="button" title="Refresh now">Refresh</button>
+            <button id="clearBtn" class="xBtn" type="button" title="Clear filters">Clear</button>
+          </div>
+        </div>
 
-            <div class="smallMuted">
-              Up next: <span id="upNext">—</span>
-              • Round: <span id="round">—</span> / <span id="totalRounds">12</span>
-              • Picks made: <span id="picksMade">0</span>
-            </div>
-            <div class="smallMuted" id="forfeitLine" style="margin-top:6px;"></div>
+        <div style="height: 10px;"></div>
 
-            <div class="tickerWrap">
-              <div class="ticker">
-                <div class="tickerHdr">
-                  <div class="tickerTitle">Last 5 picks</div>
-                  <div class="tickerSub" id="lastPicksMeta">—</div>
+        <!-- On the clock -->
+        <div class="grid2">
+          <div class="card" id="otcCard" style="margin:0;">
+            <div class="cardBody" style="padding: 14px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; flex-wrap:wrap;">
+                <div style="flex:1; min-width: 240px;">
+                  <div style="text-align:center; font-weight:1000; font-size: 14px; color: rgba(0,0,0,.62);">On the clock:</div>
+                  <div id="otcTeam" style="text-align:center; font-weight: 1200; font-size: 24px; margin-top: 4px;">—</div>
+                  <div id="otcMeta" class="smallMuted" style="text-align:center; margin-top: 4px;">—</div>
                 </div>
-
-                <div class="tickerMarquee" id="lastPicksMarquee">
-                  <div class="tickerTrack" id="lastPicksTrack"></div>
+                <div style="display:flex; align-items:center; justify-content:center; gap: 8px; min-width: 160px; flex-wrap:wrap;">
+                  <span class="pill" id="pickPill">Pick —</span>
+                  <span class="pill" id="roundPill">Round —</span>
                 </div>
               </div>
-            </div>
 
+              <div style="height: 10px;"></div>
+
+              <!-- Last 5 picks ticker -->
+              <div class="ticker" aria-label="Last 5 picks">
+                <div class="tickerRow" id="tickerRow"></div>
+              </div>
+              <div class="smallMuted" style="margin-top: 6px;">Last 5 picks (swipe on mobile)</div>
+            </div>
           </div>
-          <div class="smallMuted">Auto-refresh: <span id="autoRefreshState">ON</span></div>
+
+          <!-- Filters -->
+          <div class="card" style="margin:0;">
+            <div class="cardBody" style="padding: 14px;">
+              <div style="font-weight: 1000; margin-bottom: 10px;">Filters</div>
+
+              <div class="grid3">
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Name</span>
+                  <input id="q" type="text" placeholder="Search name…" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);" />
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Pitcher</span>
+                  <select id="pitcherFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                    <option value="y">Pitcher</option>
+                    <option value="n">Not pitcher</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Travel</span>
+                  <select id="travelFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                    <option value="y">Travel</option>
+                    <option value="n">Non-travel</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Travel Level</span>
+                  <select id="levelFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                    <option value="a">A</option>
+                    <option value="b">B</option>
+                    <option value="c">C</option>
+                    <option value="none">None</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">School</span>
+                  <select id="schoolFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Taken Team</span>
+                  <select id="takenTeamFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All teams</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Spring Pitching</span>
+                  <select id="springPitchingFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                    <option value="y">Yes</option>
+                    <option value="n">No</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Spring Hitting</span>
+                  <select id="springHittingFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                    <option value="y">Yes</option>
+                    <option value="n">No</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Spring Throwing</span>
+                  <select id="springThrowingFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                    <option value="y">Yes</option>
+                    <option value="n">No</option>
+                  </select>
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:6px;">
+                  <span class="smallMuted">Spring Fielding</span>
+                  <select id="springFieldingFilter" style="padding:10px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.15);">
+                    <option value="">All</option>
+                    <option value="y">Yes</option>
+                    <option value="n">No</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="smallMuted" style="margin-top: 10px;">
+                Picks are recorded by typing the player name into the team’s roster slot (e.g., Or-01 … Or-12).
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="grid2" style="margin-top:14px;">
+    <!-- Main -->
+    <div class="grid2">
+      <!-- Available -->
       <div class="card">
-        <div class="cardBody">
-          <h2 style="margin:0 0 10px 0;">Available</h2>
-          <div id="available" style="display:grid; gap:10px;"></div>
+        <div class="cardBody" style="padding: 14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; flex-wrap:wrap;">
+            <h2 style="margin:0;">Available</h2>
+            <div class="smallMuted" id="availCount">—</div>
+          </div>
+          <div style="height: 10px;"></div>
+          <div id="available" style="display:grid; gap:12px;"></div>
           <p id="availMsg" class="smallMuted" style="margin-top:10px;"></p>
         </div>
       </div>
 
+      <!-- Taken -->
       <div class="card">
-        <div class="cardBody">
-          <div class="takenHdrRow">
+        <div class="cardBody" style="padding: 14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; flex-wrap:wrap;">
             <h2 style="margin:0;">Taken</h2>
             <div class="pillTabs" id="takenViewTabs" aria-label="Taken view toggle">
               <button id="viewTakenBtn" class="pillTab active" type="button" aria-pressed="true">By team</button>
               <button id="viewBoardBtn" class="pillTab" type="button" aria-pressed="false">Draft order</button>
             </div>
           </div>
-
           <div id="taken" style="display:grid; gap:12px;"></div>
           <div id="draftBoard" style="display:none; gap:12px;"></div>
-
           <p id="takenMsg" class="smallMuted" style="margin-top:10px;"></p>
         </div>
       </div>
@@ -658,37 +513,26 @@
   </div>
 </div>
 
-<script src="./data.js"></script>
-<script>
-  const TOTAL_ROUNDS = 12;
-  let slugToColor = new Map();
-  let TAKEN_VIEW = "team"; // "team" | "board"
+<script src="data.js?v=wbl2026-draft-13"></script>
 
+<script>
+  // ===== Config =====
+  const TOTAL_TEAMS = 10;
+  const TOTAL_ROUNDS = 12;
+
+  // CoachKid forfeit rules (used to mark "autopick rounds" for the board + skip them for on-the-clock):
+  // A => base round 1; B => base round 2. If duplicates, push forward to avoid collisions.
+  const COACHKID_FORFEIT_BASE = { "A": 1, "B": 2 };
+
+  // Detail panel schema: 3 cols x 5 fields each.
   const DETAIL_SCHEMA = [
-    [
-      ["Travel", "Travel"],
-      ["TravelTeam", "Travel Team"],
-      ["TravelLevel", "Travel Level"],
-      ["Pitcher", "Pitcher"],
-      ["CoachKid", "Coach Kid"]
-    ],
-    [
-      ["Spring2025HeadCoach", "2025 Spring Coach"],
-      ["SpringPitching", "Spring Pitching"],
-      ["SpringHitting", "Spring Hitting"],
-      ["SpringThrowing", "Spring Throwing"],
-      ["SpringFielding", "Spring Fielding"]
-    ],
-    [
-      ["School", "School"],
-      ["CoachRequest", "Coach Request"],
-      ["FriendRequest", "Friend Request"],
-      ["OtherSpringSport", "Other Spring Sport"],
-      ["Conflict", "Conflict"]
-    ]
+    ["School", "Travel", "TravelLevel", "Pitcher", "TakenTeam"],
+    ["SpringPitching", "SpringHitting", "SpringThrowing", "SpringFielding", "Notes"],
+    ["Height", "Weight", "Bats", "Throws", "Other"]
   ];
 
-  function safe(v){ return String(v ?? "").trim(); }
+  // ===== Helpers =====
+  function safe(v){ return (v ?? "").toString().trim(); }
   function norm(v){ return safe(v).toLowerCase(); }
   function escapeHtml(s){
     return (s ?? "").toString()
@@ -700,7 +544,7 @@
   }
 
   function colorToRgba(color, alpha){
-    const c = safe(color);
+    const c = (color ?? "").toString().trim();
     const a = Math.max(0, Math.min(1, Number(alpha)));
     if (!c) return `rgba(0,0,0,${a})`;
 
@@ -729,146 +573,468 @@
     if (!url) throw new Error("Missing CSV URL in data.js (check window.SHEET.*)");
     const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
     const res = await fetch(url + bust, { cache:"no-store" });
-    if (!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
-    return await res.text();
+    if (!res.ok) throw new Error("Fetch failed: " + res.status);
+    const txt = await res.text();
+    return parseCsv(txt);
   }
 
-  function parseCsv(text){
+  function parseCsv(txt){
     const rows = [];
-    let row = [], cur = "", inQuotes = false;
-    for (let i=0; i<text.length; i++){
-      const ch = text[i], next = text[i+1];
-      if (ch === '"'){
-        if (inQuotes && next === '"'){ cur += '"'; i++; }
-        else inQuotes = !inQuotes;
-        continue;
+    let cur = [];
+    let field = "";
+    let inQ = false;
+
+    for (let i = 0; i < txt.length; i++){
+      const ch = txt[i];
+      const nxt = txt[i+1];
+
+      if (inQ){
+        if (ch === '"' && nxt === '"'){
+          field += '"';
+          i++;
+        } else if (ch === '"'){
+          inQ = false;
+        } else {
+          field += ch;
+        }
+      } else {
+        if (ch === '"'){
+          inQ = true;
+        } else if (ch === ","){
+          cur.push(field);
+          field = "";
+        } else if (ch === "\n"){
+          cur.push(field);
+          rows.push(cur);
+          cur = [];
+          field = "";
+        } else if (ch === "\r"){
+          // ignore
+        } else {
+          field += ch;
+        }
       }
-      if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
-      if (!inQuotes && (ch === "\n" || ch === "\r")){
-        if (ch === "\r" && next === "\n") i++;
-        row.push(cur); cur="";
-        if (row.some(v => safe(v) !== "")) rows.push(row);
-        row = [];
-        continue;
-      }
-      cur += ch;
     }
-    row.push(cur);
-    if (row.some(v => safe(v) !== "")) rows.push(row);
+    cur.push(field);
+    rows.push(cur);
 
-    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
-    return rows.map(r => {
-      const o = {};
-      headers.forEach((h, idx) => o[h] = safe(r[idx]));
-      return o;
-    }).filter(o => Object.values(o).some(v => safe(v) !== ""));
-  }
+    while (rows.length && rows[rows.length-1].every(x => safe(x)==="")) rows.pop();
+    if (!rows.length) return [];
 
-  function getRosterName(r){
-    return safe(r.PlayerName || r.Name);
-  }
-
-  function buildPlayerMap(pool){
-    const m = new Map();
-    for (const p of pool){
-      const name = safe(p.Name);
-      if (!name) continue;
-      m.set(norm(name), p);
-    }
-    return m;
-  }
-
-  function assignForfeitsForTeam(baseRounds){
-    const used = new Set();
+    const hdr = rows[0].map(h => safe(h).replace(/\s+/g,""));
     const out = [];
-    const sorted = baseRounds.slice().sort((a,b)=>a-b);
-    for (const base of sorted){
-      let r = base;
-      while (used.has(r)) r++;
-      used.add(r);
-      out.push(r);
+    for (let r = 1; r < rows.length; r++){
+      const obj = {};
+      const row = rows[r];
+      for (let c = 0; c < hdr.length; c++){
+        obj[hdr[c]] = row[c] ?? "";
+      }
+      out.push(obj);
     }
     return out;
   }
 
-  function computeForfeits(teams, roster, playerMap){
-    const nameToSlug = new Map();
-    for (const r of roster){
-      const nm = norm(getRosterName(r));
-      const slug = safe(r.TeamSlug);
-      if (nm && slug) nameToSlug.set(nm, slug);
-    }
+  // ===== State =====
+  let TEAMS = [];
+  let TEAM_BY_SLUG = new Map();
+  let TEAM_COLOR_BY_SLUG = new Map();
+  let TAKEN_VIEW = "team"; // "team" or "board"
 
-    const baseByTeam = new Map();
-    for (const [nm, p] of playerMap.entries()){
-      if (norm(p.CoachKid) !== "y") continue;
-      const slug = nameToSlug.get(nm);
-      if (!slug) continue;
-      const lvl = norm(p.TravelLevel);
-      if (lvl === "a"){
-        if (!baseByTeam.has(slug)) baseByTeam.set(slug, []);
-        baseByTeam.get(slug).push(1);
-      } else if (lvl === "b"){
-        if (!baseByTeam.has(slug)) baseByTeam.set(slug, []);
-        baseByTeam.get(slug).push(2);
-      }
-    }
+  function teamColor(slug){ return TEAM_COLOR_BY_SLUG.get(slug) || ""; }
 
-    const forfeits = new Map();
-    for (const t of teams){
-      const slug = safe(t.TeamSlug);
-      if (!slug) continue;
-      const assigned = assignForfeitsForTeam(baseByTeam.get(slug) || []);
-      forfeits.set(slug, new Set(assigned));
-    }
-    return forfeits;
-  }
-
-  // Pick sequence used for ON-THE-CLOCK: excludes forfeited picks
-  function buildPickSequenceSnake(teams, forfeits){
-    const order = teams
-      .map(t => ({ slug: safe(t.TeamSlug), name: safe(t.TeamName) || safe(t.TeamSlug) }))
-      .filter(t => t.slug);
-
-    const n = order.length;
+  function buildPickSequence(teams){
     const seq = [];
+    const order = teams.slice();
+    const rev = teams.slice().reverse();
     for (let round = 1; round <= TOTAL_ROUNDS; round++){
-      const isOdd = (round % 2) === 1;
-      for (let pos = 0; pos < n; pos++){
-        const idx = isOdd ? pos : (n - 1 - pos);
-        const team = order[idx];
-        const fset = forfeits.get(team.slug) || new Set();
-        if (fset.has(round)) continue;
-        seq.push({ round, posInRound: pos+1, teamSlug: team.slug, teamName: team.name });
+      const list = (round % 2 === 1) ? order : rev;
+      for (let pos = 0; pos < list.length; pos++){
+        const t = list[pos];
+        seq.push({
+          round,
+          posInRound: pos+1,
+          teamSlug: t.TeamSlug,
+          teamName: t.TeamName
+        });
       }
     }
     return seq;
   }
 
-  // Full board slots for Draft Order view: includes forfeits
-  function buildBoardSlotsSnake(teams, forfeits){
-    const order = teams
-      .map(t => ({ slug: safe(t.TeamSlug), name: safe(t.TeamName) || safe(t.TeamSlug) }))
-      .filter(t => t.slug);
+  function computeRosterIndex(rosterRows){
+    // Maps by (teamSlug|round) => playerName
+    const m = new Map();
+    for (const r of rosterRows){
+      const slug = safe(r.TeamSlug);
+      const id = safe(r.PlayerID);
+      const name = safe(r.PlayerName || r.Name);
+      if (!slug) continue;
+      if (!id) continue;
 
-    const n = order.length;
+      const mm = id.match(/-(\d{1,2})$/);
+      if (!mm) continue;
+      const round = Number(mm[1]);
+      if (!Number.isFinite(round) || round < 1 || round > TOTAL_ROUNDS) continue;
+
+      m.set(`${slug}|${round}`, name);
+    }
+    return m;
+  }
+
+  function computeRosterCoachKidIndex(rosterRows){
+    // Maps by (teamSlug|round) => true/false based on Roster.CoachKid == Y
+    const m = new Map();
+    for (const r of rosterRows){
+      const slug = safe(r.TeamSlug);
+      const id = safe(r.PlayerID);
+      if (!slug || !id) continue;
+
+      const mm = id.match(/-(\d{1,2})$/);
+      if (!mm) continue;
+      const round = Number(mm[1]);
+      if (!Number.isFinite(round) || round < 1 || round > TOTAL_ROUNDS) continue;
+
+      const isCK = norm(r.CoachKid || r.IsCoachKid) === "y";
+      m.set(`${slug}|${round}`, isCK);
+    }
+    return m;
+  }
+
+  function buildPlayerMap(draftPool){
+    // Map by normalized name => player object (first occurrence wins)
+    const m = new Map();
+    for (const p of draftPool){
+      const nm = norm(p.Name);
+      if (!nm) continue;
+      if (!m.has(nm)) m.set(nm, p);
+    }
+    return m;
+  }
+
+  function buildTakenByTeam(rosterRows, playerMap){
+    const m = new Map();
+    for (const r of rosterRows){
+      const slug = safe(r.TeamSlug);
+      if (!slug) continue;
+      const nm = safe(r.PlayerName || r.Name);
+      if (!nm) continue;
+
+      const key = norm(nm);
+      const full = playerMap.get(key) || { Name: nm };
+
+      if (!m.has(slug)) m.set(slug, []);
+      const obj = { ...full, TakenTeam: slug };
+      m.get(slug).push(obj);
+    }
+    return m;
+  }
+
+  function computeForfeitsFromCoachKids(takenPlayersByTeam){
+    // Uses DraftPool flags on the taken player objects.
+    const forfeitsByTeam = new Map();
+
+    for (const [slug, arr] of takenPlayersByTeam.entries()){
+      const coachKids = arr.filter(p => norm(p.CoachKid || p.IsCoachKid) === "y");
+      if (!coachKids.length) continue;
+
+      const used = new Set();
+      const rounds = [];
+      for (const ck of coachKids){
+        const lv = safe(ck.TravelLevel || ck.Level || ck.TravelLvl).toUpperCase();
+        const base = COACHKID_FORFEIT_BASE[lv];
+        if (!base) continue;
+
+        let r = base;
+        while (used.has(r) && r <= TOTAL_ROUNDS) r++;
+        if (r <= TOTAL_ROUNDS){
+          used.add(r);
+          rounds.push(r);
+        }
+      }
+      if (rounds.length) forfeitsByTeam.set(slug, new Set(rounds));
+    }
+
+    return forfeitsByTeam;
+  }
+
+  function buildBoardSlots(teams, forfeitsByTeam){
+    // Display sequence includes all slots; some are flagged as "autopick/coachkid rounds"
+    const seq = buildPickSequence(teams);
     const slots = [];
+    for (const s of seq){
+      const fset = forfeitsByTeam.get(s.teamSlug);
+      const isForfeit = fset ? fset.has(s.round) : false;
+      slots.push({ ...s, isForfeit });
+    }
+    return slots;
+  }
+
+  function buildPickSequenceSkippingForfeits(teams, forfeitsByTeam){
+    // Used for "on the clock" progression: omit forfeited slots entirely.
+    const seq = [];
+    const order = teams.slice();
+    const rev = teams.slice().reverse();
     for (let round = 1; round <= TOTAL_ROUNDS; round++){
-      const isOdd = (round % 2) === 1;
-      for (let pos = 0; pos < n; pos++){
-        const idx = isOdd ? pos : (n - 1 - pos);
-        const team = order[idx];
-        const fset = forfeits.get(team.slug) || new Set();
-        slots.push({
+      const list = (round % 2 === 1) ? order : rev;
+      for (let pos = 0; pos < list.length; pos++){
+        const t = list[pos];
+        const slug = safe(t.TeamSlug);
+        if (!slug) continue;
+        const fset = forfeitsByTeam.get(slug);
+        const isForfeit = fset ? fset.has(round) : false;
+        if (isForfeit) continue;
+
+        seq.push({
           round,
           posInRound: pos+1,
-          teamSlug: team.slug,
-          teamName: team.name,
-          isForfeit: fset.has(round),
+          teamSlug: t.TeamSlug,
+          teamName: t.TeamName
         });
       }
     }
-    return slots;
+    return seq;
+  }
+
+  function calcPicksMadeFromPickSeq(pickSeqNoForfeits, rosterByTeamRound, rosterCoachKidByTeamRound){
+    // Count only slots in pickSeqNoForfeits that have a name AND are not CoachKid on Roster.
+    let n = 0;
+    for (const s of pickSeqNoForfeits){
+      const key = `${s.teamSlug}|${s.round}`;
+      const nm = safe(rosterByTeamRound.get(key));
+      if (!nm) continue;
+      if (rosterCoachKidByTeamRound.get(key) === true) continue;
+      n++;
+    }
+    return n;
+  }
+
+  function adjustTickerCenter(){
+    const row = document.getElementById("tickerRow");
+    if (!row) return;
+    // Center only when content fits in the container (no overflow).
+    const fits = row.scrollWidth <= row.clientWidth + 1;
+    row.classList.toggle("center", fits);
+  }
+
+  function renderTicker(lastPicks){
+    const row = document.getElementById("tickerRow");
+    if (!row) return;
+    row.innerHTML = "";
+    row.classList.remove("center");
+
+    if (!lastPicks.length){
+      row.innerHTML = `<div class="smallMuted" style="padding:10px 12px;">No picks yet.</div>`;
+      adjustTickerCenter();
+      return;
+    }
+    for (const p of lastPicks){
+      const tcol = teamColor(p.teamSlug);
+      const el = document.createElement("div");
+      el.className = "tick";
+      el.innerHTML = `
+        <div class="team" style="${tcol ? `color:${escapeHtml(tcol)};` : ""}">${escapeHtml(p.teamName)}</div>
+        <div class="sep">•</div>
+        <div class="player">${escapeHtml(p.playerName)}</div>
+      `;
+      row.appendChild(el);
+    }
+    adjustTickerCenter();
+  }
+
+  function renderAvailable(players){
+    const el = document.getElementById("available");
+    const msg = document.getElementById("availMsg");
+    const count = document.getElementById("availCount");
+    if (!el) return;
+
+    el.innerHTML = "";
+    count.textContent = `${players.length} players`;
+    msg.textContent = players.length ? "" : "No available players match your filters.";
+
+    for (const p of players){
+      const card = document.createElement("div");
+      card.className = "playerCard";
+      card.dataset.name = safe(p.Name);
+
+      const pills = [];
+      if (norm(p.Pitcher) === "y") pills.push(`<span class="pill">Pitcher</span>`);
+      if (norm(p.Travel) === "y"){
+        const lv = safe(p.TravelLevel).toUpperCase() || "Travel";
+        pills.push(`<span class="pill">${escapeHtml(lv)} travel</span>`);
+      } else {
+        pills.push(`<span class="pill muted">Non-travel</span>`);
+      }
+      if (safe(p.School)) pills.push(`<span class="pill">${escapeHtml(p.School)}</span>`);
+
+      card.innerHTML = `
+        <div class="pName">${escapeHtml(p.Name || "Unnamed")}</div>
+        <div class="pMeta">${pills.join("")}</div>
+        <div class="smallMuted">Tap for details</div>
+      `;
+
+      card.addEventListener("click", () => openModal(p));
+      el.appendChild(card);
+    }
+  }
+
+  function renderTakenByTeam(takenByTeam, forfeitsByTeam){
+    const el = document.getElementById("taken");
+    const msg = document.getElementById("takenMsg");
+    if (!el) return;
+
+    el.innerHTML = "";
+    msg.textContent = "";
+
+    const takenSelect = document.getElementById("takenTeamFilter");
+    if (takenSelect){
+      const cur = safe(takenSelect.value);
+      takenSelect.innerHTML = `<option value="">All teams</option>` +
+        TEAMS.map(t => `<option value="${escapeHtml(t.TeamSlug)}">${escapeHtml(t.TeamName)}</option>`).join("");
+      takenSelect.value = cur;
+    }
+
+    const filterSlug = safe(document.getElementById("takenTeamFilter")?.value);
+
+    let any = false;
+    for (const t of TEAMS){
+      const slug = safe(t.TeamSlug);
+      if (filterSlug && filterSlug !== slug) continue;
+
+      const arr = takenByTeam.get(slug) || [];
+      const fset = forfeitsByTeam.get(slug) || new Set();
+      any = true;
+
+      const card = document.createElement("div");
+      card.className = "takenTeamCard";
+
+      const aCount = arr.filter(p => safe(p.TravelLevel).toUpperCase() === "A").length;
+      const capClass = aCount > 2 ? "pill bad" : (aCount === 2 ? "pill warn" : "pill good");
+
+      const tcol = teamColor(slug);
+
+      card.innerHTML = `
+        <div class="takenHdr">
+          <div class="tName" style="${tcol ? `color:${escapeHtml(tcol)};` : ""}" title="${escapeHtml(t.TeamName)}">${escapeHtml(t.TeamName)}</div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="pill">${arr.length} picks</span>
+            <span class="${capClass}">A cap: ${aCount}/2</span>
+          </div>
+        </div>
+        <div class="takenList"></div>
+      `;
+
+      const list = card.querySelector(".takenList");
+      arr.forEach((p, idx) => {
+        const li = document.createElement("div");
+        li.className = "takenItem";
+        const nm = safe(p.Name);
+        li.innerHTML = `
+          <div class="idx">${idx+1}</div>
+          <div class="nm" title="${escapeHtml(nm)}">${escapeHtml(nm)}</div>
+          <div class="tag">${escapeHtml(safe(p.TravelLevel || "").toUpperCase())}</div>
+        `;
+        li.addEventListener("click", () => openModal(p));
+        list.appendChild(li);
+      });
+
+      // Optional footer (kept as informational; not shown in On-the-clock header)
+      if (fset.size){
+        const note = document.createElement("div");
+        note.className = "smallMuted";
+        note.style.padding = "0 12px 12px 12px";
+        note.textContent = "Autopick rounds: " + Array.from(fset).sort((a,b)=>a-b).join(", ");
+        card.appendChild(note);
+      }
+
+      el.appendChild(card);
+    }
+
+    if (!any){
+      msg.textContent = "No taken players yet.";
+    }
+  }
+
+  function renderDraftBoard(boardSlots, rosterByTeamRound, curPick){
+    const el = document.getElementById("draftBoard");
+    const msg = document.getElementById("takenMsg");
+    if (!el) return;
+    el.innerHTML = "";
+
+    if (!boardSlots.length){
+      msg.textContent = "Draft board unavailable (no teams loaded).";
+      return;
+    }
+    msg.textContent = "";
+
+    const curRound = curPick?.round;
+    const curSlug = curPick?.teamSlug;
+
+    const byRound = new Map();
+    for (const s of boardSlots){
+      if (!byRound.has(s.round)) byRound.set(s.round, []);
+      byRound.get(s.round).push(s);
+    }
+
+    for (let round = 1; round <= TOTAL_ROUNDS; round++){
+      const rows = byRound.get(round) || [];
+      if (!rows.length) continue;
+
+      const roundCard = document.createElement("div");
+      roundCard.className = "card";
+      roundCard.innerHTML = `
+        <div class="cardBody" style="padding:12px;">
+          <div class="boardRoundTitle">Round ${round}</div>
+          <div class="boardRoundRows" style="display:grid; gap:8px;"></div>
+        </div>
+      `;
+      const wrap = roundCard.querySelector(".boardRoundRows");
+
+      for (let i = 0; i < rows.length; i++){
+        const s = rows[i];
+        const key = `${s.teamSlug}|${s.round}`;
+        const rosterName = safe(rosterByTeamRound.get(key));
+        const isClock = (s.round === curRound && s.teamSlug === curSlug);
+        const c = teamColor(s.teamSlug);
+
+        // ✅ "FORFEIT" removed as a concept in the displayed pick cell:
+        // If it's an autopick/coachkid round, show the player's name (if present) + small (F).
+        const isAuto = s.isForfeit === true;
+
+        let playerHtml = "";
+        let playerClass = "boardPlayer";
+
+        if (rosterName){
+          playerHtml = `${escapeHtml(rosterName)}${isAuto ? ` <span class="smallMuted">(F)</span>` : ""}`;
+        } else {
+          // Empty slot
+          playerHtml = isAuto
+            ? `<span class="smallMuted">— (F)</span>`
+            : `<span class="smallMuted">—</span>`;
+          playerClass = "boardPlayer muted";
+        }
+
+        const row = document.createElement("div");
+        row.className = "boardRow" + (isClock ? " onclock" : "") + (isAuto ? " forfeit" : "");
+        if (isClock){
+          const tc = c || "rgba(0,0,0,.55)";
+          row.style.borderColor = tc;
+          row.style.borderWidth = "2px";
+          row.style.boxShadow = `0 0 0 5px ${colorToRgba(tc, 0.18)}, 0 12px 28px rgba(0,0,0,.14)`;
+          row.style.background = colorToRgba(tc, 0.06);
+        }
+
+        row.innerHTML = `
+          <div class="boardLeft">
+            <div class="boardPick">R${s.round} • ${String(s.posInRound).padStart(2,"0")}</div>
+            <div class="boardTeam" style="${c ? `color:${escapeHtml(c)};` : ""}">${escapeHtml(s.teamName)}</div>
+          </div>
+          <div class="${playerClass}" title="${escapeHtml(rosterName || "")}">${playerHtml}</div>
+        `;
+        wrap.appendChild(row);
+      }
+
+      el.appendChild(roundCard);
+    }
   }
 
   function applyFilters(players){
@@ -892,10 +1058,10 @@
       if (travel === "n" && tr === "y") return false;
 
       const lv = norm(p.TravelLevel);
-      if (level === "none") {
-        if (lv) return false;
-      } else if (level && lv !== level) {
-        return false;
+      if (level){
+        if (level === "none"){
+          if (lv && lv !== "none") return false;
+        } else if (lv !== level) return false;
       }
 
       const pi = norm(p.Pitcher);
@@ -905,154 +1071,74 @@
       const sc = norm(p.School);
       if (school && sc !== school) return false;
 
-      if (sp && norm(p.SpringPitching) !== sp) return false;
-      if (sh && norm(p.SpringHitting)  !== sh) return false;
-      if (st && norm(p.SpringThrowing) !== st) return false;
-      if (sf && norm(p.SpringFielding) !== sf) return false;
+      const _sp = norm(p.SpringPitching);
+      if (sp === "y" && _sp !== "y") return false;
+      if (sp === "n" && _sp === "y") return false;
+
+      const _sh = norm(p.SpringHitting);
+      if (sh === "y" && _sh !== "y") return false;
+      if (sh === "n" && _sh === "y") return false;
+
+      const _st = norm(p.SpringThrowing);
+      if (st === "y" && _st !== "y") return false;
+      if (st === "n" && _st === "y") return false;
+
+      const _sf = norm(p.SpringFielding);
+      if (sf === "y" && _sf !== "y") return false;
+      if (sf === "n" && _sf === "y") return false;
 
       return true;
     });
   }
 
-  function getValOrNA(p, key){
-    const v = safe(p[key]);
-    return v ? v : "n/a";
-  }
+  function openModal(player){
+    const bd = document.getElementById("modalBackdrop");
+    const title = document.getElementById("modalTitle");
+    const tags = document.getElementById("modalTags");
+    const kv = document.getElementById("modalKV");
+    if (!bd) return;
 
-  function renderDetailsThreeCols(p){
-    const renderCol = (pairs) => `
-      <div class="kvCol3">
-        ${pairs.map(([key, label]) => {
-          const v = getValOrNA(p, key);
-          const isNA = (v === "n/a");
-          return `
-            <div class="k">${escapeHtml(label)}</div>
-            <div class="v ${isNA ? "na" : ""}">${escapeHtml(v)}</div>
-          `;
-        }).join("")}
-      </div>
-    `;
-    return `
-      <div class="kv3">
-        ${renderCol(DETAIL_SCHEMA[0])}
-        ${renderCol(DETAIL_SCHEMA[1])}
-        ${renderCol(DETAIL_SCHEMA[2])}
-      </div>
-    `;
-  }
+    title.textContent = safe(player.Name) || "Player";
 
-  /* -----------------------------
-     Team wash helpers
-     ----------------------------- */
-  function hexToRgb(hex){
-    const h = safe(hex).replace("#","").trim();
-    if (![3,6].includes(h.length)) return null;
-    const full = h.length === 3 ? h.split("").map(c => c+c).join("") : h;
-    const n = parseInt(full, 16);
-    if (Number.isNaN(n)) return null;
-    return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
-  }
+    const t = [];
+    if (norm(player.Pitcher) === "y") t.push("Pitcher");
+    if (norm(player.Travel) === "y") t.push((safe(player.TravelLevel).toUpperCase() || "Travel") + " travel");
+    if (safe(player.School)) t.push(safe(player.School));
+    tags.textContent = t.join(" • ") || "";
 
-  function setTeamWash(teamSlug){
-    const card = document.querySelector(".clockCard");
-    const hex = slugToColor.get(teamSlug) || "";
-    const rgb = hexToRgb(hex);
-    if (!card || !rgb) {
-      if (card) card.style.setProperty("--teamWash", "transparent");
-      return;
-    }
-    card.style.setProperty(
-      "--teamWash",
-      `linear-gradient(135deg, rgba(${rgb.r},${rgb.g},${rgb.b},0.55), rgba(${rgb.r},${rgb.g},${rgb.b},0.0) 65%)`
-    );
-  }
+    kv.innerHTML = "";
+    const grid = document.createElement("div");
+    grid.className = "kvGrid";
 
-  /* -----------------------------
-     ESPN-style last 5 picks ticker
-     ----------------------------- */
-  function renderLastPicks(rosterRows, teamsRows){
-    const track = document.getElementById("lastPicksTrack");
-    const meta = document.getElementById("lastPicksMeta");
-    if (!track || !meta) return;
-
-    const slugToName = new Map();
-    for (const t of teamsRows){
-      const slug = safe(t.TeamSlug);
-      if (slug) slugToName.set(slug, safe(t.TeamName) || slug);
+    for (const col of DETAIL_SCHEMA){
+      const colEl = document.createElement("div");
+      colEl.className = "kvCol";
+      for (const k of col){
+        const v = safe(player[k]);
+        const row = document.createElement("div");
+        row.className = "kvRow";
+        row.innerHTML = `
+          <div class="k">${escapeHtml(k)}</div>
+          <div class="v">${escapeHtml(v || "n/a")}</div>
+        `;
+        colEl.appendChild(row);
+      }
+      grid.appendChild(colEl);
     }
 
-    const taken = rosterRows
-      .map(r => ({
-        slot: safe(r.PlayerID),
-        name: getRosterName(r),
-        slug: safe(r.TeamSlug)
-      }))
-      .filter(x => x.slot && x.name && x.slug)
-      .sort((a,b) => a.slot.localeCompare(b.slot));
+    kv.appendChild(grid);
 
-    const last = taken.slice(-5); // oldest -> newest among the last 5
-    meta.textContent = taken.length ? `${taken.length} total` : "—";
-
-    if (!last.length){
-      track.innerHTML = `<span class="smallMuted" style="padding:10px 12px; display:inline-block;">No picks yet.</span>`;
-      track.style.setProperty("--tickerSpeed", "0s");
-      return;
-    }
-
-    const strip = last.map(x => {
-      const teamName = slugToName.get(x.slug) || x.slug;
-      return `
-        <span class="tickItem">
-          <span class="tickSlot">${escapeHtml(x.slot)}</span>
-          <span class="tickText">${escapeHtml(x.name)} (${escapeHtml(teamName)})</span>
-        </span>
-      `;
-    }).join(`<span class="tickSep">•</span>`);
-
-    track.innerHTML = strip + `<span class="tickSep" style="margin:0 6px;">•</span>` + strip;
-
-    const approxChars = strip.replace(/<[^>]*>/g,"").length;
-    const seconds = Math.min(28, Math.max(14, Math.round(approxChars / 18)));
-    track.style.setProperty("--tickerSpeed", `${seconds}s`);
+    bd.classList.add("open");
+    bd.setAttribute("aria-hidden","false");
   }
 
-  /* -----------------------------
-     Modal
-     ----------------------------- */
-  const modalBackdrop = document.getElementById("modalBackdrop");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalTags = document.getElementById("modalTags");
-  const modalKV = document.getElementById("modalKV");
-  const modalClose = document.getElementById("modalClose");
-
-  function openModalForPlayer(p){
-    modalTitle.textContent = safe(p.Name);
-
-    const tags = [];
-    if (norm(p.Pitcher) === "y") tags.push("Pitcher");
-    if (norm(p.Travel) === "y") tags.push("Travel");
-    if (safe(p.TravelLevel)) tags.push("Level " + safe(p.TravelLevel).toUpperCase());
-    if (safe(p.TravelTeam)) tags.push(safe(p.TravelTeam));
-    if (safe(p.School)) tags.push(safe(p.School));
-    if (norm(p.CoachKid) === "y") tags.push("Coach kid");
-    modalTags.textContent = tags.join(" • ");
-
-    modalKV.innerHTML = renderDetailsThreeCols(p);
-
-    modalBackdrop.classList.add("open");
-    modalBackdrop.setAttribute("aria-hidden", "false");
-  }
   function closeModal(){
-    modalBackdrop.classList.remove("open");
-    modalBackdrop.setAttribute("aria-hidden", "true");
+    const bd = document.getElementById("modalBackdrop");
+    if (!bd) return;
+    bd.classList.remove("open");
+    bd.setAttribute("aria-hidden","true");
   }
-  modalClose.addEventListener("click", closeModal);
-  modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closeModal(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
-  /* -----------------------------
-     Taken view toggle
-     ----------------------------- */
   function setTakenView(view){
     TAKEN_VIEW = view;
     const taken = document.getElementById("taken");
@@ -1071,435 +1157,171 @@
     b.setAttribute("aria-pressed", !isTeam ? "true" : "false");
   }
 
-  // ✅ Auto-jump helper (smooth scroll to on-clock row)
-  function scrollBoardToClock(){
-    if (TAKEN_VIEW !== "board") return;
-    requestAnimationFrame(() => {
-      const el = document.getElementById("boardOnClockRow");
-      if (!el) return;
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-  }
+  async function loadAll(opts = {}){
+    // ✅ preserve scroll on refresh/filter changes so user isn't yanked to top
+    const preserveScroll = (opts.preserveScroll !== false);
+    const prevY = preserveScroll ? window.scrollY : null;
 
-  /* -----------------------------
-     Available + Taken rendering
-     ----------------------------- */
-  function renderAvailable(list){
-    const el = document.getElementById("available");
-    const msg = document.getElementById("availMsg");
-    el.innerHTML = "";
+    const teamsUrl = window.SHEET?.Teams;
+    const rosterUrl = window.SHEET?.Roster;
+    const poolUrl = window.SHEET?.DraftPool;
 
-    if (!list.length){
-      msg.textContent = "No available players match the current filters.";
-      return;
-    }
-    msg.textContent = "";
-
-    for (const p of list){
-      const name = safe(p.Name);
-      const tags = [];
-
-      if (norm(p.Pitcher) === "y") tags.push(`<span class="pill good">P</span>`);
-      if (norm(p.Travel) === "y") {
-        const lvl = safe(p.TravelLevel).toUpperCase();
-        tags.push(`<span class="pill ${lvl === "A" ? "warn" : ""}">Travel${lvl ? " " + lvl : ""}</span>`);
-      }
-
-      const hoverKV = renderDetailsThreeCols(p);
-
-      const div = document.createElement("div");
-      div.className = "card playerRow";
-      div.innerHTML = `
-        <div class="cardBody" style="padding:12px;">
-          <div class="tightRow">
-            <div class="tightLeft">
-              <div class="tightName">${escapeHtml(name)}</div>
-              <div class="tightMeta">${tags.join("")}</div>
-            </div>
-            <div class="smallMuted">Tap/click for details</div>
-          </div>
-
-          <div class="hoverCard" aria-hidden="true">
-            <div style="font-weight:1000; margin-bottom:10px;">${escapeHtml(name)}</div>
-            ${hoverKV}
-          </div>
-        </div>
-      `;
-      div.addEventListener("click", () => openModalForPlayer(p));
-      el.appendChild(div);
-    }
-  }
-
-  function renderTakenByTeam(rosterRows, teamsRows, playerMap){
-    const onlySlug = safe(document.getElementById("takenTeamFilter")?.value);
-
-    const el = document.getElementById("taken");
-    const msg = document.getElementById("takenMsg");
-    el.innerHTML = "";
-
-    const slugToName = new Map();
-    for (const t of teamsRows){
-      const slug = safe(t.TeamSlug);
-      const nm = safe(t.TeamName);
-      if (slug) slugToName.set(slug, nm || slug);
-    }
-
-    const taken = rosterRows
-      .map(r => ({
-        slug: safe(r.TeamSlug),
-        name: getRosterName(r),
-        slot: safe(r.PlayerID)
-      }))
-      .filter(x => x.slug && x.name)
-      .filter(x => !onlySlug || x.slug === onlySlug);
-
-    if (!taken.length){
-      msg.textContent = onlySlug ? "No players taken yet for that team." : "No picks recorded yet (Roster tab still empty).";
-      return;
-    }
-    msg.textContent = "";
-
-    const byTeam = new Map();
-    for (const x of taken){
-      if (!byTeam.has(x.slug)) byTeam.set(x.slug, []);
-      byTeam.get(x.slug).push(x);
-    }
-
-    const teams = [...byTeam.keys()].map(slug => ({
-      slug,
-      name: slugToName.get(slug) || slug
-    })).sort((a,b) => a.name.localeCompare(b.name));
-
-    for (const t of teams){
-      const picks = byTeam.get(t.slug) || [];
-      picks.sort((a,b) => a.slot.localeCompare(b.slot));
-
-      let aCount = 0;
-      for (const p of picks){
-        const dp = playerMap.get(norm(p.name));
-        if (dp && norm(dp.TravelLevel) === "a") aCount++;
-      }
-      const aBadge =
-        aCount > 2
-          ? `<span class="pill bad">A: ${aCount}/2</span>`
-          : (aCount === 2 ? `<span class="pill warn">A: ${aCount}/2</span>` : `<span class="pill good">A: ${aCount}/2</span>`);
-
-      const tColor = slugToColor.get(t.slug) || "";
-
-      const section = document.createElement("div");
-      section.className = "card";
-      section.innerHTML = `
-        <div class="cardBody" style="padding:12px;">
-          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:10px;">
-            <div style="font-weight:1000; ${tColor ? `color:${escapeHtml(tColor)};` : ""}">${escapeHtml(t.name)}</div>
-            ${aBadge}
-          </div>
-          <div style="display:grid; gap:6px;">
-            ${picks.map(p => `
-              <div class="smallMuted">
-                <strong>${escapeHtml(p.slot || "—")}:</strong> ${escapeHtml(p.name)}
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      `;
-      el.appendChild(section);
-    }
-  }
-
-  function renderForfeitsLine(teams, forfeits){
-    const parts = [];
-    for (const t of teams){
-      const slug = safe(t.TeamSlug);
-      const name = safe(t.TeamName) || slug;
-      const rounds = [...(forfeits.get(slug) || new Set())].sort((a,b)=>a-b);
-      if (rounds.length) parts.push(`${name}: forfeits R${rounds.join(", R")}`);
-    }
-    document.getElementById("forfeitLine").textContent =
-      parts.length ? ("Forfeits: " + parts.join(" • ")) : "Forfeits: none";
-  }
-
-  function computeClockFromSequence(pickSeq, picksMade){
-    document.getElementById("picksMade").textContent = String(Math.max(0, picksMade));
-    document.getElementById("totalRounds").textContent = String(TOTAL_ROUNDS);
-
-    const cur = pickSeq[picksMade];
-    const nxt = pickSeq[picksMade + 1];
-
-    const onEl = document.getElementById("onClock");
-    onEl.textContent = cur?.teamName || "—";
-
-    if (cur?.teamSlug) {
-      const c = slugToColor.get(cur.teamSlug);
-      onEl.style.color = c ? c : "";
-    } else {
-      onEl.style.color = "";
-    }
-
-    document.getElementById("upNext").textContent = nxt?.teamName || "—";
-    document.getElementById("round").textContent = cur ? String(cur.round) : "—";
-
-    const pickPill = document.getElementById("pickPill");
-    pickPill.textContent = "Pick " + (picksMade + 1);
-    pickPill.className = cur ? "pill" : "pill bad";
-
-    return cur || null;
-  }
-
-  function computePicksMadeAutomatically(rosterRows, playerMap){
-    const rosteredNames = rosterRows.map(getRosterName).filter(Boolean);
-    let coachKidsOnRoster = 0;
-    for (const name of rosteredNames){
-      const p = playerMap.get(norm(name));
-      if (p && norm(p.CoachKid) === "y") coachKidsOnRoster++;
-    }
-    return Math.max(0, rosteredNames.length - coachKidsOnRoster);
-  }
-
-  function populateSchoolOptions(pool){
-    const sel = document.getElementById("schoolFilter");
-    const prev = sel.value;
-
-    const schools = Array.from(new Set(
-      pool.map(p => safe(p.School)).filter(Boolean)
-    )).sort((a,b) => a.localeCompare(b));
-
-    sel.innerHTML =
-      `<option value="">All</option>` +
-      schools.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
-
-    if (schools.includes(prev)) sel.value = prev;
-    else sel.value = "";
-  }
-
-  function populateTakenTeamOptions(teams){
-    const sel = document.getElementById("takenTeamFilter");
-    const prev = sel.value;
-
-    const opts = teams
-      .map(t => ({ slug: safe(t.TeamSlug), name: safe(t.TeamName) }))
-      .filter(t => t.slug && t.name)
-      .sort((a,b) => a.name.localeCompare(b.name));
-
-    sel.innerHTML =
-      `<option value="">All teams</option>` +
-      opts.map(t => `<option value="${escapeHtml(t.slug)}">${escapeHtml(t.name)}</option>`).join("");
-
-    if (opts.some(t => t.slug === prev)) sel.value = prev;
-    else sel.value = "";
-  }
-
-  function clearFilters(){
-    document.getElementById("pitcherFilter").value = "";
-    document.getElementById("travelFilter").value = "";
-    document.getElementById("levelFilter").value = "";
-    document.getElementById("schoolFilter").value = "";
-    document.getElementById("takenTeamFilter").value = "";
-    document.getElementById("springPitchingFilter").value = "";
-    document.getElementById("springHittingFilter").value = "";
-    document.getElementById("springThrowingFilter").value = "";
-    document.getElementById("springFieldingFilter").value = "";
-    document.getElementById("q").value = "";
-  }
-
-  function computeRosterIndexByTeamRound(rosterRows){
-    const m = new Map();
-    for (const r of rosterRows){
-      const slug = safe(r.TeamSlug);
-      const id = safe(r.PlayerID);
-      const name = getRosterName(r);
-      if (!slug || !id) continue;
-
-      const mm = id.match(/-(\d{1,2})$/);
-      if (!mm) continue;
-      const round = Number(mm[1]);
-      if (!Number.isFinite(round) || round < 1 || round > TOTAL_ROUNDS) continue;
-
-      if (name) m.set(`${slug}|${round}`, name);
-    }
-    return m;
-  }
-
-  function renderDraftBoard(slots, rosterByTeamRound, onClockPick){
-    const el = document.getElementById("draftBoard");
-    if (!el) return;
-    el.innerHTML = "";
-
-    const curSlug = onClockPick?.teamSlug || "";
-    const curRound = onClockPick?.round || 0;
-
-    const byRound = new Map();
-    for (const s of slots){
-      if (!byRound.has(s.round)) byRound.set(s.round, []);
-      byRound.get(s.round).push(s);
-    }
-
-    for (let round = 1; round <= TOTAL_ROUNDS; round++){
-      const rows = byRound.get(round) || [];
-      if (!rows.length) continue;
-
-      const roundCard = document.createElement("div");
-      roundCard.className = "card";
-      roundCard.innerHTML = `
-        <div class="cardBody" style="padding:12px;">
-          <div class="boardRoundTitle">Round ${round}</div>
-          <div class="boardRoundRows" style="display:grid; gap:8px;"></div>
-        </div>
-      `;
-      const wrap = roundCard.querySelector(".boardRoundRows");
-
-      for (const s of rows){
-        const key = `${s.teamSlug}|${s.round}`;
-        const rosterName = rosterByTeamRound.get(key) || "";
-        const isClock = (s.teamSlug === curSlug && s.round === curRound);
-
-        const tColor = slugToColor.get(s.teamSlug) || "";
-        const tc = tColor || "rgba(0,0,0,.55)";
-
-        let playerText = rosterName ? escapeHtml(rosterName) : "—";
-        let playerClass = rosterName ? "boardPlayer" : "boardPlayer muted";
-
-        if (s.isForfeit){
-          const extra = rosterName ? ` <span class="smallMuted">(coach kid: ${escapeHtml(rosterName)})</span>` : "";
-          playerText = `FORFEIT${extra}`;
-          playerClass = "boardPlayer";
-        }
-
-        const row = document.createElement("div");
-        row.className = "boardRow" + (s.isForfeit ? " forfeit" : "");
-
-        // ✅ Give the on-clock row a stable ID for scrollIntoView()
-        if (isClock) row.id = "boardOnClockRow";
-
-        if (isClock){
-          row.style.borderColor = tc;
-          row.style.borderWidth = "2px";
-          row.style.boxShadow = `0 0 0 5px ${colorToRgba(tc, 0.18)}, 0 12px 28px rgba(0,0,0,.14)`;
-          row.style.background = colorToRgba(tc, 0.06);
-        }
-
-        row.innerHTML = `
-          <div class="boardLeft">
-            <div class="boardPick">R${s.round} • ${String(s.posInRound).padStart(2,"0")}</div>
-            <div class="boardTeam" style="${tColor ? `color:${escapeHtml(tColor)};` : ""}" title="${escapeHtml(s.teamName)}">
-              ${escapeHtml(s.teamName)}
-            </div>
-          </div>
-          <div class="${playerClass}" title="${escapeHtml(rosterName)}">${playerText}</div>
-        `;
-        wrap.appendChild(row);
-      }
-
-      el.appendChild(roundCard);
-    }
-  }
-
-  let autoTimer = null;
-
-  async function loadAndRender(){
-    const meta = document.getElementById("meta");
-    meta.textContent = "Loading…";
-
-    const [teamsCsv, rosterCsv, poolCsv] = await Promise.all([
-      fetchCsv(window.SHEET?.TEAMS_CSV_URL),
-      fetchCsv(window.SHEET?.ROSTER_CSV_URL),
-      fetchCsv(window.SHEET?.DRAFTPOOL_CSV_URL),
+    const [teams, roster, pool] = await Promise.all([
+      fetchCsv(teamsUrl),
+      fetchCsv(rosterUrl),
+      fetchCsv(poolUrl)
     ]);
 
-    const teams = parseCsv(teamsCsv);
-    const roster = parseCsv(rosterCsv);
-    const poolRaw = parseCsv(poolCsv);
+    TEAMS = teams;
+    TEAM_BY_SLUG = new Map();
+    TEAM_COLOR_BY_SLUG = new Map();
 
-    slugToColor = new Map(
-      teams
-        .map(t => [safe(t.TeamSlug), safe(t.TeamColor)])
-        .filter(([slug, color]) => slug && color)
-    );
+    for (const t of TEAMS){
+      const slug = safe(t.TeamSlug);
+      if (!slug) continue;
+      TEAM_BY_SLUG.set(slug, t);
+      TEAM_COLOR_BY_SLUG.set(slug, safe(t.TeamColor));
+    }
 
-    const pool = poolRaw.map(p => {
-      const out = {};
-      for (const k of Object.keys(p)) out[k] = safe(p[k]);
-      return out;
-    });
-
-    populateSchoolOptions(pool);
-    populateTakenTeamOptions(teams);
+    // Populate school filter options
+    const schools = Array.from(new Set(pool.map(p => safe(p.School)).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+    const schoolSel = document.getElementById("schoolFilter");
+    if (schoolSel){
+      const cur = safe(schoolSel.value);
+      schoolSel.innerHTML = `<option value="">All</option>` + schools.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+      schoolSel.value = cur;
+    }
 
     const playerMap = buildPlayerMap(pool);
 
-    const takenNames = new Set(
-      roster.map(getRosterName).filter(Boolean).map(n => norm(n))
-    );
+    const rosterByTeamRound = computeRosterIndex(roster);
+    const rosterCoachKidByTeamRound = computeRosterCoachKidIndex(roster);
 
-    const availableAll = pool.filter(p => p.Name && !takenNames.has(norm(p.Name)));
-    const availableFiltered = applyFilters(availableAll);
-    availableFiltered.sort((a,b) => safe(a.Name).localeCompare(safe(b.Name)));
+    const takenByTeam = buildTakenByTeam(roster, playerMap);
+    const forfeitsByTeam = computeForfeitsFromCoachKids(takenByTeam);
 
-    const forfeits = computeForfeits(teams, roster, playerMap);
-    renderForfeitsLine(teams, forfeits);
+    // Draft-order display includes all slots
+    const boardSlots = buildBoardSlots(TEAMS, forfeitsByTeam);
 
-    const pickSeq = buildPickSequenceSnake(teams, forfeits);
-    const picksMade = computePicksMadeAutomatically(roster, playerMap);
-    const onClockPick = computeClockFromSequence(pickSeq, picksMade);
+    // On-the-clock progression skips forfeited slots
+    const pickSeqNoForfeits = buildPickSequenceSkippingForfeits(TEAMS, forfeitsByTeam);
 
-    renderLastPicks(roster, teams);
-    setTeamWash(onClockPick?.teamSlug);
+    // Picks made: only non-forfeit progression slots with non-coachkid roster entries
+    const picksMade = calcPicksMadeFromPickSeq(pickSeqNoForfeits, rosterByTeamRound, rosterCoachKidByTeamRound);
 
-    renderAvailable(availableFiltered);
-    renderTakenByTeam(roster, teams, playerMap);
+    const curPick = pickSeqNoForfeits[picksMade];
 
-    const rosterByTeamRound = computeRosterIndexByTeamRound(roster);
-    const boardSlots = buildBoardSlotsSnake(teams, forfeits);
-    renderDraftBoard(boardSlots, rosterByTeamRound, onClockPick);
+    // On the clock UI (no forfeit/autopick messaging here)
+    const otcTeamEl = document.getElementById("otcTeam");
+    const otcMetaEl = document.getElementById("otcMeta");
+    const pickPill = document.getElementById("pickPill");
+    const roundPill = document.getElementById("roundPill");
+    const otcCard = document.getElementById("otcCard");
 
-    meta.textContent =
-      `Available: ${availableAll.length} • Showing: ${availableFiltered.length} • Taken: ${takenNames.size} • Updated: ${new Date().toLocaleTimeString()}`;
+    if (curPick){
+      const tcol = teamColor(curPick.teamSlug);
+      otcTeamEl.textContent = curPick.teamName;
+      otcTeamEl.style.color = tcol || "";
+      otcMetaEl.textContent = `Round ${curPick.round} • Pick ${picksMade+1} of ${pickSeqNoForfeits.length}`;
+      pickPill.textContent = `Pick ${picksMade+1}`;
+      roundPill.textContent = `Round ${curPick.round}`;
 
-    // ✅ If user is already in Draft order, keep the on-clock row centered after refresh
-    scrollBoardToClock();
+      if (otcCard){
+        const wash = tcol ? colorToRgba(tcol, 0.10) : "rgba(0,0,0,.02)";
+        otcCard.style.background = wash;
+      }
+    } else {
+      otcTeamEl.textContent = "Draft complete";
+      otcMetaEl.textContent = `${pickSeqNoForfeits.length} picks completed`;
+      pickPill.textContent = `Pick —`;
+      roundPill.textContent = `Round —`;
+      if (otcCard) otcCard.style.background = "rgba(0,0,0,.02)";
+    }
+
+    // Last 5 picks ticker: show only REAL picks (exclude coachkids + exclude forfeited slots)
+    const picked = [];
+    for (const s of pickSeqNoForfeits){
+      const key = `${s.teamSlug}|${s.round}`;
+      const nm = safe(rosterByTeamRound.get(key));
+      if (!nm) continue;
+      if (rosterCoachKidByTeamRound.get(key) === true) continue;
+      picked.push({ teamSlug: s.teamSlug, teamName: s.teamName, playerName: nm, round: s.round });
+    }
+    const last5 = picked.slice(-5).reverse();
+    renderTicker(last5);
+
+    // Available list: remove taken names (including coach kids)
+    const takenNames = new Set(roster.map(r => norm(r.PlayerName || r.Name)).filter(Boolean));
+    const avail = pool.filter(p => {
+      const nm = norm(p.Name);
+      return nm && !takenNames.has(nm);
+    });
+
+    renderAvailable(applyFilters(avail));
+
+    renderTakenByTeam(takenByTeam, forfeitsByTeam);
+    renderDraftBoard(boardSlots, rosterByTeamRound, curPick);
+
+    // restore scroll after DOM updates
+    if (prevY !== null && Number.isFinite(prevY)){
+      requestAnimationFrame(() => window.scrollTo(0, prevY));
+    }
+
+    // Re-check ticker centering (in case fonts/layout changed)
+    adjustTickerCenter();
   }
 
-  function init(){
-    document.getElementById("refreshBtn")
-      .addEventListener("click", () => loadAndRender().catch(err => alert(err.message)));
-
-    document.getElementById("clearBtn")
-      .addEventListener("click", () => {
-        clearFilters();
-        loadAndRender().catch(()=>{});
-      });
-
-    [
-      "q",
-      "pitcherFilter","travelFilter","levelFilter","schoolFilter","takenTeamFilter",
-      "springPitchingFilter","springHittingFilter","springThrowingFilter","springFieldingFilter"
-    ].forEach(id => {
+  function attachEvents(){
+    const ids = [
+      "q","pitcherFilter","travelFilter","levelFilter","schoolFilter",
+      "springPitchingFilter","springHittingFilter","springThrowingFilter","springFieldingFilter",
+      "takenTeamFilter"
+    ];
+    for (const id of ids){
       const el = document.getElementById(id);
-      el.addEventListener("input", () => loadAndRender().catch(()=>{}));
-      el.addEventListener("change", () => loadAndRender().catch(()=>{}));
+      if (!el) continue;
+      el.addEventListener("input", () => loadAll({ preserveScroll:true }).catch(console.error));
+      el.addEventListener("change", () => loadAll({ preserveScroll:true }).catch(console.error));
+    }
+
+    document.getElementById("refreshBtn")?.addEventListener("click", () => loadAll({ preserveScroll:true }).catch(console.error));
+    document.getElementById("clearBtn")?.addEventListener("click", () => {
+      document.getElementById("q").value = "";
+      document.getElementById("pitcherFilter").value = "";
+      document.getElementById("travelFilter").value = "";
+      document.getElementById("levelFilter").value = "";
+      document.getElementById("schoolFilter").value = "";
+      document.getElementById("takenTeamFilter").value = "";
+      document.getElementById("springPitchingFilter").value = "";
+      document.getElementById("springHittingFilter").value = "";
+      document.getElementById("springThrowingFilter").value = "";
+      document.getElementById("springFieldingFilter").value = "";
+      loadAll({ preserveScroll:true }).catch(console.error);
     });
+
+    document.getElementById("modalBackdrop")?.addEventListener("click", (e) => {
+      if (e.target?.id === "modalBackdrop") closeModal();
+    });
+    document.getElementById("modalClose")?.addEventListener("click", closeModal);
 
     document.getElementById("viewTakenBtn")?.addEventListener("click", () => setTakenView("team"));
+    document.getElementById("viewBoardBtn")?.addEventListener("click", () => setTakenView("board"));
 
-    // ✅ When switching to Draft order, jump to on-the-clock row automatically
-    document.getElementById("viewBoardBtn")?.addEventListener("click", () => {
-      setTakenView("board");
-      scrollBoardToClock();
-    });
+    // keep ticker centering correct on resize/orientation changes
+    window.addEventListener("resize", () => adjustTickerCenter());
 
-    setTakenView("team");
-
-    autoTimer = setInterval(() => loadAndRender().catch(()=>{}), 8000);
-
-    loadAndRender().catch(err => {
-      console.error(err);
-      alert("Draft page error: " + err.message);
-    });
+    // Auto refresh (preserves scroll position)
+    setInterval(() => loadAll({ preserveScroll:true }).catch(console.error), 8000);
   }
 
-  init();
+  // Init
+  attachEvents();
+  setTakenView("team");
+  loadAll({ preserveScroll:false }).catch(err => {
+    console.error(err);
+    document.getElementById("availMsg").textContent = "Failed to load data. Check data.js URLs.";
+    document.getElementById("takenMsg").textContent = "Failed to load data. Check data.js URLs.";
+  });
 </script>
-
-<script src="./nav.js"></script>
 </body>
 </html>
