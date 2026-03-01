@@ -2795,64 +2795,75 @@ body.watermarkPage::before{
 }
 
 /* =========================================
-   MOBILE HAMBURGER DROPDOWN FIX (SAFE)
+   MOBILE HAMBURGER: FULL MENU VISIBLE + SCROLL
    Delete this block to revert
 ========================================= */
 
 @media (max-width: 900px){
 
-  /* Keep header (and dropdown) above page while you scroll */
+  /* Keep header above page */
   .siteHeader{
     position: sticky;
     top: 0;
     z-index: 9999;
   }
 
-  /* Watermark/gradient layers should never block taps */
+  /* Header visuals never block taps */
   .siteHeader::before,
   .siteHeader::after{
     pointer-events: none;
   }
 
-  /* Ensure the hamburger is always tappable */
+  /* Hamburger always tappable */
   .navToggle{
     position: relative;
     z-index: 10003;
   }
 
-  /* Overlay should be behind the dropdown menu */
+  /* Overlay covers page behind menu */
   .navOverlay{
     position: fixed;
     inset: 0;
     z-index: 10000;
   }
 
-  /* Dropdown menu: force it above overlay + content, and make it clickable */
-  #siteNav{
-    position: absolute;     /* dropdown anchored to header */
+  /* IMPORTANT: prevent any parent from clipping the dropdown */
+  .siteHeader,
+  .siteHeader .navWrap{
+    overflow: visible !important;
+  }
+
+  /* When the hamburger is OPEN, make the nav a full-screen scroll panel */
+  .navToggle[aria-expanded="true"] ~ #siteNav{
+    position: fixed !important;
     left: 0;
     right: 0;
-    top: 100%;
+    top: 0;
+    bottom: 0;
+
     z-index: 10002;
-    pointer-events: auto;
+    display: block !important;
 
-    /* optional: helps it feel like a real dropdown panel */
-    background: rgba(255,255,255,.96);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(0,0,0,.10);
-    box-shadow: 0 14px 34px rgba(0,0,0,.16);
+    /* Make all items reachable */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+
+    /* Panel styling */
+    background: rgba(255,255,255,.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    /* space so it doesn't sit under the hamburger row */
+    padding-top: 72px;
+    padding-bottom: 18px;
+
+    box-shadow: 0 18px 50px rgba(0,0,0,.22);
   }
 
-  /* Make sure the header acts as the positioning anchor for the dropdown */
-  .siteHeader .navWrap{
-    position: relative;
-    z-index: 10002; /* keep nav area above */
-  }
-
-  /* Safety: page content should never sit above the dropdown */
-  main, .wrap, .docSection{
-    position: relative;
-    z-index: 1;
+  /* Make sure links are easy to tap */
+  .navToggle[aria-expanded="true"] ~ #siteNav a{
+    display: block;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(0,0,0,.08);
   }
 }
