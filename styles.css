@@ -2793,3 +2793,66 @@ body.watermarkPage::before{
 .siteHeader .nav a:hover{
   background: rgba(255,255,255,.35); /* subtle, clean hover “chip” */
 }
+
+/* =========================================
+   MOBILE HAMBURGER DROPDOWN FIX (SAFE)
+   Delete this block to revert
+========================================= */
+
+@media (max-width: 900px){
+
+  /* Keep header (and dropdown) above page while you scroll */
+  .siteHeader{
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+  }
+
+  /* Watermark/gradient layers should never block taps */
+  .siteHeader::before,
+  .siteHeader::after{
+    pointer-events: none;
+  }
+
+  /* Ensure the hamburger is always tappable */
+  .navToggle{
+    position: relative;
+    z-index: 10003;
+  }
+
+  /* Overlay should be behind the dropdown menu */
+  .navOverlay{
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+  }
+
+  /* Dropdown menu: force it above overlay + content, and make it clickable */
+  #siteNav{
+    position: absolute;     /* dropdown anchored to header */
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 10002;
+    pointer-events: auto;
+
+    /* optional: helps it feel like a real dropdown panel */
+    background: rgba(255,255,255,.96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,.10);
+    box-shadow: 0 14px 34px rgba(0,0,0,.16);
+  }
+
+  /* Make sure the header acts as the positioning anchor for the dropdown */
+  .siteHeader .navWrap{
+    position: relative;
+    z-index: 10002; /* keep nav area above */
+  }
+
+  /* Safety: page content should never sit above the dropdown */
+  main, .wrap, .docSection{
+    position: relative;
+    z-index: 1;
+  }
+}
