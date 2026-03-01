@@ -2645,3 +2645,8 @@ body.watermarkPage::before{
 .siteHeader .logoImage{
   display: none;
 }
+
+/* Add spacing between top nav and page title */
+.siteHeader .brandCenter{
+  margin-top: 18px;
+}
