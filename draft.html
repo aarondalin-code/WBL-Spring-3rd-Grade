@@ -83,10 +83,11 @@
       grid-template-columns: 1fr;
       gap:10px;
       margin-top:10px;
-      justify-items:center;
+      justify-items:stretch; /* was center; stretch prevents “shift right” */
     }
     .draftPage .ticker{
       width:min(820px, 100%);
+      margin: 0 auto; /* ensure centered */
       border:1px solid rgba(0,0,0,.10);
       border-radius:14px;
       background: rgba(255,255,255,.75);
@@ -120,11 +121,12 @@
     }
 
     .draftPage .tickerTrack{
-      display:inline-flex;
+      display:flex;               /* was inline-flex */
       align-items:center;
       gap:22px;
       padding:10px 12px;
       white-space:nowrap;
+      width:max-content;
       will-change: transform;
       animation: tickerScroll var(--tickerSpeed, 18s) linear infinite;
     }
@@ -352,7 +354,7 @@
     .draftPage #meta{ margin-top:8px !important; }
 
     /* -----------------------------
-       NEW: Taken toggle tabs + Draft Order board
+       Taken toggle tabs + Draft Order board
        ----------------------------- */
     .draftPage .takenHdrRow{
       display:flex;
@@ -433,6 +435,14 @@
     }
     .draftPage .boardRow.forfeit{
       background: rgba(0,0,0,.03);
+    }
+
+    /* Small coachkid marker */
+    .draftPage .fMark{
+      font-size:11px;
+      font-weight:1000;
+      color: rgba(0,0,0,.55);
+      margin-left:6px;
     }
   </style>
 </head>
@@ -594,7 +604,8 @@
               • Round: <span id="round">—</span> / <span id="totalRounds">12</span>
               • Picks made: <span id="picksMade">0</span>
             </div>
-            <div class="smallMuted" id="forfeitLine" style="margin-top:6px;"></div>
+
+            <!-- removed: forfeit line in header -->
 
             <div class="tickerWrap">
               <div class="ticker">
@@ -663,6 +674,13 @@
   const TOTAL_ROUNDS = 12;
   let slugToColor = new Map();
   let TAKEN_VIEW = "team"; // "team" | "board"
+
+  // CoachKid forfeits:
+  // A => Round 1
+  // B => Round 2
+  // Otherwise => Round 8
+  // Collisions push forward (e.g., two non-A/B => 8 and 9)
+  const COACHKID_DEFAULT_ROUND = 8;
 
   const DETAIL_SCHEMA = [
     [
@@ -792,6 +810,7 @@
   }
 
   function computeForfeits(teams, roster, playerMap){
+    // map rostered player name -> TeamSlug
     const nameToSlug = new Map();
     for (const r of roster){
       const nm = norm(getRosterName(r));
@@ -799,19 +818,20 @@
       if (nm && slug) nameToSlug.set(nm, slug);
     }
 
+    // base forfeits by team based on DraftPool coach kids that are on that team's roster
     const baseByTeam = new Map();
     for (const [nm, p] of playerMap.entries()){
       if (norm(p.CoachKid) !== "y") continue;
       const slug = nameToSlug.get(nm);
       if (!slug) continue;
+
       const lvl = norm(p.TravelLevel);
-      if (lvl === "a"){
-        if (!baseByTeam.has(slug)) baseByTeam.set(slug, []);
-        baseByTeam.get(slug).push(1);
-      } else if (lvl === "b"){
-        if (!baseByTeam.has(slug)) baseByTeam.set(slug, []);
-        baseByTeam.get(slug).push(2);
-      }
+      let base = COACHKID_DEFAULT_ROUND;
+      if (lvl === "a") base = 1;
+      else if (lvl === "b") base = 2;
+
+      if (!baseByTeam.has(slug)) baseByTeam.set(slug, []);
+      baseByTeam.get(slug).push(base);
     }
 
     const forfeits = new Map();
@@ -838,7 +858,7 @@
         const idx = isOdd ? pos : (n - 1 - pos);
         const team = order[idx];
         const fset = forfeits.get(team.slug) || new Set();
-        if (fset.has(round)) continue;
+        if (fset.has(round)) continue; // forfeited slot removed from on-clock sequence
         seq.push({ round, posInRound: pos+1, teamSlug: team.slug, teamName: team.name });
       }
     }
@@ -988,7 +1008,7 @@
         slug: safe(r.TeamSlug)
       }))
       .filter(x => x.slot && x.name && x.slug)
-      .sort((a,b) => a.slot.localeCompare(b.slot));
+      .sort((a,b) => a.slot.localeCompare(b.slot)); // IDs are 2-digit (01..12), so string sort is OK
 
     const last = taken.slice(-5); // oldest -> newest among the last 5
 
@@ -1010,10 +1030,8 @@
       `;
     }).join(`<span class="tickSep">•</span>`);
 
-    // Duplicate for seamless loop (animation moves -50%)
-    track.innerHTML = strip + `<span class="tickSep" style="margin:0 6px;">•</span>` + strip;
+    track.innerHTML = strip + `<span class="tickSep" style="margin:0 10px;">•</span>` + strip;
 
-    // Set speed based on content length
     const approxChars = strip.replace(/<[^>]*>/g,"").length;
     const seconds = Math.min(28, Math.max(14, Math.round(approxChars / 18)));
     track.style.setProperty("--tickerSpeed", `${seconds}s`);
@@ -1141,7 +1159,8 @@
       .map(r => ({
         slug: safe(r.TeamSlug),
         name: getRosterName(r),
-        slot: safe(r.PlayerID)
+        slot: safe(r.PlayerID),
+        isCoachKid: (norm(r.CoachKid) === "y")
       }))
       .filter(x => x.slug && x.name)
       .filter(x => !onlySlug || x.slug === onlySlug);
@@ -1190,7 +1209,8 @@
           <div style="display:grid; gap:6px;">
             ${picks.map(p => `
               <div class="smallMuted">
-                <strong>${escapeHtml(p.slot || "—")}:</strong> ${escapeHtml(p.name)}
+                <strong>${escapeHtml(p.slot || "—")}:</strong>
+                ${escapeHtml(p.name)}${p.isCoachKid ? `<span class="fMark">(F)</span>` : ``}
               </div>
             `).join("")}
           </div>
@@ -1200,24 +1220,26 @@
     }
   }
 
-  function renderForfeitsLine(teams, forfeits){
-    const parts = [];
-    for (const t of teams){
-      const slug = safe(t.TeamSlug);
-      const name = safe(t.TeamName) || slug;
-      const rounds = [...(forfeits.get(slug) || new Set())].sort((a,b)=>a-b);
-      if (rounds.length) parts.push(`${name}: forfeits R${rounds.join(", R")}`);
+  /* -----------------------------
+     New ON-THE-CLOCK logic:
+     Find first unfilled slot in pick sequence
+     ----------------------------- */
+  function computeClockFromRoster(pickSeq, rosterByTeamRound){
+    // first index i where roster slot is empty
+    let idx = 0;
+    while (idx < pickSeq.length){
+      const s = pickSeq[idx];
+      const nm = rosterByTeamRound.get(`${s.teamSlug}|${s.round}`) || "";
+      if (!nm) break;
+      idx++;
     }
-    document.getElementById("forfeitLine").textContent =
-      parts.length ? ("Forfeits: " + parts.join(" • ")) : "Forfeits: none";
-  }
 
-  function computeClockFromSequence(pickSeq, picksMade){
+    const picksMade = idx;
     document.getElementById("picksMade").textContent = String(Math.max(0, picksMade));
     document.getElementById("totalRounds").textContent = String(TOTAL_ROUNDS);
 
-    const cur = pickSeq[picksMade];
-    const nxt = pickSeq[picksMade + 1];
+    const cur = pickSeq[picksMade] || null;
+    const nxt = pickSeq[picksMade + 1] || null;
 
     const onEl = document.getElementById("onClock");
     onEl.textContent = cur?.teamName || "—";
@@ -1233,20 +1255,10 @@
     document.getElementById("round").textContent = cur ? String(cur.round) : "—";
 
     const pickPill = document.getElementById("pickPill");
-    pickPill.textContent = "Pick " + (picksMade + 1);
+    pickPill.textContent = cur ? ("Pick " + (picksMade + 1)) : "Pick —";
     pickPill.className = cur ? "pill" : "pill bad";
 
-    return cur || null;
-  }
-
-  function computePicksMadeAutomatically(rosterRows, playerMap){
-    const rosteredNames = rosterRows.map(getRosterName).filter(Boolean);
-    let coachKidsOnRoster = 0;
-    for (const name of rosteredNames){
-      const p = playerMap.get(norm(name));
-      if (p && norm(p.CoachKid) === "y") coachKidsOnRoster++;
-    }
-    return Math.max(0, rosteredNames.length - coachKidsOnRoster);
+    return cur;
   }
 
   function populateSchoolOptions(pool){
@@ -1314,7 +1326,26 @@
     return m;
   }
 
-  function renderDraftBoard(slots, rosterByTeamRound, onClockPick){
+  function computeRosterCoachKidByTeamRound(rosterRows){
+    // Map `${slug}|${round}` -> boolean CoachKid (from Roster CSV column)
+    const m = new Map();
+    for (const r of rosterRows){
+      const slug = safe(r.TeamSlug);
+      const id = safe(r.PlayerID);
+      if (!slug || !id) continue;
+
+      const mm = id.match(/-(\d{1,2})$/);
+      if (!mm) continue;
+      const round = Number(mm[1]);
+      if (!Number.isFinite(round) || round < 1 || round > TOTAL_ROUNDS) continue;
+
+      const isCK = (norm(r.CoachKid) === "y");
+      if (isCK) m.set(`${slug}|${round}`, true);
+    }
+    return m;
+  }
+
+  function renderDraftBoard(slots, rosterByTeamRound, rosterCoachKidByTeamRound, onClockPick){
     const el = document.getElementById("draftBoard");
     if (!el) return;
     el.innerHTML = "";
@@ -1322,7 +1353,6 @@
     const curSlug = onClockPick?.teamSlug || "";
     const curRound = onClockPick?.round || 0;
 
-    // group by round
     const byRound = new Map();
     for (const s of slots){
       if (!byRound.has(s.round)) byRound.set(s.round, []);
@@ -1351,17 +1381,23 @@
         const tColor = slugToColor.get(s.teamSlug) || "";
         const tc = tColor || "rgba(0,0,0,.55)";
 
+        const isCoachKidSlot = (rosterCoachKidByTeamRound.get(key) === true);
+        const showF = isCoachKidSlot || s.isForfeit; // either roster says coach kid OR forfeits table marks slot
+
         let playerText = rosterName ? escapeHtml(rosterName) : "—";
         let playerClass = rosterName ? "boardPlayer" : "boardPlayer muted";
 
-        if (s.isForfeit){
-          const extra = rosterName ? ` <span class="smallMuted">(coach kid: ${escapeHtml(rosterName)})</span>` : "";
-          playerText = `FORFEIT${extra}`;
+        if (showF && rosterName){
+          playerText = `${escapeHtml(rosterName)} <span class="fMark">(F)</span>`;
           playerClass = "boardPlayer";
+        } else if (showF && !rosterName){
+          // rare: forfeited/coachkid slot but name missing
+          playerText = `— <span class="fMark">(F)</span>`;
+          playerClass = "boardPlayer muted";
         }
 
         const row = document.createElement("div");
-        row.className = "boardRow" + (s.isForfeit ? " forfeit" : "");
+        row.className = "boardRow" + (showF ? " forfeit" : "");
         if (isClock){
           row.style.borderColor = tc;
           row.style.borderWidth = "2px";
@@ -1385,9 +1421,36 @@
     }
   }
 
+  /* -----------------------------
+     Auto-refresh behavior:
+     - preserve scroll position always
+     - pause when scrolled down
+     ----------------------------- */
   let autoTimer = null;
+  let autoPausedByScroll = false;
+
+  function updateAutoRefreshState(){
+    const el = document.getElementById("autoRefreshState");
+    if (!el) return;
+    if (autoPausedByScroll) el.textContent = "PAUSED (scrolling)";
+    else el.textContent = "ON";
+  }
+
+  function handleScrollPause(){
+    const y = window.scrollY || 0;
+    // If user is meaningfully down the page, pause auto refresh.
+    const shouldPause = y > 220;
+    if (shouldPause !== autoPausedByScroll){
+      autoPausedByScroll = shouldPause;
+      updateAutoRefreshState();
+    }
+  }
+  window.addEventListener("scroll", handleScrollPause, { passive:true });
 
   async function loadAndRender(){
+    // preserve scroll position to prevent “jump to top”
+    const prevY = window.scrollY || 0;
+
     const meta = document.getElementById("meta");
     meta.textContent = "Loading…";
 
@@ -1426,12 +1489,13 @@
     const availableFiltered = applyFilters(availableAll);
     availableFiltered.sort((a,b) => safe(a.Name).localeCompare(safe(b.Name)));
 
+    // compute forfeits (A=>1, B=>2, else=>8) based on coach kids on roster
     const forfeits = computeForfeits(teams, roster, playerMap);
-    renderForfeitsLine(teams, forfeits);
 
+    // compute sequence + on-the-clock based on first empty roster slot
+    const rosterByTeamRound = computeRosterIndexByTeamRound(roster);
     const pickSeq = buildPickSequenceSnake(teams, forfeits);
-    const picksMade = computePicksMadeAutomatically(roster, playerMap);
-    const onClockPick = computeClockFromSequence(pickSeq, picksMade);
+    const onClockPick = computeClockFromRoster(pickSeq, rosterByTeamRound);
 
     // Header enhancements
     renderLastPicks(roster, teams);
@@ -1441,12 +1505,15 @@
     renderTakenByTeam(roster, teams, playerMap);
 
     // Draft order view (board)
-    const rosterByTeamRound = computeRosterIndexByTeamRound(roster);
+    const rosterCoachKidByTeamRound = computeRosterCoachKidByTeamRound(roster);
     const boardSlots = buildBoardSlotsSnake(teams, forfeits);
-    renderDraftBoard(boardSlots, rosterByTeamRound, onClockPick);
+    renderDraftBoard(boardSlots, rosterByTeamRound, rosterCoachKidByTeamRound, onClockPick);
 
     meta.textContent =
       `Available: ${availableAll.length} • Showing: ${availableFiltered.length} • Taken: ${takenNames.size} • Updated: ${new Date().toLocaleTimeString()}`;
+
+    // restore scroll position (prevents jump)
+    window.scrollTo({ top: prevY, left: 0, behavior: "auto" });
   }
 
   function init(){
@@ -1473,7 +1540,14 @@
     document.getElementById("viewBoardBtn")?.addEventListener("click", () => setTakenView("board"));
     setTakenView("team");
 
-    autoTimer = setInterval(() => loadAndRender().catch(()=>{}), 8000);
+    updateAutoRefreshState();
+    handleScrollPause();
+
+    autoTimer = setInterval(() => {
+      // Do not auto-refresh while user is scrolled down the page
+      if (autoPausedByScroll) return;
+      loadAndRender().catch(()=>{});
+    }, 8000);
 
     loadAndRender().catch(err => {
       console.error(err);
@@ -1487,4 +1561,3 @@
 <script src="./nav.js"></script>
 </body>
 </html>
-
