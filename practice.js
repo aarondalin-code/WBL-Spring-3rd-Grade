@@ -92,28 +92,34 @@ const metaEl = document.getElementById("drillsMeta");
 let all = [];
 
 function renderWeekOptions(items){
-  const weeks = Array.from(new Set(items.map(x => Number(x.week)).filter(n => Number.isFinite(n))))
+  const weeks = Array.from(
+      new Set(items.map(x => Number(x.week)).filter(n => Number.isFinite(n)))
+    )
     .sort((a,b)=>a-b);
 
   weekEl.innerHTML = "";
 
+  // Always include All Weeks at top
+  weekEl.insertAdjacentHTML("beforeend", `<option value="all">All Weeks</option>`);
+
   if (!weeks.length){
-    weekEl.innerHTML = `<option value="all">All Weeks</option>`;
     weekEl.value = "all";
     return;
   }
 
   const latest = weeks[weeks.length - 1];
 
+  // Keep "Latest" as a quick option, but not the default
   weekEl.insertAdjacentHTML("beforeend", `<option value="${latest}">Week ${latest} (Latest)</option>`);
-  weekEl.insertAdjacentHTML("beforeend", `<option value="all">All Weeks</option>`);
 
+  // Then list all weeks in descending order (excluding latest to avoid duplicate)
   weeks.slice().reverse().forEach(w=>{
     if (w === latest) return;
     weekEl.insertAdjacentHTML("beforeend", `<option value="${w}">Week ${w}</option>`);
   });
 
-  weekEl.value = String(latest);
+  // Default selection is now ALL weeks
+  weekEl.value = "all";
 }
 
 function cardHtml(d){
@@ -152,7 +158,6 @@ function applyFilters(){
     const wOk = (w === "all") || String(d.week) === String(w);
     const tOk = (t === "all") || norm(d.type) === t;
     return wOk && tOk;
- 
   });
 
   gridEl.innerHTML = filtered.map(cardHtml).join("");
