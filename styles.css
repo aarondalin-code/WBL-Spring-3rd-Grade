@@ -3008,3 +3008,41 @@ body.watermarkPage::before{
     touch-action: none;
   }
 }
+/* =========================================
+   NAV OPEN: FIX HAMBURGER VISIBILITY + STOP BLEED-THROUGH
+   Paste at bottom of styles.css. Delete to revert.
+========================================= */
+
+@media (max-width: 900px){
+
+  /* When menu is open, guarantee overlay/menu are above the page content */
+  html.navOpen .hasHamburger .navOverlay{
+    z-index: 2147483640 !important;
+  }
+  html.navOpen .hasHamburger .nav{
+    z-index: 2147483641 !important;
+  }
+
+  /* Guarantee the hamburger button stays ABOVE the overlay so you can see/tap it */
+  html.navOpen .hasHamburger .navToggle{
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    z-index: 2147483642 !important;
+
+    /* make it readable on the dark overlay */
+    background: rgba(0,0,0,0.35) !important;
+    border-radius: 12px !important;
+    padding: 10px !important;
+  }
+
+  /* Make the hamburger bars white while overlay is open */
+  html.navOpen .hasHamburger .navToggle span{
+    background: #ffffff !important;
+  }
+
+  /* Extra safety: if your header has a high z-index, force it below overlay when open */
+  html.navOpen .siteHeader{
+    z-index: 1 !important;
+  }
+}
