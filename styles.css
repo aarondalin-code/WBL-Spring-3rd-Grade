@@ -2795,167 +2795,70 @@ body.watermarkPage::before{
 }
 
 /* =========================================
-   MOBILE HAMBURGER: FULL MENU VISIBLE + SCROLL
-   Delete this block to revert
+   MOBILE HAMBURGER (TOURNAMENT STYLE) — SINGLE SOURCE OF TRUTH
+   Paste at bottom of styles.css. Delete to revert.
 ========================================= */
 
 @media (max-width: 900px){
 
-  /* Keep header above page */
+  /* Keep header visible while scrolling */
   .siteHeader{
     position: sticky;
     top: 0;
-    z-index: 9999;
+    z-index: 2147483000;
   }
 
-  /* Header visuals never block taps */
+  /* Make sure header's watermark never blocks taps */
   .siteHeader::before,
   .siteHeader::after{
     pointer-events: none;
   }
 
-  /* Hamburger always tappable */
-  .navToggle{
+  /* Hamburger button stays visible above overlay */
+  .hasHamburger .navToggle{
     position: relative;
-    z-index: 10003;
+    z-index: 2147483647;
   }
-
-  /* Overlay covers page behind menu */
-  .navOverlay{
+  html.navOpen .hasHamburger .navToggle{
     position: fixed;
-    inset: 0;
-    z-index: 10000;
-  }
-
-  /* IMPORTANT: prevent any parent from clipping the dropdown */
-  .siteHeader,
-  .siteHeader .navWrap{
-    overflow: visible !important;
-  }
-
- /* =========================================
-   MOBILE HAMBURGER OVERLAY MENU (TOURNAMENT STYLE)
-   Delete this entire block to revert
-========================================= */
-
-@media (max-width: 900px){
-
-  /* Overlay blocks interaction with page content behind */
-  .hasHamburger .navOverlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(5,9,20,0.92);
-    z-index: 2147483644;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 180ms ease;
-  }
-
-  /* Menu panel (dropdown panel, but fixed so it can't be clipped) */
-  .hasHamburger .nav{
-    position: fixed;
-    top: 70px;
+    top: 12px;
     left: 12px;
-    right: 12px;
+    z-index: 2147483647;
 
-    display: grid;
-    gap: 10px;
-    padding: 14px;
-
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: rgba(11,18,32,0.98);
-    box-shadow: 0 18px 60px rgba(0,0,0,0.60);
-
-    z-index: 2147483645;
-
-    /* animation */
-    transform: translateY(-10px);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 180ms ease, opacity 180ms ease;
-
-    /* KEY FIX: if many items, allow scrolling inside panel */
-    max-height: calc(100vh - 92px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    /* visible on dark overlay */
+    background: rgba(0,0,0,0.35);
+    border-radius: 12px;
+    padding: 10px;
   }
-
-  .hasHamburger .nav a{
-    display: block;
-    text-align: center;
-    font-size: 15px;
-    padding: 14px 14px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #e5e7eb;
-    text-decoration: none;
-    font-weight: 800;
-  }
-
-  .hasHamburger .nav a.active{
-    background: rgba(37,99,235,0.45);
-    border-color: rgba(37,99,235,0.75);
-    color: #fff;
-  }
-
-  /* Open state */
-  html.navOpen .hasHamburger .navOverlay{
-    opacity: 1;
-    pointer-events: auto;
-  }
-  html.navOpen .hasHamburger .nav{
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-
-  /* Lock page scroll behind the overlay/menu */
-  body.navOpen{
-    overflow: hidden;
-    touch-action: none;
-  }
-}
-/* =========================================
-   TOURNAMENT-STYLE MOBILE HAMBURGER (SITEWIDE)
-   Delete this entire block to revert
-========================================= */
-
-@media (max-width: 900px){
-
-  /* Keep header + hamburger visible while scrolling */
-  .siteHeader{
-    position: sticky;
-    top: 0;
-    z-index: 2147483643;
+  html.navOpen .hasHamburger .navToggle span{
+    background: #ffffff;
   }
 
   /* Overlay blocks all interaction with page content behind */
   .hasHamburger .navOverlay{
     position: fixed;
     inset: 0;
-    background: #050914;          /* solid overlay prevents bleed-through */
+    background: #050914;
     z-index: 2147483644;
     opacity: 0;
     pointer-events: none;
     transition: opacity 180ms ease;
   }
 
-  /* Menu panel (hidden by default) */
+  /* Menu panel */
   .hasHamburger .nav{
     position: fixed;
     top: 70px;
     left: 12px;
     right: 12px;
 
-    display: none;                /* IMPORTANT: hide when closed */
+    display: none;
     gap: 10px;
     padding: 14px;
 
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.14);
-    background: #0b1220;          /* solid panel */
+    background: #0b1220;
     box-shadow: 0 18px 60px rgba(0,0,0,0.60);
 
     z-index: 2147483645;
@@ -2965,7 +2868,6 @@ body.watermarkPage::before{
     pointer-events: none;
     transition: transform 180ms ease, opacity 180ms ease;
 
-    /* allow scrolling inside menu if long */
     max-height: calc(100vh - 92px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -3006,43 +2908,5 @@ body.watermarkPage::before{
   html.navOpen body{
     overflow: hidden;
     touch-action: none;
-  }
-}
-/* =========================================
-   NAV OPEN: FIX HAMBURGER VISIBILITY + STOP BLEED-THROUGH
-   Paste at bottom of styles.css. Delete to revert.
-========================================= */
-
-@media (max-width: 900px){
-
-  /* When menu is open, guarantee overlay/menu are above the page content */
-  html.navOpen .hasHamburger .navOverlay{
-    z-index: 2147483640 !important;
-  }
-  html.navOpen .hasHamburger .nav{
-    z-index: 2147483641 !important;
-  }
-
-  /* Guarantee the hamburger button stays ABOVE the overlay so you can see/tap it */
-  html.navOpen .hasHamburger .navToggle{
-    position: fixed !important;
-    top: 12px !important;
-    left: 12px !important;
-    z-index: 2147483642 !important;
-
-    /* make it readable on the dark overlay */
-    background: rgba(0,0,0,0.35) !important;
-    border-radius: 12px !important;
-    padding: 10px !important;
-  }
-
-  /* Make the hamburger bars white while overlay is open */
-  html.navOpen .hasHamburger .navToggle span{
-    background: #ffffff !important;
-  }
-
-  /* Extra safety: if your header has a high z-index, force it below overlay when open */
-  html.navOpen .siteHeader{
-    z-index: 1 !important;
   }
 }
