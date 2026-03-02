@@ -2919,9 +2919,7 @@ body.watermarkPage::before{
 }
 /* =========================================
    MOBILE HAMBURGER MENU (OVERLAY + FIXED PANEL)
-   - Prevents menu being "under" content
-   - Prevents partial/bleeding nav items
-   - Scrolls inside menu if items exceed screen
+   Works whether nav.js toggles navOpen on <html> OR <body>
    Delete this entire block to revert
 ========================================= */
 
@@ -2931,16 +2929,16 @@ body.watermarkPage::before{
   .hasHamburger .navOverlay{
     position: fixed;
     inset: 0;
-    background: rgba(5, 9, 20, 0.92);  /* dark overlay */
+    background: rgba(5, 9, 20, 0.92);
     z-index: 2147483644;
     opacity: 0;
     pointer-events: none;
     transition: opacity 180ms ease;
   }
 
-  /* --- Menu panel: HIDDEN by default so it cannot "bleed" --- */
+  /* --- Menu panel: HIDDEN by default so it cannot bleed --- */
   .hasHamburger .nav{
-    display: none;               /* KEY: fully hidden when closed */
+    display: none;               /* fully hidden when closed */
     position: fixed;
     top: 70px;
     left: 12px;
@@ -2961,12 +2959,10 @@ body.watermarkPage::before{
     pointer-events: none;
     transition: transform 180ms ease, opacity 180ms ease;
 
-    /* Allow scrolling if menu is taller than screen */
     max-height: calc(100vh - 92px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 
-    /* Extra safety against weird stacking-context bugs */
     isolation: isolate;
   }
 
@@ -2989,20 +2985,23 @@ body.watermarkPage::before{
     color: #fff;
   }
 
-  /* --- OPEN STATE (nav.js toggles these classes) --- */
-  html.navOpen .hasHamburger .navOverlay{
+  /* --- OPEN STATE (support html.navOpen OR body.navOpen) --- */
+  html.navOpen .hasHamburger .navOverlay,
+  body.navOpen .hasHamburger .navOverlay{
     opacity: 1;
     pointer-events: auto;
   }
 
-  html.navOpen .hasHamburger .nav{
-    display: grid;               /* KEY: show only when open */
+  html.navOpen .hasHamburger .nav,
+  body.navOpen .hasHamburger .nav{
+    display: grid;
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
   }
 
   /* Lock page scroll behind the overlay/menu */
+  html.navOpen body,
   body.navOpen{
     overflow: hidden;
     touch-action: none;
