@@ -2833,37 +2833,87 @@ body.watermarkPage::before{
     overflow: visible !important;
   }
 
-  /* When the hamburger is OPEN, make the nav a full-screen scroll panel */
-  .navToggle[aria-expanded="true"] ~ #siteNav{
-    position: fixed !important;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+ /* =========================================
+   MOBILE HAMBURGER OVERLAY MENU (TOURNAMENT STYLE)
+   Delete this entire block to revert
+========================================= */
 
-    z-index: 10002;
-    display: block !important;
+@media (max-width: 900px){
 
-    /* Make all items reachable */
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-
-    /* Panel styling */
-    background: rgba(255,255,255,.97);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    /* space so it doesn't sit under the hamburger row */
-    padding-top: 72px;
-    padding-bottom: 18px;
-
-    box-shadow: 0 18px 50px rgba(0,0,0,.22);
+  /* Overlay blocks interaction with page content behind */
+  .hasHamburger .navOverlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(5,9,20,0.92);
+    z-index: 2147483644;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
   }
 
-  /* Make sure links are easy to tap */
-  .navToggle[aria-expanded="true"] ~ #siteNav a{
+  /* Menu panel (dropdown panel, but fixed so it can't be clipped) */
+  .hasHamburger .nav{
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(11,18,32,0.98);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.60);
+
+    z-index: 2147483645;
+
+    /* animation */
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 180ms ease, opacity 180ms ease;
+
+    /* KEY FIX: if many items, allow scrolling inside panel */
+    max-height: calc(100vh - 92px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hasHamburger .nav a{
     display: block;
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(0,0,0,.08);
+    text-align: center;
+    font-size: 15px;
+    padding: 14px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 800;
+  }
+
+  .hasHamburger .nav a.active{
+    background: rgba(37,99,235,0.45);
+    border-color: rgba(37,99,235,0.75);
+    color: #fff;
+  }
+
+  /* Open state */
+  html.navOpen .hasHamburger .navOverlay{
+    opacity: 1;
+    pointer-events: auto;
+  }
+  html.navOpen .hasHamburger .nav{
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Lock page scroll behind the overlay/menu */
+  body.navOpen{
+    overflow: hidden;
+    touch-action: none;
   }
 }
