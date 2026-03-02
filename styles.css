@@ -2918,38 +2918,44 @@ body.watermarkPage::before{
   }
 }
 /* =========================================
-   MOBILE HAMBURGER MENU (OVERLAY + FIXED PANEL)
-   Works whether nav.js toggles navOpen on <html> OR <body>
+   TOURNAMENT-STYLE MOBILE HAMBURGER (SITEWIDE)
    Delete this entire block to revert
 ========================================= */
 
 @media (max-width: 900px){
 
-  /* --- Overlay blocks interaction with page content behind --- */
+  /* Keep header + hamburger visible while scrolling */
+  .siteHeader{
+    position: sticky;
+    top: 0;
+    z-index: 2147483643;
+  }
+
+  /* Overlay blocks all interaction with page content behind */
   .hasHamburger .navOverlay{
     position: fixed;
     inset: 0;
-    background: rgba(5, 9, 20, 0.92);
+    background: #050914;          /* solid overlay prevents bleed-through */
     z-index: 2147483644;
     opacity: 0;
     pointer-events: none;
     transition: opacity 180ms ease;
   }
 
-  /* --- Menu panel: HIDDEN by default so it cannot bleed --- */
+  /* Menu panel (hidden by default) */
   .hasHamburger .nav{
-    display: none;               /* fully hidden when closed */
     position: fixed;
     top: 70px;
     left: 12px;
     right: 12px;
 
+    display: none;                /* IMPORTANT: hide when closed */
     gap: 10px;
     padding: 14px;
 
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.14);
-    background: rgba(11,18,32,0.98);
+    background: #0b1220;          /* solid panel */
     box-shadow: 0 18px 60px rgba(0,0,0,0.60);
 
     z-index: 2147483645;
@@ -2959,11 +2965,10 @@ body.watermarkPage::before{
     pointer-events: none;
     transition: transform 180ms ease, opacity 180ms ease;
 
+    /* allow scrolling inside menu if long */
     max-height: calc(100vh - 92px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-
-    isolation: isolate;
   }
 
   .hasHamburger .nav a{
@@ -2985,15 +2990,12 @@ body.watermarkPage::before{
     color: #fff;
   }
 
-  /* --- OPEN STATE (support html.navOpen OR body.navOpen) --- */
-  html.navOpen .hasHamburger .navOverlay,
-  body.navOpen .hasHamburger .navOverlay{
+  /* Open state */
+  html.navOpen .hasHamburger .navOverlay{
     opacity: 1;
     pointer-events: auto;
   }
-
-  html.navOpen .hasHamburger .nav,
-  body.navOpen .hasHamburger .nav{
+  html.navOpen .hasHamburger .nav{
     display: grid;
     opacity: 1;
     pointer-events: auto;
@@ -3001,8 +3003,7 @@ body.watermarkPage::before{
   }
 
   /* Lock page scroll behind the overlay/menu */
-  html.navOpen body,
-  body.navOpen{
+  html.navOpen body{
     overflow: hidden;
     touch-action: none;
   }
