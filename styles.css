@@ -2917,3 +2917,94 @@ body.watermarkPage::before{
     touch-action: none;
   }
 }
+/* =========================================
+   MOBILE HAMBURGER MENU (OVERLAY + FIXED PANEL)
+   - Prevents menu being "under" content
+   - Prevents partial/bleeding nav items
+   - Scrolls inside menu if items exceed screen
+   Delete this entire block to revert
+========================================= */
+
+@media (max-width: 900px){
+
+  /* --- Overlay blocks interaction with page content behind --- */
+  .hasHamburger .navOverlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 9, 20, 0.92);  /* dark overlay */
+    z-index: 2147483644;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  /* --- Menu panel: HIDDEN by default so it cannot "bleed" --- */
+  .hasHamburger .nav{
+    display: none;               /* KEY: fully hidden when closed */
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+
+    gap: 10px;
+    padding: 14px;
+
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(11,18,32,0.98);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.60);
+
+    z-index: 2147483645;
+
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 180ms ease, opacity 180ms ease;
+
+    /* Allow scrolling if menu is taller than screen */
+    max-height: calc(100vh - 92px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    /* Extra safety against weird stacking-context bugs */
+    isolation: isolate;
+  }
+
+  .hasHamburger .nav a{
+    display: block;
+    text-align: center;
+    font-size: 15px;
+    padding: 14px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 800;
+  }
+
+  .hasHamburger .nav a.active{
+    background: rgba(37,99,235,0.45);
+    border-color: rgba(37,99,235,0.75);
+    color: #fff;
+  }
+
+  /* --- OPEN STATE (nav.js toggles these classes) --- */
+  html.navOpen .hasHamburger .navOverlay{
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  html.navOpen .hasHamburger .nav{
+    display: grid;               /* KEY: show only when open */
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Lock page scroll behind the overlay/menu */
+  body.navOpen{
+    overflow: hidden;
+    touch-action: none;
+  }
+}
