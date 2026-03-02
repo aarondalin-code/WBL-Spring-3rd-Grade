@@ -1,60 +1,48 @@
-// nav.js — WBL 3rd Grade 2026
-// Purpose: hamburger open/close + overlay behavior
-// NOTE: Links are defined in each page's <nav>; this file does not generate navigation markup.
+// Tournament-style hamburger behavior (sitewide)
+(function(){
+  const html = document.documentElement;
+  const body = document.body;
 
-(function () {
-  function ready(fn) {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn);
-    } else {
-      fn();
-    }
+  const toggle = document.querySelector(".navToggle");
+  const overlay = document.querySelector(".navOverlay");
+  const nav = document.getElementById("siteNav");
+
+  if (!toggle || !overlay || !nav) return;
+
+  function openNav(){
+    html.classList.add("navOpen");
+    body.classList.add("navOpen"); // harmless, extra compatibility
+    toggle.setAttribute("aria-expanded", "true");
+    overlay.setAttribute("aria-hidden", "false");
   }
 
-  ready(function () {
-    const toggle = document.querySelector(".navToggle");
-    const overlay = document.querySelector(".navOverlay");
-    const nav = document.getElementById("siteNav");
+  function closeNav(){
+    html.classList.remove("navOpen");
+    body.classList.remove("navOpen");
+    toggle.setAttribute("aria-expanded", "false");
+    overlay.setAttribute("aria-hidden", "true");
+  }
 
-    if (!toggle || !overlay || !nav) return;
+  function isOpen(){
+    return html.classList.contains("navOpen");
+  }
 
-    function openMenu() {
-      document.body.classList.add("navOpen");
-      toggle.setAttribute("aria-expanded", "true");
-      overlay.setAttribute("aria-hidden", "false");
-    }
+  toggle.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isOpen() ? closeNav() : openNav();
+  });
 
-    function closeMenu() {
-      document.body.classList.remove("navOpen");
-      toggle.setAttribute("aria-expanded", "false");
-      overlay.setAttribute("aria-hidden", "true");
-    }
+  overlay.addEventListener("click", closeNav);
 
-    function isOpen() {
-      return document.body.classList.contains("navOpen");
-    }
+  // Close when clicking a link
+  nav.addEventListener("click", (e) => {
+    const a = e.target.closest("a");
+    if (a) closeNav();
+  });
 
-    toggle.addEventListener("click", function () {
-      if (isOpen()) closeMenu();
-      else openMenu();
-    });
-
-    overlay.addEventListener("click", function () {
-      closeMenu();
-    });
-
-    // Close menu after clicking a link (mobile UX)
-    nav.addEventListener("click", function (e) {
-      const a = e.target && e.target.closest ? e.target.closest("a") : null;
-      if (a) closeMenu();
-    });
-
-    // Escape key closes menu
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeMenu();
-    });
-
-    // Ensure overlay state is consistent on load
-    closeMenu();
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeNav();
   });
 })();
