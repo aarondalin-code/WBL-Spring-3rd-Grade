@@ -2863,3 +2863,13 @@ body.watermarkPage::before{
   background: rgba(255,255,255,.35); /* subtle, clean hover “chip” */
 }
 
+/* =========================
+   NAV OPEN STACKING FINAL FIX
+========================= */
+@media (max-width: 820px){
+  html.navOpen .siteHeader,
+  html.navOpen .wrap{
+    position: relative !important;
+    z-index: 0 !important;
+  }
+}
