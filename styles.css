@@ -2667,7 +2667,7 @@ body.watermarkPage::before{
   border-bottom: 1px solid rgba(0,0,0,.08);
   box-shadow: 0 6px 18px rgba(0,0,0,.08);
 
-  overflow: hidden; /* important so watermark doesn't spill */
+  overflow: visible; /* important so watermark doesn't spill */
 }
 
 /* Watermark logo (behind header content) */
