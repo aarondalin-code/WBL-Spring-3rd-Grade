@@ -251,10 +251,6 @@ body.watermarkPage::before{
     background:#fff;
   }
 
-  /* IMPORTANT: prevent header watermark from visually competing */
-  html.navOpen .siteHeader{
-    z-index: 1 !important;
-  }
 }
  
 /* =========================
@@ -2863,13 +2859,27 @@ body.watermarkPage::before{
   background: rgba(255,255,255,.35); /* subtle, clean hover “chip” */
 }
 
+
 /* =========================
-   NAV OPEN STACKING FINAL FIX
+   NAV OPEN STACKING FINAL FIX (MOBILE)
+   Paste at bottom of styles.css — delete to revert
 ========================= */
 @media (max-width: 820px){
+
+  /* Push header + page content behind overlay/menu while nav is open */
   html.navOpen .siteHeader,
   html.navOpen .wrap{
     position: relative !important;
     z-index: 0 !important;
+  }
+
+  /* Hide the header watermark layer while nav is open (prevents iOS stacking bugs) */
+  html.navOpen .siteHeader::before{
+    opacity: 0 !important;
+  }
+
+  /* Extra safety: prevent the “2026 SEASON” pill from painting above the overlay */
+  html.navOpen .siteHeader .tagline::before{
+    opacity: 0 !important;
   }
 }
