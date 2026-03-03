@@ -2859,15 +2859,13 @@ body.watermarkPage::before{
   background: rgba(255,255,255,.35); /* subtle, clean hover “chip” */
 }
 
-/* =========================================================
-   MOBILE NAV + WATERMARK iOS FIX (PASTE LAST)
-   Purpose: stop Safari from drawing header/watermark above fixed overlay
-   Safe: affects only <=820px and only when menu is open
-========================================================= */
+/* =========================================
+   iOS WATERMARK COMPOSITING FIX (MOBILE ONLY)
+   Clean, single-purpose fix
+========================================= */
 @media (max-width: 820px){
 
-  /* 1) iOS/Safari fix: the header watermark layer can "float" above fixed overlays.
-        When nav is open, disable that composited layer. */
+  /* When menu is open, remove the composited watermark layer */
   html.navOpen .siteHeader::before{
     opacity: 0 !important;
     animation: none !important;
@@ -2875,36 +2873,9 @@ body.watermarkPage::before{
     filter: none !important;
   }
 
-  /* Also hide the "2026 SEASON" pill while open (it’s a pseudo-element too) */
+  /* Hide season badge while menu is open (also pseudo-element) */
   html.navOpen .siteHeader .tagline::before{
     opacity: 0 !important;
   }
 
-  /* 2) Force overlay/menu into their own top layer (prevents “behind page” bug) */
-  html.navOpen .navOverlay{
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 2147483646 !important;
-    transform: translateZ(0) !important;
-  }
-
-  html.navOpen .nav{
-    position: fixed !important;
-    z-index: 2147483647 !important;
-    transform: translateZ(0) !important;
-  }
-
-  /* 3) Keep the hamburger visible above the dark overlay */
-  html.navOpen .navToggle{
-    position: fixed !important;
-    top: 12px !important;
-    left: 12px !important;
-    z-index: 2147483647 !important;
-    background: rgba(0,0,0,0.35) !important;
-    border-radius: 12px !important;
-    padding: 10px !important;
-  }
-  html.navOpen .navToggle span{
-    background: #fff !important;
-  }
 }
