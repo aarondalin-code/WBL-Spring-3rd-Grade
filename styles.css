@@ -2880,4 +2880,41 @@ body.watermarkPage::before{
 
 }
 
+/* =========================================
+   MOBILE NAV OPEN — SINGLE TARGETED PATCH (iPhone Chrome)
+   Fixes:
+   - header title / divider bleeding above overlay
+   - hamburger bars invisible when open
+   Paste at VERY BOTTOM of styles.css
+========================================= */
+@media (max-width: 820px){
 
+  /* 1) Make the overlay truly opaque in the OPEN state */
+  html.navOpen .navOverlay{
+    opacity: 1 !important;
+    background: #050914 !important;
+  }
+
+  /* 2) Remove the header “line” artifacts while open */
+  html.navOpen .siteHeader{
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* 3) Keep hamburger readable while open */
+  html.navOpen .navToggle{
+    background: rgba(0,0,0,0.35) !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+  }
+  html.navOpen .navToggle span{
+    background: #ffffff !important;
+  }
+
+  /* 4) Kill ONLY the composited header watermark layer while open (the root cause) */
+  html.navOpen .siteHeader::before{
+    opacity: 0 !important;
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
