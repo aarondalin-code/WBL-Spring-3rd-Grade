@@ -2880,3 +2880,65 @@ body.watermarkPage::before{
 
 }
 
+/* =========================================
+   MOBILE NAV OPEN – FINAL: STOP HEADER BLEED + WHITE HAMBURGER BARS
+   Paste at VERY BOTTOM of styles.css
+   Delete to revert
+========================================= */
+@media (max-width: 820px){
+
+  /* 1) When nav is open: force ALL header layers underneath overlay/menu */
+  html.navOpen .siteHeader,
+  html.navOpen .siteHeader *{
+    z-index: 0 !important;
+  }
+
+  /* kill header pseudo-elements that can float above overlays (watermark/dividers) */
+  html.navOpen .siteHeader::before,
+  html.navOpen .siteHeader::after{
+    opacity: 0 !important;
+    display: none !important;
+  }
+
+  /* remove any bold border/shadow line that can “bleed” */
+  html.navOpen .siteHeader{
+    border-top-color: transparent !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* 2) Ensure overlay + menu are the top layers */
+  html.navOpen .navOverlay{
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9998 !important;
+  }
+  html.navOpen .nav{
+    position: fixed !important;
+    z-index: 9999 !important;
+  }
+
+  /* 3) Keep hamburger visible and make bars WHITE when open */
+  html.navOpen .navToggle{
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    z-index: 10000 !important;
+
+    background: rgba(0,0,0,0.35) !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    border-radius: 12px !important;
+    padding: 10px !important;
+  }
+  html.navOpen .navToggle span{
+    background: #ffffff !important;
+    height: 2px !important;   /* keeps strength consistent */
+    opacity: 1 !important;
+  }
+
+  /* 4) Lock scroll behind the overlay */
+  body.navOpen{
+    overflow: hidden !important;
+    touch-action: none !important;
+  }
+}
