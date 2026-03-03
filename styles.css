@@ -2859,59 +2859,52 @@ body.watermarkPage::before{
   background: rgba(255,255,255,.35); /* subtle, clean hover “chip” */
 }
 
-
 /* =========================
-   NAV OPEN STACKING FINAL FIX (MOBILE)
-   Paste at bottom of styles.css — delete to revert
+   MOBILE NAV – FINAL STACKING OVERRIDE (PASTE LAST)
+   This forces overlay/menu above EVERYTHING on iOS
 ========================= */
 @media (max-width: 820px){
 
-  /* Push header + page content behind overlay/menu while nav is open */
+  /* Force overlay + menu above all header/content layers */
+  html.navOpen .navOverlay{
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483646 !important;
+  }
+
+  html.navOpen .nav{
+    position: fixed !important;
+    z-index: 2147483647 !important;
+  }
+
+  /* Push the rest of the page below the overlay/menu */
   html.navOpen .siteHeader,
   html.navOpen .wrap{
-    position: relative !important;
     z-index: 0 !important;
   }
 
-  /* Hide the header watermark layer while nav is open (prevents iOS stacking bugs) */
+  /* Stop the header “watermark” composited layer from painting above overlay (iOS bug) */
   html.navOpen .siteHeader::before{
     opacity: 0 !important;
   }
 
-  /* Extra safety: prevent the “2026 SEASON” pill from painting above the overlay */
+  /* Stop the 2026 SEASON pill from bleeding through */
   html.navOpen .siteHeader .tagline::before{
     opacity: 0 !important;
   }
-}
 
-/* =========================================================
-   HAMBURGER OVERLAY FIX (MOBILE)
-   Paste at VERY BOTTOM of styles.css
-   Fixes: black overlay/menu appearing behind page
-========================================================= */
-@media (max-width: 820px){
-
-  /* Your watermark header block sets overflow:hidden (needed for watermark),
-     but it breaks fixed overlays on some mobile browsers.
-     Only relax it WHILE the nav is open. */
-  html.navOpen .siteHeader{
-    overflow: visible !important;
+  /* Keep hamburger visible on the dark overlay */
+  html.navOpen .navToggle{
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    z-index: 2147483647 !important;
+    background: rgba(0,0,0,0.35) !important;
+    border-radius: 12px !important;
+    padding: 10px !important;
   }
-
-  /* Ensure header/hamburger stay on top and tappable */
-  .siteHeader{
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 2147483000 !important;
+  html.navOpen .navToggle span{
+    background: #fff !important;
   }
-
-  /* Ensure overlay + menu are above ALL page content */
-  html.navOpen .navOverlay{ z-index: 2147483644 !important; }
-  html.navOpen .nav{        z-index: 2147483645 !important; }
-  html.navOpen .navToggle{  z-index: 2147483647 !important; }
-
-  /* Optional (but recommended): hide watermark + the 2026 pill while open,
-     avoids any weird “bleed-through” rendering artifacts */
-  html.navOpen .siteHeader::before{ opacity: 0 !important; }
-  html.navOpen .siteHeader .tagline::before{ opacity: 0 !important; }
 }
