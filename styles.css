@@ -2883,3 +2883,35 @@ body.watermarkPage::before{
     opacity: 0 !important;
   }
 }
+
+/* =========================================================
+   HAMBURGER OVERLAY FIX (MOBILE)
+   Paste at VERY BOTTOM of styles.css
+   Fixes: black overlay/menu appearing behind page
+========================================================= */
+@media (max-width: 820px){
+
+  /* Your watermark header block sets overflow:hidden (needed for watermark),
+     but it breaks fixed overlays on some mobile browsers.
+     Only relax it WHILE the nav is open. */
+  html.navOpen .siteHeader{
+    overflow: visible !important;
+  }
+
+  /* Ensure header/hamburger stay on top and tappable */
+  .siteHeader{
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 2147483000 !important;
+  }
+
+  /* Ensure overlay + menu are above ALL page content */
+  html.navOpen .navOverlay{ z-index: 2147483644 !important; }
+  html.navOpen .nav{        z-index: 2147483645 !important; }
+  html.navOpen .navToggle{  z-index: 2147483647 !important; }
+
+  /* Optional (but recommended): hide watermark + the 2026 pill while open,
+     avoids any weird “bleed-through” rendering artifacts */
+  html.navOpen .siteHeader::before{ opacity: 0 !important; }
+  html.navOpen .siteHeader .tagline::before{ opacity: 0 !important; }
+}
