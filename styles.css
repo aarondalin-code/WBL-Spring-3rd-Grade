@@ -151,43 +151,112 @@ body.watermarkPage::before{
 }
 
 @media (max-width: 820px){
-  .navToggle{ display:inline-flex; flex-direction:column; justify-content:center; }
-  .nav{
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    top: 64px;
-    z-index: 60;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 12px;
-    box-shadow: 0 18px 40px rgba(15,23,42,.18);
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-  .nav a{ display:block; text-align:left; }
-
-  html.navOpen .nav,
-  body.navOpen .nav{
-    display: flex;
+  /* show hamburger button */
+  .navToggle{
+    display:inline-flex;
+    flex-direction:column;
+    justify-content:center;
   }
 
+  /* overlay covers whole screen and blocks ALL taps behind */
   .navOverlay{
-    display:none;
+    display:block;              /* always exists, but hidden via opacity */
     position:fixed;
     inset:0;
-    z-index:55;
-    background: rgba(15,23,42,.50);
+    background:#050914;
+    z-index: 2147483644;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 180ms ease;
   }
-  html.navOpen .navOverlay,
-  body.navOpen .navOverlay{
+
+  /* menu panel: fixed, scrollable if long, dark theme */
+  .nav{
+    position:fixed;
+    left:12px;
+    right:12px;
+    top:70px;
+
+    z-index: 2147483645;
+
+    display:grid;
+    gap:10px;
+    padding:14px;
+
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:#0b1220;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.60);
+
+    /* hidden by default */
+    opacity:0;
+    pointer-events:none;
+    transform: translateY(-10px);
+    transition: transform 180ms ease, opacity 180ms ease;
+
+    /* allow scrolling inside menu */
+    max-height: calc(100vh - 92px);
+    overflow-y:auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav a{
     display:block;
+    text-align:center;
+    font-size:15px;
+    padding:14px 14px;
+    border-radius:999px;
+    background: rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12);
+    color:#e5e7eb;
+    text-decoration:none;
+    font-weight:800;
+  }
+
+  .nav a.active{
+    background: rgba(37,99,235,0.45);
+    border-color: rgba(37,99,235,0.75);
+    color:#fff;
+  }
+
+  /* OPEN STATE (driven by nav.js adding html.navOpen) */
+  html.navOpen .navOverlay{
+    opacity:1;
+    pointer-events:auto;
+  }
+  html.navOpen .nav{
+    opacity:1;
+    pointer-events:auto;
+    transform: translateY(0);
+  }
+
+  /* lock page scroll behind menu */
+  html.navOpen body{
+    overflow:hidden;
+    touch-action:none;
+  }
+
+  /* keep hamburger visible ABOVE overlay, and white bars */
+  .navToggle{ position:relative; z-index: 2147483647; }
+  html.navOpen .navToggle{
+    position:fixed;
+    top:12px;
+    left:12px;
+    z-index:2147483647;
+    background: rgba(0,0,0,0.35);
+    border-radius:12px;
+    padding:10px;
+  }
+  html.navOpen .navToggle span{
+    background:#fff;
+  }
+
+  /* IMPORTANT: prevent header watermark from visually competing */
+  html.navOpen .siteHeader{
+    z-index: 1 !important;
   }
 }
-
+ 
 /* =========================
    Layout Blocks / Cards
 ========================= */
@@ -2794,119 +2863,3 @@ body.watermarkPage::before{
   background: rgba(255,255,255,.35); /* subtle, clean hover “chip” */
 }
 
-/* =========================================
-   MOBILE HAMBURGER (TOURNAMENT STYLE) — SINGLE SOURCE OF TRUTH
-   Paste at bottom of styles.css. Delete to revert.
-========================================= */
-
-@media (max-width: 900px){
-
-  /* Keep header visible while scrolling */
-  .siteHeader{
-    position: sticky;
-    top: 0;
-    z-index: 2147483000;
-  }
-
-  /* Make sure header's watermark never blocks taps */
-  .siteHeader::before,
-  .siteHeader::after{
-    pointer-events: none;
-  }
-
-  /* Hamburger button stays visible above overlay */
-  .hasHamburger .navToggle{
-    position: relative;
-    z-index: 2147483647;
-  }
-  html.navOpen .hasHamburger .navToggle{
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 2147483647;
-
-    /* visible on dark overlay */
-    background: rgba(0,0,0,0.35);
-    border-radius: 12px;
-    padding: 10px;
-  }
-  html.navOpen .hasHamburger .navToggle span{
-    background: #ffffff;
-  }
-
-  /* Overlay blocks all interaction with page content behind */
-  .hasHamburger .navOverlay{
-    position: fixed;
-    inset: 0;
-    background: #050914;
-    z-index: 2147483644;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 180ms ease;
-  }
-
-  /* Menu panel */
-  .hasHamburger .nav{
-    position: fixed;
-    top: 70px;
-    left: 12px;
-    right: 12px;
-
-    display: none;
-    gap: 10px;
-    padding: 14px;
-
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: #0b1220;
-    box-shadow: 0 18px 60px rgba(0,0,0,0.60);
-
-    z-index: 2147483645;
-
-    transform: translateY(-10px);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 180ms ease, opacity 180ms ease;
-
-    max-height: calc(100vh - 92px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .hasHamburger .nav a{
-    display: block;
-    text-align: center;
-    font-size: 15px;
-    padding: 14px 14px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #e5e7eb;
-    text-decoration: none;
-    font-weight: 800;
-  }
-
-  .hasHamburger .nav a.active{
-    background: rgba(37,99,235,0.45);
-    border-color: rgba(37,99,235,0.75);
-    color: #fff;
-  }
-
-  /* Open state */
-  html.navOpen .hasHamburger .navOverlay{
-    opacity: 1;
-    pointer-events: auto;
-  }
-  html.navOpen .hasHamburger .nav{
-    display: grid;
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-
-  /* Lock page scroll behind the overlay/menu */
-  html.navOpen body{
-    overflow: hidden;
-    touch-action: none;
-  }
-}
