@@ -2879,3 +2879,48 @@ body.watermarkPage::before{
   }
 
 }
+/* =========================================
+   MOBILE NAV OPEN: FIX HAMBURGER VISIBILITY + STOP HEADER BLEED + LOCK SCROLL
+   Paste DIRECTLY under your iOS watermark fix
+========================================= */
+@media (max-width: 820px){
+
+  /* 1) When menu is open: keep hamburger visible (white bars + dark chip bg) */
+  html.navOpen .navToggle{
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    z-index: 2147483647 !important;
+
+    background: rgba(0,0,0,0.35) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    border-radius: 12px !important;
+  }
+  html.navOpen .navToggle span{
+    background: #ffffff !important;
+  }
+
+  /* 2) Stop scrolling the page behind the overlay (prevents header “scrolling away”) */
+  html.navOpen body{
+    overflow: hidden !important;
+    touch-action: none !important;
+  }
+
+  /* 3) Make sure overlay/menu are ABOVE header/content (stops header + divider bleeding through) */
+  html.navOpen .navOverlay{
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483644 !important;
+  }
+  html.navOpen .nav{
+    position: fixed !important;
+    z-index: 2147483645 !important;
+  }
+
+  /* 4) Extra safety: while open, force header below overlay and remove its divider line */
+  html.navOpen .siteHeader{
+    z-index: 1 !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+  }
+}
