@@ -3055,7 +3055,7 @@ body.watermarkPage::before{
   .navToggle span{
     width: 20px;
     height: 2px;
-    margin: 3px 0;
+    margin: 6px 0;
     border-radius: 2px;
   }
 
