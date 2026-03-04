@@ -146,9 +146,10 @@ function cardHtml(d){
 
   return `
 <a class="drillCard" href="${url}" target="_blank" rel="noopener"
-   onclick="trackDrill(${JSON.stringify(title)}, ${JSON.stringify(type)}, ${JSON.stringify(week)}, ${JSON.stringify(url)})">
-
-      <div class="drillThumb">
+   data-drill-title=${JSON.stringify(title)}
+   data-drill-type=${JSON.stringify(type)}
+   data-drill-week=${JSON.stringify(week)}
+   data-drill-url=${JSON.stringify(url)}>      <div class="drillThumb">
         <img src="${thumb}" alt="${title}" loading="lazy" />
       </div>
       <div class="drillBody">
@@ -163,6 +164,34 @@ function cardHtml(d){
   `;
 }
 
+function wireDrillTracking(){
+  gridEl.querySelectorAll(".drillCard").forEach(a => {
+    a.addEventListener("click", (e) => {
+      const title = a.dataset.drillTitle || "";
+      const type  = a.dataset.drillType || "";
+      const week  = a.dataset.drillWeek || "";
+      const url   = a.dataset.drillUrl || "";
+
+      if (typeof gtag === "function") {
+        gtag("event", "view_drill", {
+          drill_name: title,
+          drill_type: type,
+          week: week,
+          video_url: url
+        });
+      }
+
+      // Delay opening the new tab slightly so GA has time to send the event
+      const href = a.href;
+      e.preventDefault();
+      setTimeout(() => window.open(href, "_blank", "noopener"), 120);
+    });
+  });
+}
+
+
+
+
 function applyFilters(){
   const w = weekEl.value;
   const t = typeEl.value;
@@ -174,6 +203,7 @@ function applyFilters(){
   });
 
   gridEl.innerHTML = filtered.map(cardHtml).join("");
+  wireDrillTracking();
   emptyEl.style.display = filtered.length ? "none" : "";
   metaEl.textContent = filtered.length ? `${filtered.length} drill(s)` : "";
 }
