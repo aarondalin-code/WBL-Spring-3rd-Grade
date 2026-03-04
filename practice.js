@@ -2,6 +2,17 @@
 function safe(v){ return String(v ?? "").trim(); }
 function norm(v){ return safe(v).toLowerCase(); }
 
+function trackDrill(drillName, drillType, week, videoUrl){
+  if (typeof gtag === "function") {
+    gtag("event", "view_drill", {
+      drill_name: drillName,
+      drill_type: drillType,
+      week: week,
+      video_url: videoUrl
+    });
+  }
+}
+
 async function fetchCsv(url){
   if (!url) throw new Error("Missing DRILLS_CSV_URL in data.js");
   const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
@@ -134,7 +145,9 @@ function cardHtml(d){
   const pillWeek = week ? `<span class="drillPill drillPillMuted">Week ${week}</span>` : "";
 
   return `
-    <a class="drillCard" href="${url}" target="_blank" rel="noopener">
+<a class="drillCard" href="${url}" target="_blank" rel="noopener"
+   onclick="trackDrill(${JSON.stringify(title)}, ${JSON.stringify(type)}, ${JSON.stringify(week)}, ${JSON.stringify(url)})">
+
       <div class="drillThumb">
         <img src="${thumb}" alt="${title}" loading="lazy" />
       </div>
