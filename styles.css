@@ -2918,3 +2918,76 @@ body.watermarkPage::before{
     filter: none !important;
   }
 }
+/* =========================================================
+   MOBILE NAV OPEN — HARD OVERRIDE (PASTE LAST)
+   Fixes:
+   1) Header/title + divider bleeding through
+   2) Hamburger bars not turning white on open
+   3) Overlay/menu ending up behind content (iPhone Chrome/WebKit)
+========================================================= */
+@media (max-width: 820px){
+
+  /* While nav is open: remove anything “header-ish” that can show through */
+  html.navOpen .siteHeader{
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Hide ONLY the page title area (keeps hamburger/nav functional) */
+  html.navOpen .siteHeader .brandCenter{
+    display: none !important;
+  }
+
+  /* Kill header pseudo-elements while open (watermark, etc.) */
+  html.navOpen .siteHeader::before,
+  html.navOpen .siteHeader::after{
+    opacity: 0 !important;
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* Ensure overlay is truly on top and opaque */
+  html.navOpen .navOverlay{
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: #050914 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 999999 !important;
+    transform: translateZ(0) !important; /* helps iPhone/WebKit stacking */
+  }
+
+  /* Ensure menu panel is above overlay */
+  html.navOpen .nav{
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: 70px !important;
+    z-index: 1000000 !important;
+    transform: translateZ(0) !important;
+  }
+
+  /* Keep hamburger visible and make bars WHITE when open */
+  html.navOpen .navToggle{
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    z-index: 1000001 !important;
+    background: rgba(0,0,0,0.35) !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    border-radius: 12px !important;
+  }
+  html.navOpen .navToggle span{
+    background: #ffffff !important;
+    opacity: 1 !important;
+  }
+
+  /* Lock scroll behind the overlay */
+  html.navOpen body{
+    overflow: hidden !important;
+    touch-action: none !important;
+  }
+}
