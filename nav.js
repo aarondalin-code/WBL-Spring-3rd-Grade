@@ -14,8 +14,6 @@
     }
   }
 
-
-  
   function openNav(){
     html.classList.add("navOpen");
     body.classList.add("navOpen"); // harmless, extra compatibility
