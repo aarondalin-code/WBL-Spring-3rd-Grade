@@ -3009,3 +3009,23 @@ body.watermarkPage::before{
   }
 
 }
+/* =========================================
+   HAMBURGER BARS – FORCE RENDER + WHITE WHEN OPEN
+   (based on working tournament code)
+========================================= */
+@media (max-width: 820px){
+
+  .navToggle span{
+    display: block !important;
+    width: 20px !important;      /* critical: prevents span collapse */
+    height: 2px !important;
+    margin: 3px 0 !important;
+    border-radius: 2px !important;
+    background: #0f172a !important;
+  }
+
+  html.navOpen .navToggle span{
+    background: #ffffff !important;
+  }
+
+}
