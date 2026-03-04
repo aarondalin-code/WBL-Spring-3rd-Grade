@@ -3041,3 +3041,22 @@ body.watermarkPage::before{
     z-index: 2147483647 !important;
   }
 }
+/* =========================
+   HAMBURGER BAR ALIGNMENT FIX
+   Add at VERY BOTTOM of styles.css
+========================= */
+@media (max-width: 820px){
+
+  .navToggle{
+    display: grid;
+    place-items: center;
+  }
+
+  .navToggle span{
+    width: 20px;
+    height: 2px;
+    margin: 3px 0;
+    border-radius: 2px;
+  }
+
+}
