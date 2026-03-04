@@ -759,6 +759,7 @@ function renderScheduleCard(g){
           msgEl.textContent = "Submitting vote…";
           const counts = await pollSubmitVote(idx);
           saveMyVote(idx);
+          if (typeof gtag === "function") gtag("event", "poll_vote", { poll_id: POLL.weekKey, option_index: idx });
           renderPollUI();
           renderPollResultsFromCounts(padCountsToOptions(counts));
           msgEl.textContent = "Vote recorded.";
