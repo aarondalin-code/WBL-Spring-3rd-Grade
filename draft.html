@@ -252,7 +252,7 @@
       cursor:pointer;
     }
 
-   /* -----------------------------
+/* -----------------------------
    FILTER BOX (clean 4 + 4 + centered actions row)
    ----------------------------- */
 .draftPage .filtersCard .cardBody{
@@ -265,13 +265,14 @@
   padding:8px;
   background:
     linear-gradient(180deg, rgba(30,64,175,.06), rgba(30,64,175,0) 55%),
-    repeating-linear-gradient(135deg,
+    repeating-linear-gradient(
+      135deg,
       rgba(30,64,175,.045) 0px,
       rgba(30,64,175,.045) 10px,
       rgba(30,64,175,0) 10px,
       rgba(30,64,175,0) 28px
     );
-  border: 1px solid rgba(0,0,0,.10);
+  border:1px solid rgba(0,0,0,.10);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
   overflow:hidden;
 }
@@ -296,24 +297,20 @@
   gap:8px;
 }
 
-/* Top row and second row now identical */
-.draftPage .filtersGrid5,
 .draftPage .filtersGrid4{
   display:grid;
-  gap:10px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap:10px;
   align-items:end;
 }
 
 @media (max-width: 980px){
-  .draftPage .filtersGrid5,
   .draftPage .filtersGrid4{
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 520px){
-  .draftPage .filtersGrid5,
   .draftPage .filtersGrid4{
     grid-template-columns: 1fr;
   }
@@ -331,15 +328,36 @@
   font-size:11px;
   font-weight:900;
   color: rgba(0,0,0,.55);
+  line-height:1.05;
 }
 
-.draftPage input[type="text"], .draftPage select{
+.draftPage select{
   width:100%;
   padding:8px 10px;
   border-radius:12px;
   border:1px solid rgba(0,0,0,.12);
   background: rgba(255,255,255,.92);
   font-size:14px;
+  min-height:44px;
+}
+
+.draftPage .actionsRow{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:2px;
+}
+
+.draftPage .searchInput{
+  width:min(420px, 100%);
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.12);
+  background: rgba(255,255,255,.92);
+  font-size:14px;
+  min-height:44px;
 }
 
 .draftPage .btnSecondary{
@@ -350,28 +368,7 @@
   font-weight:900;
   cursor:pointer;
   white-space:nowrap;
-}
-
-/* Third row: centered search + buttons */
-.draftPage .actionsRow{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:2px;
-}
-
-.draftPage .actionsRow .field{
-  width:min(420px, 100%);
-}
-
-.draftPage .btnGroup{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  align-items:center;
-  flex-wrap:wrap;
+  min-height:44px;
 }
 
 .draftPage #meta{
@@ -503,109 +500,106 @@
 <main class="wrap">
   <section class="docSection">
 
-    <div class="card filtersCard">
-      <div class="cardBody">
-        <div class="filtersShell">
-          <div class="filtersWrap">
+<div class="card filtersCard">
+  <div class="cardBody">
+    <div class="filtersShell">
+      <div class="filtersWrap">
 
-            <div class="filtersGrid5">
-              <div class="field">
-                <div class="lbl">Pitcher</div>
-                <select id="pitcherFilter">
-                  <option value="">All</option>
-                  <option value="y">Pitcher (Y)</option>
-                  <option value="n">Not marked</option>
-                </select>
-              </div>
+        <!-- Row 1 -->
+        <div class="filtersGrid4">
+          <div class="field">
+            <div class="lbl">Pitcher</div>
+            <select id="pitcherFilter">
+              <option value="">All</option>
+              <option value="y">Pitcher (Y)</option>
+              <option value="n">Not marked</option>
+            </select>
+          </div>
 
-              <div class="field">
-                <div class="lbl">Travel</div>
-                <select id="travelFilter">
-                  <option value="">All</option>
-                  <option value="y">Travel (Y)</option>
-                  <option value="n">Non-travel (N)</option>
-                </select>
-              </div>
+          <div class="field">
+            <div class="lbl">Travel</div>
+            <select id="travelFilter">
+              <option value="">All</option>
+              <option value="y">Travel (Y)</option>
+              <option value="n">Non-travel (N)</option>
+            </select>
+          </div>
 
-              <div class="field">
-                <div class="lbl">Travel Level</div>
-                <select id="levelFilter">
-                  <option value="">All</option>
-                  <option value="a">A</option>
-                  <option value="b">B</option>
-                  <option value="c">C</option>
-                  <option value="none">None</option>
-                </select>
-              </div>
+          <div class="field">
+            <div class="lbl">Travel Level</div>
+            <select id="levelFilter">
+              <option value="">All</option>
+              <option value="a">A</option>
+              <option value="b">B</option>
+              <option value="c">C</option>
+              <option value="none">None</option>
+            </select>
+          </div>
 
-              <div class="field">
-                <div class="lbl">School</div>
-                <select id="schoolFilter">
-                  <option value="">All</option>
-                </select>
-              </div>
-
-
-
-            <div class="filtersGrid4">
-              <div class="field">
-                <div class="lbl">Spring Pitching</div>
-                <select id="springPitchingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Spring Hitting</div>
-                <select id="springHittingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Spring Throwing</div>
-                <select id="springThrowingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <div class="lbl">Spring Fielding</div>
-                <select id="springFieldingFilter">
-                  <option value="">All</option>
-                  <option value="Developing">Developing</option>
-                  <option value="Age Appropriate">Age Appropriate</option>
-                  <option value="Above Age Level">Above Age Level</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="actionsRow">
-              <div class="field" style="gap:0;">
-                <input id="q" type="text" placeholder="Search player name…" />
-              </div>
-
-              <div class="btnGroup">
-                <button id="clearBtn" class="btnSecondary" type="button">Clear filters</button>
-                <button id="refreshBtn" class="btnSecondary" type="button">Refresh</button>
-              </div>
-            </div>
-
+          <div class="field">
+            <div class="lbl">School</div>
+            <select id="schoolFilter">
+              <option value="">All</option>
+            </select>
           </div>
         </div>
 
-        <div class="smallMuted" id="meta" style="margin-top:10px;"></div>
+        <!-- Row 2 -->
+        <div class="filtersGrid4">
+          <div class="field">
+            <div class="lbl">Spring Pitching</div>
+            <select id="springPitchingFilter">
+              <option value="">All</option>
+              <option value="Developing">Developing</option>
+              <option value="Age Appropriate">Age Appropriate</option>
+              <option value="Above Age Level">Above Age Level</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Spring Hitting</div>
+            <select id="springHittingFilter">
+              <option value="">All</option>
+              <option value="Developing">Developing</option>
+              <option value="Age Appropriate">Age Appropriate</option>
+              <option value="Above Age Level">Above Age Level</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Spring Throwing</div>
+            <select id="springThrowingFilter">
+              <option value="">All</option>
+              <option value="Developing">Developing</option>
+              <option value="Age Appropriate">Age Appropriate</option>
+              <option value="Above Age Level">Above Age Level</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Spring Fielding</div>
+            <select id="springFieldingFilter">
+              <option value="">All</option>
+              <option value="Developing">Developing</option>
+              <option value="Age Appropriate">Age Appropriate</option>
+              <option value="Above Age Level">Above Age Level</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="actionsRow">
+          <input id="q" class="searchInput" type="text" placeholder="Search player name…" />
+          <button id="clearBtn" class="btnSecondary" type="button">Clear filters</button>
+          <button id="refreshBtn" class="btnSecondary" type="button">Refresh</button>
+        </div>
+
       </div>
     </div>
+
+    <div class="smallMuted" id="meta" style="margin-top:8px;"></div>
+  </div>
+</div>
 
     <div class="card clockCard" style="margin-top:14px;">
       <div class="cardBody">
