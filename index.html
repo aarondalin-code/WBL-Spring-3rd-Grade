@@ -270,6 +270,13 @@
     /* -------------------- Utils -------------------- */
     function safe(v){ return String(v ?? "").trim(); }
     function norm(v){ return safe(v).toLowerCase(); }
+    function formatPlayerName(name){
+  const parts = safe(name).split(/\s+/).filter(Boolean);
+  if (!parts.length) return "";
+  const first = parts[0];
+  const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
+  return first + lastInitial;
+}
     function isFinal(status){ return norm(status) === "final"; }
 
     function parseDateLoose(s){
@@ -1068,14 +1075,17 @@ function renderScheduleCard(g){
           btn.type = "button";
           btn.className = "potwCardBtn";
 
-          const displayName = p.PlayerName || "Player of the Week";
+         const displayName = formatPlayerName(p.PlayerName) || "Player of the Week";
+const meta = getMeta(p.Team);
+const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
 
+          
           btn.innerHTML = `
             <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}"
                  onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
             <div class="potwText">
               <div class="potwName">${displayName}</div>
-              <div class="potwTeam muted small">${p.Team}</div>
+              <div class="potwTeam muted small" ${teamStyle}>${p.Team}</div>
               <div class="potwLink">Learn more →</div>
             </div>
           `;
