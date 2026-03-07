@@ -256,7 +256,21 @@ body.teamPage #addCalendarBtn{
   // Helpers
   // -----------------------------
   function safe(v){ return String(v ?? "").trim(); }
+function formatPlayerName(name){
+  const parts = safe(name).split(/\s+/).filter(Boolean);
+  if (!parts.length) return "";
+  const first = parts[0];
+  const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
+  return first + lastInitial;
+}
 
+function getTeamMetaByName(teamName, teamRows){
+  const row = (teamRows || []).find(r => safe(r.TeamName) === safe(teamName));
+  return {
+    color: safe(row?.TeamColor),
+    logo: safe(row?.TeamLogo)
+  };
+}
   function getParam(name){
     return new URLSearchParams(window.location.search).get(name) || "";
   }
@@ -410,50 +424,53 @@ body.teamPage #addCalendarBtn{
     return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
   }
 
-  function renderPlayerModal(player, teamDisplayName){
-    const name = safe(player.PlayerName || player.Name || "Player");
-    const num = safe(player.Number);
-    const pos = safe(player.Position);
-    const bats = safe(player.Bats);
-    const throws = safe(player.Throws);
-    const fav = safe(player.FavoriteTeam);
-    const fun = safe(player.FunFact);
-    const photo = getPhotoSrc(player);
+function renderPlayerModal(player, teamDisplayName, teamRows){
+  const name = formatPlayerName(player.PlayerName || player.Name || "Player");
+  const num = safe(player.Number);
+  const pos = safe(player.Position);
+  const bats = safe(player.Bats);
+  const throws = safe(player.Throws);
+  const fav = safe(player.FavoriteTeam);
+  const fun = safe(player.FunFact);
+  const photo = getPhotoSrc(player);
 
-    const lines = [];
-    const line = (label, value) => `
-      <div class="profileLine">
-        <span class="profileKey">${label}</span>
-        <span class="profileVal">${value}</span>
+  const lines = [];
+  const line = (label, value) => `
+    <div class="profileLine">
+      <span class="profileKey">${label}</span>
+      <span class="profileVal">${value}</span>
+    </div>
+  `;
+
+  if (num) lines.push(line("Number", `#${num}`));
+  if (pos) lines.push(line("Position", pos));
+  if (bats) lines.push(line("Bats", bats));
+  if (throws) lines.push(line("Throws", throws));
+  if (fav) lines.push(line("Favorite MLB Team", fav));
+  if (fun) lines.push(line("Fun Fact", fun));
+
+  const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
+  const teamMeta = getTeamMetaByName(teamDisplayName, teamRows);
+  const teamStyle = teamMeta.color
+    ? `style="color:${teamMeta.color}; font-weight:900;"`
+    : "";
+
+  openModal(`
+    <div class="profileHeader">
+      <div class="profilePhoto">
+        <img src="${photo}" alt="${name}"
+             onerror="this.onerror=null; this.src='${fallback}';">
       </div>
-    `;
-
-    if (num) lines.push(line("Number", `#${num}`));
-    if (pos) lines.push(line("Position", pos));
-    if (bats) lines.push(line("Bats", bats));
-    if (throws) lines.push(line("Throws", throws));
-    if (fav) lines.push(line("Favorite MLB Team", fav));
-    if (fun) lines.push(line("Fun Fact", fun));
-
-    const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
-
-    openModal(`
-      <div class="profileHeader">
-        <div class="profilePhoto">
-          <img src="${photo}" alt="${name}"
-               onerror="this.onerror=null; this.src='${fallback}';">
-        </div>
-        <div style="min-width:260px;">
-          <h3 id="modalTitle" class="profileName">${name}</h3>
-          <div class="muted">${teamDisplayName}${num ? ` • #${num}` : ""}</div>
-          <div class="profileLines" style="margin-top:12px;">
-            ${lines.length ? lines.join("") : `<div class="muted small">No additional details yet.</div>`}
-          </div>
+      <div style="min-width:260px;">
+        <h3 id="modalTitle" class="profileName">${name}</h3>
+        <div class="muted" ${teamStyle}>${teamDisplayName}${num ? ` • #${num}` : ""}</div>
+        <div class="profileLines" style="margin-top:12px;">
+          ${lines.length ? lines.join("") : `<div class="muted small">No additional details yet.</div>`}
         </div>
       </div>
-    `);
-  }
-
+    </div>
+  `);
+}
   function buildRosterGrid(players, teamDisplayName){
     const grid = document.getElementById("rosterGrid");
     const msg = document.getElementById("rosterMsg");
@@ -483,7 +500,7 @@ body.teamPage #addCalendarBtn{
       btn.type = "button";
       btn.className = "playerCardBtn";
 
-      const name = safe(p.PlayerName || p.Name || "Player");
+     const name = formatPlayerName(p.PlayerName || p.Name || "Player");
       const num = safe(p.Number);
       const pos = safe(p.Position);
       const photo = getPhotoSrc(p);
@@ -504,7 +521,7 @@ body.teamPage #addCalendarBtn{
         </div>
       `;
 
-      btn.addEventListener("click", () => renderPlayerModal(p, teamDisplayName));
+  btn.addEventListener("click", () => renderPlayerModal(p, teamDisplayName, window.__TEAM_ROWS__ || []));
       grid.appendChild(btn);
     }
   }
@@ -583,7 +600,7 @@ body.teamPage #addCalendarBtn{
     try {
       const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
       const teamRows = parseCsv(teamsCsv);
-
+window.__TEAM_ROWS__ = teamRows;
       const teamRow = teamRows.find(r => safe(r.TeamSlug) === slug);
       if (!teamRow) {
         alert("Team not found. Check TeamSlug in your Teams tab.");
