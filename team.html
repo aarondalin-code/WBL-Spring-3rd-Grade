@@ -359,7 +359,12 @@ function getTeamMetaByName(teamName, teamRows){
   // Render: Team header + coach
   // -----------------------------
   function setHeaderFromTeamRow(teamRow){
-    const teamNameEl = document.getElementById("teamName");
+const teamNameEl = document.getElementById("teamName");
+if (teamNameEl){
+  teamNameEl.textContent = safe(teamRow.TeamName);
+  const color = safe(teamRow.TeamColor);
+  if (color) teamNameEl.style.color = color;
+}
     const logoEl = document.getElementById("teamLogo");
     const subEl = document.getElementById("teamSubtitle");
 
