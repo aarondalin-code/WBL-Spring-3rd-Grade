@@ -1156,7 +1156,7 @@
         isCoachKid: (norm(r.CoachKid) === "y")
       }))
       .filter(x => x.slug && x.name)
-      .filter(x => !onlySlug || x.slug === onlySlug);
+     
 
     if (!taken.length){
       msg.textContent = onlySlug ? "No players taken yet for that team." : "No picks recorded yet (Roster tab still empty).";
