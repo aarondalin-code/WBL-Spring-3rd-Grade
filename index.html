@@ -270,6 +270,14 @@
     /* -------------------- Utils -------------------- */
     function safe(v){ return String(v ?? "").trim(); }
     function norm(v){ return safe(v).toLowerCase(); }
+function formatPlayerName(name){
+  const parts = safe(name).split(/\s+/).filter(Boolean);
+  if (!parts.length) return "";
+  const first = parts[0];
+  const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
+  return first + lastInitial;
+}
+
     function formatPlayerName(name){
   const parts = safe(name).split(/\s+/).filter(Boolean);
   if (!parts.length) return "";
@@ -361,31 +369,34 @@
     overlay.addEventListener("click", (e)=>{ if (e.target === overlay) closeModal(); });
     document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeModal(); });
 
-    function renderPlayerModal(player){
-      const name = safe(player.PlayerName || player.Name || "Player");
-      const team = safe(player.Team || player.TeamName || "");
-      const photo = safe(player.PhotoURL) || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
-      const blurb = safe(player.Blurb || player.Why || player.Reason || player.Notes || "");
-      const coach = safe(player.CoachName);
+   function renderPlayerModal(player){
+  const name = formatPlayerName(player.PlayerName || player.Name || "Player");
+  const team = safe(player.Team || player.TeamName || "");
+  const photo = safe(player.PhotoURL) || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
+  const blurb = safe(player.Blurb || player.Why || player.Reason || player.Notes || "");
+  const coach = safe(player.CoachName);
 
-      openModal(`
-        <div class="profileHeader">
-          <div class="profilePhoto">
-            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
-          </div>
-          <div>
-            <h3 id="modalTitle" class="profileName">${name}</h3>
-            ${team ? `<div class="muted" style="margin-top:4px;">${team}</div>` : ""}
-            <div class="card" style="margin-top:12px;">
-              <div class="cardBody">
-                <div class="muted small">Coach’s Note${coach ? ` • ${coach}` : ""}</div>
-                <div style="margin-top:6px;">${blurb || "Write-up coming soon."}</div>
-              </div>
-            </div>
+  const meta = getMeta(team);
+  const teamStyle = meta.color ? `style="margin-top:4px; color:${meta.color}; font-weight:900;"` : `style="margin-top:4px;"`;
+
+  openModal(`
+    <div class="profileHeader">
+      <div class="profilePhoto">
+        <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
+      </div>
+      <div>
+        <h3 id="modalTitle" class="profileName">${name}</h3>
+        ${team ? `<div class="muted" ${teamStyle}>${team}</div>` : ""}
+        <div class="card" style="margin-top:12px;">
+          <div class="cardBody">
+            <div class="muted small">Coach’s Note${coach ? ` • ${coach}` : ""}</div>
+            <div style="margin-top:6px;">${blurb || "Write-up coming soon."}</div>
           </div>
         </div>
-      `);
-    }
+      </div>
+    </div>
+  `);
+}
 
     /* -------------------- Countdown -------------------- */
     const LEAGUE_START_DATE = new Date(2026, 3, 11); // Apr 11, 2026
