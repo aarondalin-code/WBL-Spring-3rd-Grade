@@ -1135,7 +1135,7 @@
   }
 
   function renderTakenByTeam(rosterRows, teamsRows, playerMap){
-    const onlySlug = safe(document.getElementById("takenTeamFilter")?.value);
+    const onlySlug = "";
 
     const el = document.getElementById("taken");
     const msg = document.getElementById("takenMsg");
@@ -1270,29 +1270,11 @@
     else sel.value = "";
   }
 
-  function populateTakenTeamOptions(teams){
-    const sel = document.getElementById("takenTeamFilter");
-    const prev = sel.value;
-
-    const opts = teams
-      .map(t => ({ slug: safe(t.TeamSlug), name: safe(t.TeamName) }))
-      .filter(t => t.slug && t.name)
-      .sort((a,b) => a.name.localeCompare(b.name));
-
-    sel.innerHTML =
-      `<option value="">All teams</option>` +
-      opts.map(t => `<option value="${escapeHtml(t.slug)}">${escapeHtml(t.name)}</option>`).join("");
-
-    if (opts.some(t => t.slug === prev)) sel.value = prev;
-    else sel.value = "";
-  }
-
   function clearFilters(){
     document.getElementById("pitcherFilter").value = "";
     document.getElementById("travelFilter").value = "";
     document.getElementById("levelFilter").value = "";
     document.getElementById("schoolFilter").value = "";
-    document.getElementById("takenTeamFilter").value = "";
     document.getElementById("springPitchingFilter").value = "";
     document.getElementById("springHittingFilter").value = "";
     document.getElementById("springThrowingFilter").value = "";
@@ -1470,7 +1452,7 @@
     });
 
     populateSchoolOptions(pool);
-    populateTakenTeamOptions(teams);
+   
 
     const playerMap = buildPlayerMap(pool);
 
@@ -1521,7 +1503,7 @@
 
     [
       "q",
-      "pitcherFilter","travelFilter","levelFilter","schoolFilter","takenTeamFilter",
+      "pitcherFilter","travelFilter","levelFilter","schoolFilter",
       "springPitchingFilter","springHittingFilter","springThrowingFilter","springFieldingFilter"
     ].forEach(id => {
       const el = document.getElementById(id);
