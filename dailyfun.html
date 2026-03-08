@@ -1,259 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Daily Fun | WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="styles.css?v=wbl2026-1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Fun • WBL 3rd Grade 2026</title>
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-dailyfun1" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVXQ5JN459"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VVXQ5JN459');
+  </script>
+
   <style>
-    .dailyFunWrap{
-      max-width:1200px;
-      margin:0 auto;
-      padding:24px 16px 48px;
-    }
-    
-    .dailyHero{
-      margin-bottom:18px;
+    .dailyFunPage .dailyIntroCard{
+      margin-bottom:16px;
     }
 
-    .dailyHero h1{
-      margin:0 0 8px;
+    .dailyFunPage .dailyIntroTitle{
+      font-size:1.35rem;
+      font-weight:900;
+      margin:0 0 6px;
     }
 
-    .dailyHero p{
+    .dailyFunPage .dailyIntroText{
+      color:#5b6472;
       margin:0;
-      color:#555;
     }
 
-    .dailyGrid{
+    .dailyFunPage .dailyFunGrid{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
+      grid-template-columns:repeat(2, minmax(0, 1fr));
       gap:16px;
       align-items:start;
+      margin-bottom:16px;
     }
 
-    .dailyCard{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:16px;
-      box-shadow:0 4px 14px rgba(0,0,0,.06);
-      overflow:hidden;
-    }
-
-    .dailyCardHead{
-      padding:14px 16px;
-      border-bottom:1px solid #eef0f3;
-      font-weight:800;
+    .dailyFunPage .dailySectionTitle{
       font-size:1.05rem;
+      font-weight:900;
+      margin:0 0 12px;
+      color:#122033;
     }
 
-    .dailyCardBody{
-      padding:16px;
-    }
-
-    .dailyHistoryDate{
+    .dailyFunPage .dailyHistoryDate{
       font-size:.95rem;
-      font-weight:700;
-      color:#666;
+      font-weight:800;
+      color:#5b6472;
       margin-bottom:6px;
     }
 
-    .dailyHistoryTitle{
+    .dailyFunPage .dailyHistoryTitle{
       font-size:1.1rem;
-      font-weight:800;
+      font-weight:900;
       margin-bottom:8px;
+      color:#122033;
     }
 
-    .dailyQuote{
+    .dailyFunPage .dailyQuote{
       font-size:1.15rem;
-      line-height:1.5;
+      line-height:1.55;
       margin-bottom:10px;
+      color:#122033;
     }
 
-    .dailyQuoteSpeaker{
-      font-weight:700;
-      color:#555;
+    .dailyFunPage .dailyQuoteSpeaker{
+      font-weight:800;
+      color:#5b6472;
     }
 
-    .featuredQ{
+    .dailyFunPage .featuredQ{
       display:flex;
       flex-direction:column;
       gap:10px;
     }
 
-    .featuredQLabel{
-      font-size:.85rem;
+    .dailyFunPage .featuredQLabel{
+      font-size:.82rem;
       text-transform:uppercase;
-      letter-spacing:.04em;
-      color:#666;
+      letter-spacing:.05em;
+      color:#5b6472;
+      font-weight:900;
+    }
+
+    .dailyFunPage .featuredQName{
       font-weight:800;
+      color:#122033;
     }
 
-    .featuredQName{
-      font-weight:700;
+    .dailyFunPage .featuredQQuestion{
+      font-size:1.03rem;
+      line-height:1.45;
+      color:#122033;
     }
 
-    .featuredQQuestion{
-      font-size:1.05rem;
-    }
-
-    .featuredQAnswer{
-      background:#f8fafc;
-      border:1px solid #e5e7eb;
+    .dailyFunPage .featuredQAnswer{
+      background:#f7f9fc;
+      border:1px solid #dfe5ee;
       border-radius:12px;
       padding:12px;
+      line-height:1.5;
     }
 
-    .questionForm{
+    .dailyFunPage .questionForm{
       display:grid;
       gap:12px;
     }
 
-    .questionFormRow{
+    .dailyFunPage .questionFormRow{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
     }
 
-    .questionForm input,
-    .questionForm textarea{
+    .dailyFunPage .questionForm input,
+    .dailyFunPage .questionForm textarea{
       width:100%;
-      border:1px solid #d1d5db;
+      border:1px solid #cfd8e3;
       border-radius:12px;
       padding:12px 14px;
       font:inherit;
       box-sizing:border-box;
+      background:#fff;
     }
 
-    .questionForm textarea{
+    .dailyFunPage .questionForm textarea{
       min-height:120px;
       resize:vertical;
     }
 
-    .questionForm button{
+    .dailyFunPage .questionForm button{
       border:0;
       border-radius:12px;
       padding:12px 16px;
-      font-weight:800;
+      font-weight:900;
       cursor:pointer;
       background:#0f766e;
       color:#fff;
     }
 
-    .questionFormNote,
-    .submitMsg{
+    .dailyFunPage .questionFormNote,
+    .dailyFunPage .submitMsg{
       font-size:.95rem;
-      color:#555;
+      color:#5b6472;
     }
 
-    .archiveList{
+    .dailyFunPage .archiveList{
       display:grid;
       gap:12px;
     }
 
-    .archiveItem{
-      border:1px solid #e5e7eb;
+    .dailyFunPage .archiveItem{
+      border:1px solid #dfe5ee;
       border-radius:12px;
       padding:12px;
       background:#fff;
     }
 
-    .archiveMeta{
+    .dailyFunPage .archiveMeta{
       font-size:.9rem;
-      color:#666;
+      color:#5b6472;
       margin-bottom:6px;
-      font-weight:700;
+      font-weight:800;
     }
 
-    .archiveQ{
+    .dailyFunPage .archiveQ{
       margin-bottom:8px;
+      line-height:1.45;
+      color:#122033;
     }
 
-    .archiveA{
-      color:#333;
+    .dailyFunPage .archiveA{
+      color:#122033;
+      line-height:1.45;
     }
 
     @media (max-width: 900px){
-      .dailyGrid{
+      .dailyFunPage .dailyFunGrid{
         grid-template-columns:1fr;
       }
 
-      .questionFormRow{
+      .dailyFunPage .questionFormRow{
         grid-template-columns:1fr;
       }
     }
   </style>
 </head>
-<body>
-  <main class="dailyFunWrap">
-    <section class="dailyHero">
+
+<body class="watermarkPage dailyFunPage hasHamburger">
+  <header class="siteHeader">
+    <div class="navWrap">
+      <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="navOverlay" aria-hidden="true"></div>
+
+      <nav class="nav" id="siteNav">
+        <a href="./index.html">Home</a>
+        <a href="./schedule.html">Schedule/Scores</a>
+        <a href="./standings.html">Standings</a>
+        <a href="./teams.html">Teams</a>
+        <a href="./playoffs.html">Playoffs</a>
+        <a href="./practice.html">Practice Drills</a>
+        <a href="./rules.html">Rules</a>
+        <a href="./contacts.html">Contacts</a>
+        <a href="./gallery.html">Gallery</a>
+        <a href="./uploads.html">Uploads</a>
+        <a href="./DailyFun.html" class="active">Daily Fun</a>
+      </nav>
+    </div>
+
+    <div class="brandCenter">
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" />
       <h1>Daily Fun</h1>
-      <p>Baseball history, famous quotes, and questions from WBL kids.</p>
-    </section>
+      <div class="tagline">WBL 3rd Grade</div>
+    </div>
+  </header>
 
-    <section class="dailyGrid">
-      <article class="dailyCard">
-        <div class="dailyCardHead">This Day in Baseball History</div>
-        <div class="dailyCardBody" id="historyCard">
-          Loading today’s baseball history...
+  <main class="wrap">
+    <section class="docSection">
+      <article class="card dailyIntroCard">
+        <div class="cardBody">
+          <h2 class="dailyIntroTitle">Daily Fun</h2>
+          <p class="dailyIntroText">Baseball history, famous quotes, and questions from WBL kids.</p>
         </div>
       </article>
 
-      <article class="dailyCard">
-        <div class="dailyCardHead">Quote of the Day</div>
-        <div class="dailyCardBody" id="quoteCard">
-          Loading today’s quote...
-        </div>
-      </article>
+      <div class="dailyFunGrid">
+        <article class="card">
+          <div class="cardBody">
+            <div class="dailySectionTitle">This Day in Baseball History</div>
+            <div id="historyCard">Loading today’s baseball history...</div>
+          </div>
+        </article>
 
-      <article class="dailyCard">
-        <div class="dailyCardHead">Featured Kid Question</div>
-        <div class="dailyCardBody" id="featuredQuestionCard">
-          Loading featured question...
-        </div>
-      </article>
+        <article class="card">
+          <div class="cardBody">
+            <div class="dailySectionTitle">Quote of the Day</div>
+            <div id="quoteCard">Loading today’s quote...</div>
+          </div>
+        </article>
 
-      <article class="dailyCard">
-        <div class="dailyCardHead">Ask a Baseball Question</div>
-        <div class="dailyCardBody">
-          <form id="kidQuestionForm" class="questionForm">
-            <div class="questionFormRow">
-              <input type="text" id="kidName" name="kidName" maxlength="30" placeholder="First name or nickname" required />
-              <input type="text" id="teamName" name="teamName" maxlength="40" placeholder="Team name" />
-            </div>
-            <textarea id="kidQuestion" name="kidQuestion" maxlength="300" placeholder="Ask your baseball question here..." required></textarea>
-            <button type="submit">Send Question</button>
-            <div class="questionFormNote">Questions go into a private review queue before anything is shown on the site.</div>
-            <div class="submitMsg" id="submitMsg"></div>
-          </form>
-        </div>
-      </article>
-    </section>
+        <article class="card">
+          <div class="cardBody">
+            <div class="dailySectionTitle">Featured Kid Question</div>
+            <div id="featuredQuestionCard">Loading featured question...</div>
+          </div>
+        </article>
 
-    <section style="margin-top:16px;">
-      <article class="dailyCard">
-        <div class="dailyCardHead">More Kids Ask, Coaches Answer</div>
-        <div class="dailyCardBody" id="qaArchive">
-          Loading more questions...
+        <article class="card">
+          <div class="cardBody">
+            <div class="dailySectionTitle">Ask a Baseball Question</div>
+
+            <form id="kidQuestionForm" class="questionForm">
+              <div class="questionFormRow">
+                <input
+                  type="text"
+                  id="kidName"
+                  name="kidName"
+                  maxlength="30"
+                  placeholder="First name or nickname"
+                  required
+                />
+                <input
+                  type="text"
+                  id="teamName"
+                  name="teamName"
+                  maxlength="40"
+                  placeholder="Team name"
+                />
+              </div>
+
+              <textarea
+                id="kidQuestion"
+                name="kidQuestion"
+                maxlength="300"
+                placeholder="Ask your baseball question here..."
+                required
+              ></textarea>
+
+              <button type="submit">Send Question</button>
+              <div class="questionFormNote">Questions go into a private review queue before anything is shown on the site.</div>
+              <div class="submitMsg" id="submitMsg"></div>
+            </form>
+          </div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="cardBody">
+          <div class="dailySectionTitle">More Kids Ask, Coaches Answer</div>
+          <div id="qaArchive">Loading more questions...</div>
         </div>
       </article>
     </section>
   </main>
 
   <script src="./data.js"></script>
-<script>
-const HISTORY_CSV_URL = window.SHEET?.BASEBALL_HISTORY_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=214692870&single=true&output=csv";
+  <script>
+    const HISTORY_CSV_URL =
+      window.SHEET?.BASEBALL_HISTORY_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=214692870&single=true&output=csv";
 
-const QUOTES_CSV_URL = window.SHEET?.BASEBALL_QUOTES_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1596942991&single=true&output=csv";
+    const QUOTES_CSV_URL =
+      window.SHEET?.BASEBALL_QUOTES_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1596942991&single=true&output=csv";
 
-const QUESTIONS_CSV_URL = window.SHEET?.KIDS_QUESTIONS_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=518767165&single=true&output=csv";
+    const QUESTIONS_CSV_URL =
+      window.SHEET?.KIDS_QUESTIONS_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=518767165&single=true&output=csv";
 
-const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://script.google.com/macros/s/AKfycbzI_HtEsDPhd53HKPO1Rr_xhWl6BFAgGbHVqb0mhk2qukvUz23d8xalewu0juBBlMQEPg/exec";
- 
+    const QUESTION_SUBMIT_URL =
+      window.SHEET?.KIDS_QUESTIONS_API_URL ||
+      "https://script.google.com/macros/s/AKfycbzI_HtEsDPhd53HKPO1Rr_xhWl6BFAgGbHVqb0mhk2qukvUz23d8xalewu0juBBlMQEPg/exec";
 
     async function fetchCsv(url){
       const res = await fetch(url, { cache: "no-store" });
-      if(!res.ok) throw new Error("Failed to fetch CSV");
+      if (!res.ok) throw new Error("Failed to fetch CSV");
       return await res.text();
     }
 
@@ -263,26 +329,24 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
       let cell = "";
       let inQuotes = false;
 
-      for(let i = 0; i < text.length; i++){
+      for (let i = 0; i < text.length; i++) {
         const c = text[i];
         const next = text[i + 1];
 
-        if(c === '"'){
-          if(inQuotes && next === '"'){
+        if (c === '"') {
+          if (inQuotes && next === '"') {
             cell += '"';
             i++;
           } else {
             inQuotes = !inQuotes;
           }
-        } else if(c === "," && !inQuotes){
+        } else if (c === "," && !inQuotes) {
           row.push(cell);
           cell = "";
-        } else if((c === "\n" || c === "\r") && !inQuotes){
-          if(c === "\r" && next === "\n") i++;
+        } else if ((c === "\n" || c === "\r") && !inQuotes) {
+          if (c === "\r" && next === "\n") i++;
           row.push(cell);
-          if(row.some(v => v !== "")){
-            rows.push(row);
-          }
+          if (row.some(v => v !== "")) rows.push(row);
           row = [];
           cell = "";
         } else {
@@ -290,12 +354,12 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
         }
       }
 
-      if(cell.length || row.length){
+      if (cell.length || row.length) {
         row.push(cell);
         rows.push(row);
       }
 
-      if(!rows.length) return [];
+      if (!rows.length) return [];
 
       const headers = rows[0].map(h => String(h).trim());
       return rows.slice(1).map(r => {
@@ -323,7 +387,7 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
 
     async function loadHistory(){
       const el = document.getElementById("historyCard");
-      try{
+      try {
         const csv = await fetchCsv(HISTORY_CSV_URL);
         const rows = parseCsv(csv);
         const key = getMonthDayKey();
@@ -333,7 +397,7 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
           String(r.Active || "").toUpperCase() !== "FALSE"
         );
 
-        if(!item){
+        if (!item) {
           el.innerHTML = "<div>No baseball history item has been added for today yet.</div>";
           return;
         }
@@ -343,7 +407,7 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
           <div class="dailyHistoryTitle">${item.Title || ""}</div>
           <div>${item.Text || ""}</div>
         `;
-      }catch(err){
+      } catch (err) {
         el.textContent = "Unable to load baseball history right now.";
         console.error(err);
       }
@@ -351,14 +415,14 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
 
     async function loadQuote(){
       const el = document.getElementById("quoteCard");
-      try{
+      try {
         const csv = await fetchCsv(QUOTES_CSV_URL);
         const rows = parseCsv(csv).filter(r =>
           String(r.Active || "").toUpperCase() !== "FALSE" &&
           String(r.Quote || "").trim()
         );
 
-        if(!rows.length){
+        if (!rows.length) {
           el.textContent = "No quote is available yet.";
           return;
         }
@@ -370,7 +434,7 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
           <div class="dailyQuote">“${item.Quote || ""}”</div>
           <div class="dailyQuoteSpeaker">— ${item.Speaker || "Unknown"}</div>
         `;
-      }catch(err){
+      } catch (err) {
         el.textContent = "Unable to load quote right now.";
         console.error(err);
       }
@@ -380,14 +444,14 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
       const el = document.getElementById("featuredQuestionCard");
       const archiveEl = document.getElementById("qaArchive");
 
-      try{
+      try {
         const csv = await fetchCsv(QUESTIONS_CSV_URL);
         const rows = parseCsv(csv).filter(r =>
           String(r.Status || "").toLowerCase() === "approved" &&
           String(r.DisplayOnSite || "").toUpperCase() === "TRUE"
         );
 
-        if(!rows.length){
+        if (!rows.length) {
           el.textContent = "No approved questions have been posted yet.";
           archiveEl.textContent = "No approved questions have been posted yet.";
           return;
@@ -411,7 +475,7 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
           </div>
         `;
 
-        if(!archive.length){
+        if (!archive.length) {
           archiveEl.innerHTML = "<div>No more answered questions yet.</div>";
           return;
         }
@@ -427,7 +491,7 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
             `).join("")}
           </div>
         `;
-      }catch(err){
+      } catch (err) {
         el.textContent = "Unable to load questions right now.";
         archiveEl.textContent = "Unable to load questions right now.";
         console.error(err);
@@ -442,19 +506,19 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
       const teamName = document.getElementById("teamName").value.trim();
       const kidQuestion = document.getElementById("kidQuestion").value.trim();
 
-      if(!kidName || !kidQuestion){
+      if (!kidName || !kidQuestion) {
         msg.textContent = "Please enter a name and a question.";
         return;
       }
 
-      if(!QUESTION_SUBMIT_URL || QUESTION_SUBMIT_URL.includes("PASTE_")){
+      if (!QUESTION_SUBMIT_URL || QUESTION_SUBMIT_URL.includes("PASTE_")) {
         msg.textContent = "Submission form is not connected yet.";
         return;
       }
 
       msg.textContent = "Sending your question...";
 
-      try{
+      try {
         const formData = new URLSearchParams();
         formData.append("kidName", kidName);
         formData.append("teamName", teamName);
@@ -466,11 +530,11 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
           body: formData.toString()
         });
 
-        if(!res.ok) throw new Error("Submit failed");
+        if (!res.ok) throw new Error("Submit failed");
 
         document.getElementById("kidQuestionForm").reset();
         msg.textContent = "Thanks! Your question was sent for review.";
-      }catch(err){
+      } catch (err) {
         msg.textContent = "Sorry, there was a problem sending your question.";
         console.error(err);
       }
@@ -481,6 +545,8 @@ const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "https://scr
     loadHistory();
     loadQuote();
     loadFeaturedQuestion();
-</script>
+  </script>
+
+  <script src="./nav.js"></script>
 </body>
 </html>
