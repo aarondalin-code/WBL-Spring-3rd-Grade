@@ -3105,3 +3105,114 @@ body.watermarkPage::before{
     text-align:left;
   }
 }
+/* =========================================
+HOME PAGE LAYOUT TIGHTENING
+Paste at VERY BOTTOM of styles.css
+========================================= */
+
+/* 1) Make the two top snapshot sections feel balanced */
+.homeTwoCol{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+.homeTwoCol > .card{
+  height:100%;
+}
+
+.homeTwoCol > .card .cardBody{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+
+/* 2) Horizontal game cards for This Week + Last Week Finals */
+#thisWeekGames .miniGameCard,
+#lastWeekFinals .miniGameCard{
+  display:grid;
+  grid-template-columns: 130px minmax(0, 1fr) 88px;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  margin-top:10px;
+}
+
+#thisWeekGames .miniGameMeta,
+#lastWeekFinals .miniGameMeta{
+  margin:0;
+  line-height:1.25;
+}
+
+#thisWeekGames .miniMatchupRow,
+#lastWeekFinals .miniMatchupRow{
+  margin:0;
+  align-items:center;
+}
+
+#thisWeekGames .miniStatus,
+#lastWeekFinals .miniStatus{
+  margin:0;
+  text-align:right;
+  white-space:nowrap;
+}
+
+/* Slight tightening inside the matchup area */
+#thisWeekGames .miniMid,
+#lastWeekFinals .miniMid{
+  min-width:42px;
+}
+
+#thisWeekGames .miniTeamSide,
+#lastWeekFinals .miniTeamSide{
+  min-width:0;
+}
+
+#thisWeekGames .miniTeamSide .miniTeamName,
+#lastWeekFinals .miniTeamSide .miniTeamName{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* 3) League News in two columns on desktop */
+#newsList{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:14px;
+  align-items:start;
+}
+
+#newsList .card{
+  height:100%;
+}
+
+#newsList .cardBody{
+  height:100%;
+}
+
+/* 4) Tablet/mobile fallbacks */
+@media (max-width: 900px){
+  .homeTwoCol{
+    grid-template-columns: 1fr;
+  }
+
+  #newsList{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px){
+  #thisWeekGames .miniGameCard,
+  #lastWeekFinals .miniGameCard{
+    grid-template-columns: 1fr;
+    gap:8px;
+  }
+
+  #thisWeekGames .miniStatus,
+  #lastWeekFinals .miniStatus{
+    text-align:left;
+    white-space:normal;
+  }
+}
