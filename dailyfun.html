@@ -244,10 +244,10 @@
     /* =========================
        YOUR GOOGLE SHEET CSV URLs
        Replace these with your actual published CSV links
-       ========================= */
-    const HISTORY_CSV_URL = "PASTE_HISTORY_CSV_URL_HERE";
-    const QUOTES_CSV_URL = "PASTE_QUOTES_CSV_URL_HERE";
-    const QUESTIONS_CSV_URL = "PASTE_QUESTIONS_CSV_URL_HERE";
+   const HISTORY_CSV_URL = window.SHEET?.BASEBALL_HISTORY_CSV_URL || "";
+const QUOTES_CSV_URL = window.SHEET?.BASEBALL_QUOTES_CSV_URL || "";
+const QUESTIONS_CSV_URL = window.SHEET?.KIDS_QUESTIONS_CSV_URL || "";
+const QUESTION_SUBMIT_URL = window.SHEET?.KIDS_QUESTIONS_API_URL || "";
 
     /* Google Apps Script endpoint for form submissions */
     const QUESTION_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzI_HtEsDPhd53HKPO1Rr_xhWl6BFAgGbHVqb0mhk2qukvUz23d8xalewu0juBBlMQEPg/exec";
