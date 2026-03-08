@@ -16,178 +16,254 @@
   </script>
 
   <style>
-    .dailyFunPage .dailyIntroCard{
-      margin-bottom:16px;
-    }
+  .dailyFunPage .brandCenter{
+    text-align:center;
+    align-items:center;
+    justify-content:center;
+  }
 
-    .dailyFunPage .dailyIntroTitle{
-      font-size:1.35rem;
-      font-weight:900;
-      margin:0 0 6px;
-    }
+  .dailyFunPage .brandCenter h1{
+    text-align:center;
+    margin-left:auto;
+    margin-right:auto;
+  }
 
-    .dailyFunPage .dailyIntroText{
-      color:#5b6472;
-      margin:0;
-    }
+  .dailyFunPage .tagline{
+    text-align:center;
+  }
 
+  .dailyFunPage .dailyIntroCard{
+    margin-bottom:18px;
+  }
+
+  .dailyFunPage .dailyIntroCard .cardBody{
+    text-align:center;
+    padding:22px 20px;
+  }
+
+  .dailyFunPage .dailyIntroTitle{
+    font-size:1.5rem;
+    font-weight:900;
+    margin:0 0 6px;
+    color:#122033;
+  }
+
+  .dailyFunPage .dailyIntroText{
+    color:#5b6472;
+    margin:0;
+    max-width:700px;
+    margin-left:auto;
+    margin-right:auto;
+    line-height:1.5;
+  }
+
+  .dailyFunPage .dailyFunGrid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:18px;
+    align-items:stretch;
+    margin-bottom:18px;
+  }
+
+  .dailyFunPage .dailyFunGrid > .card{
+    height:100%;
+  }
+
+  .dailyFunPage .dailyFunGrid > .card .cardBody{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .dailyFunPage .card{
+    box-shadow:0 8px 24px rgba(10, 37, 64, 0.08);
+    border:1px solid #dde6f0;
+  }
+
+  .dailyFunPage .dailyFunGrid > .card::before,
+  .dailyFunPage .dailyArchiveCard::before,
+  .dailyFunPage .dailyIntroCard::before{
+    content:"";
+    display:block;
+    height:5px;
+    background:linear-gradient(90deg, #1d4ed8, #60a5fa);
+  }
+
+  .dailyFunPage .dailySectionTitle{
+    font-size:1.08rem;
+    font-weight:900;
+    margin:0 0 14px;
+    color:#122033;
+    letter-spacing:.01em;
+  }
+
+  .dailyFunPage .dailyHistoryDate{
+    font-size:.95rem;
+    font-weight:800;
+    color:#5b6472;
+    margin-bottom:6px;
+  }
+
+  .dailyFunPage .dailyHistoryTitle{
+    font-size:1.14rem;
+    font-weight:900;
+    margin-bottom:8px;
+    color:#122033;
+    line-height:1.35;
+  }
+
+  .dailyFunPage .dailyQuote{
+    font-size:1.16rem;
+    line-height:1.6;
+    margin-bottom:12px;
+    color:#122033;
+  }
+
+  .dailyFunPage .dailyQuoteSpeaker{
+    font-weight:800;
+    color:#5b6472;
+  }
+
+  .dailyFunPage .featuredQ{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    flex:1;
+  }
+
+  .dailyFunPage .featuredQLabel{
+    font-size:.82rem;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:#5b6472;
+    font-weight:900;
+  }
+
+  .dailyFunPage .featuredQName{
+    font-weight:800;
+    color:#122033;
+  }
+
+  .dailyFunPage .featuredQQuestion{
+    font-size:1.03rem;
+    line-height:1.5;
+    color:#122033;
+  }
+
+  .dailyFunPage .featuredQAnswer{
+    background:#f7f9fc;
+    border:1px solid #dfe5ee;
+    border-radius:12px;
+    padding:12px;
+    line-height:1.55;
+    margin-top:auto;
+  }
+
+  .dailyFunPage .questionForm{
+    display:grid;
+    gap:12px;
+    flex:1;
+  }
+
+  .dailyFunPage .questionFormRow{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .dailyFunPage .questionForm input,
+  .dailyFunPage .questionForm textarea{
+    width:100%;
+    border:1px solid #cfd8e3;
+    border-radius:12px;
+    padding:12px 14px;
+    font:inherit;
+    box-sizing:border-box;
+    background:#fff;
+  }
+
+  .dailyFunPage .questionForm input:focus,
+  .dailyFunPage .questionForm textarea:focus{
+    outline:none;
+    border-color:#3b82f6;
+    box-shadow:0 0 0 3px rgba(59,130,246,.15);
+  }
+
+  .dailyFunPage .questionForm textarea{
+    min-height:120px;
+    resize:vertical;
+  }
+
+  .dailyFunPage .questionForm button{
+    border:0;
+    border-radius:12px;
+    padding:12px 16px;
+    font-weight:900;
+    cursor:pointer;
+    background:#1d4ed8;
+    color:#fff;
+    box-shadow:0 6px 14px rgba(29,78,216,.22);
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+  }
+
+  .dailyFunPage .questionForm button:hover{
+    background:#1e40af;
+    transform:translateY(-1px);
+    box-shadow:0 8px 18px rgba(29,78,216,.28);
+  }
+
+  .dailyFunPage .questionFormNote,
+  .dailyFunPage .submitMsg{
+    font-size:.95rem;
+    color:#5b6472;
+    line-height:1.45;
+  }
+
+  .dailyFunPage .dailyArchiveCard{
+    margin-top:2px;
+  }
+
+  .dailyFunPage .archiveList{
+    display:grid;
+    gap:12px;
+  }
+
+  .dailyFunPage .archiveItem{
+    border:1px solid #dfe5ee;
+    border-radius:12px;
+    padding:12px;
+    background:#fff;
+    box-shadow:0 2px 8px rgba(10,37,64,.04);
+  }
+
+  .dailyFunPage .archiveMeta{
+    font-size:.9rem;
+    color:#5b6472;
+    margin-bottom:6px;
+    font-weight:800;
+  }
+
+  .dailyFunPage .archiveQ{
+    margin-bottom:8px;
+    line-height:1.5;
+    color:#122033;
+  }
+
+  .dailyFunPage .archiveA{
+    color:#122033;
+    line-height:1.5;
+  }
+
+  @media (max-width: 900px){
     .dailyFunPage .dailyFunGrid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:16px;
-      align-items:start;
-      margin-bottom:16px;
-    }
-
-    .dailyFunPage .dailySectionTitle{
-      font-size:1.05rem;
-      font-weight:900;
-      margin:0 0 12px;
-      color:#122033;
-    }
-
-    .dailyFunPage .dailyHistoryDate{
-      font-size:.95rem;
-      font-weight:800;
-      color:#5b6472;
-      margin-bottom:6px;
-    }
-
-    .dailyFunPage .dailyHistoryTitle{
-      font-size:1.1rem;
-      font-weight:900;
-      margin-bottom:8px;
-      color:#122033;
-    }
-
-    .dailyFunPage .dailyQuote{
-      font-size:1.15rem;
-      line-height:1.55;
-      margin-bottom:10px;
-      color:#122033;
-    }
-
-    .dailyFunPage .dailyQuoteSpeaker{
-      font-weight:800;
-      color:#5b6472;
-    }
-
-    .dailyFunPage .featuredQ{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .dailyFunPage .featuredQLabel{
-      font-size:.82rem;
-      text-transform:uppercase;
-      letter-spacing:.05em;
-      color:#5b6472;
-      font-weight:900;
-    }
-
-    .dailyFunPage .featuredQName{
-      font-weight:800;
-      color:#122033;
-    }
-
-    .dailyFunPage .featuredQQuestion{
-      font-size:1.03rem;
-      line-height:1.45;
-      color:#122033;
-    }
-
-    .dailyFunPage .featuredQAnswer{
-      background:#f7f9fc;
-      border:1px solid #dfe5ee;
-      border-radius:12px;
-      padding:12px;
-      line-height:1.5;
-    }
-
-    .dailyFunPage .questionForm{
-      display:grid;
-      gap:12px;
+      grid-template-columns:1fr;
     }
 
     .dailyFunPage .questionFormRow{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
+      grid-template-columns:1fr;
     }
-
-    .dailyFunPage .questionForm input,
-    .dailyFunPage .questionForm textarea{
-      width:100%;
-      border:1px solid #cfd8e3;
-      border-radius:12px;
-      padding:12px 14px;
-      font:inherit;
-      box-sizing:border-box;
-      background:#fff;
-    }
-
-    .dailyFunPage .questionForm textarea{
-      min-height:120px;
-      resize:vertical;
-    }
-
-    .dailyFunPage .questionForm button{
-      border:0;
-      border-radius:12px;
-      padding:12px 16px;
-      font-weight:900;
-      cursor:pointer;
-      background:#0f766e;
-      color:#fff;
-    }
-
-    .dailyFunPage .questionFormNote,
-    .dailyFunPage .submitMsg{
-      font-size:.95rem;
-      color:#5b6472;
-    }
-
-    .dailyFunPage .archiveList{
-      display:grid;
-      gap:12px;
-    }
-
-    .dailyFunPage .archiveItem{
-      border:1px solid #dfe5ee;
-      border-radius:12px;
-      padding:12px;
-      background:#fff;
-    }
-
-    .dailyFunPage .archiveMeta{
-      font-size:.9rem;
-      color:#5b6472;
-      margin-bottom:6px;
-      font-weight:800;
-    }
-
-    .dailyFunPage .archiveQ{
-      margin-bottom:8px;
-      line-height:1.45;
-      color:#122033;
-    }
-
-    .dailyFunPage .archiveA{
-      color:#122033;
-      line-height:1.45;
-    }
-
-    @media (max-width: 900px){
-      .dailyFunPage .dailyFunGrid{
-        grid-template-columns:1fr;
-      }
-
-      .dailyFunPage .questionFormRow{
-        grid-template-columns:1fr;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 
 <body class="watermarkPage dailyFunPage hasHamburger">
@@ -290,14 +366,12 @@
         </article>
       </div>
 
-      <article class="card">
-        <div class="cardBody">
-          <div class="dailySectionTitle">More Kids Ask, Coaches Answer</div>
-          <div id="qaArchive">Loading more questions...</div>
-        </div>
-      </article>
-    </section>
-  </main>
+  <article class="card dailyArchiveCard">
+  <div class="cardBody">
+    <div class="dailySectionTitle">More Kids Ask, Coaches Answer</div>
+    <div id="qaArchive">Loading more questions...</div>
+  </div>
+</article>
 
   <script src="./data.js"></script>
   <script>
