@@ -1,1 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Daily Fun | WBL 3rd Grade 2026</title>
+  <link rel="stylesheet" href="styles.css?v=wbl2026-1" />
+  <style>
+    .dailyFunWrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:24px 16px 48px;
+    }
 
+    .dailyHero{
+      margin-bottom:18px;
+    }
+
+    .dailyHero h1{
+      margin:0 0 8px;
+    }
+
+    .dailyHero p{
+      margin:0;
+      color:#555;
+    }
+
+    .dailyGrid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+      align-items:start;
+    }
+
+    .dailyCard{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:16px;
+      box-shadow:0 4px 14px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+
+    .dailyCardHead{
+      padding:14px 16px;
+      border-bottom:1px solid #eef0f3;
+      font-weight:800;
+      font-size:1.05rem;
+    }
+
+    .dailyCardBody{
+      padding:16px;
+    }
+
+    .dailyHistoryDate{
+      font-size:.95rem;
+      font-weight:700;
+      color:#666;
+      margin-bottom:6px;
+    }
+
+    .dailyHistoryTitle{
+      font-size:1.1rem;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .dailyQuote{
+      font-size:1.15rem;
+      line-height:1.5;
+      margin-bottom:10px;
+    }
+
+    .dailyQuoteSpeaker{
+      font-weight:700;
+      color:#555;
+    }
+
+    .featuredQ{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .featuredQLabel{
+      font-size:.85rem;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      color:#666;
+      font-weight:800;
+    }
+
+    .featuredQName{
+      font-weight:700;
+    }
+
+    .featuredQQuestion{
+      font-size:1.05rem;
+    }
+
+    .featuredQAnswer{
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .questionForm{
+      display:grid;
+      gap:12px;
+    }
+
+    .questionFormRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .questionForm input,
+    .questionForm textarea{
+      width:100%;
+      border:1px solid #d1d5db;
+      border-radius:12px;
+      padding:12px 14px;
+      font:inherit;
+      box-sizing:border-box;
+    }
+
+    .questionForm textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .questionForm button{
+      border:0;
+      border-radius:12px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      background:#0f766e;
+      color:#fff;
+    }
+
+    .questionFormNote,
+    .submitMsg{
+      font-size:.95rem;
+      color:#555;
+    }
+
+    .archiveList{
+      display:grid;
+      gap:12px;
+    }
+
+    .archiveItem{
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+    }
+
+    .archiveMeta{
+      font-size:.9rem;
+      color:#666;
+      margin-bottom:6px;
+      font-weight:700;
+    }
+
+    .archiveQ{
+      margin-bottom:8px;
+    }
+
+    .archiveA{
+      color:#333;
+    }
+
+    @media (max-width: 900px){
+      .dailyGrid{
+        grid-template-columns:1fr;
+      }
+
+      .questionFormRow{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="dailyFunWrap">
+    <section class="dailyHero">
+      <h1>Daily Fun</h1>
+      <p>Baseball history, famous quotes, and questions from WBL kids.</p>
+    </section>
+
+    <section class="dailyGrid">
+      <article class="dailyCard">
+        <div class="dailyCardHead">This Day in Baseball History</div>
+        <div class="dailyCardBody" id="historyCard">
+          Loading today’s baseball history...
+        </div>
+      </article>
+
+      <article class="dailyCard">
+        <div class="dailyCardHead">Quote of the Day</div>
+        <div class="dailyCardBody" id="quoteCard">
+          Loading today’s quote...
+        </div>
+      </article>
+
+      <article class="dailyCard">
+        <div class="dailyCardHead">Featured Kid Question</div>
+        <div class="dailyCardBody" id="featuredQuestionCard">
+          Loading featured question...
+        </div>
+      </article>
+
+      <article class="dailyCard">
+        <div class="dailyCardHead">Ask a Baseball Question</div>
+        <div class="dailyCardBody">
+          <form id="kidQuestionForm" class="questionForm">
+            <div class="questionFormRow">
+              <input type="text" id="kidName" name="kidName" maxlength="30" placeholder="First name or nickname" required />
+              <input type="text" id="teamName" name="teamName" maxlength="40" placeholder="Team name" />
+            </div>
+            <textarea id="kidQuestion" name="kidQuestion" maxlength="300" placeholder="Ask your baseball question here..." required></textarea>
+            <button type="submit">Send Question</button>
+            <div class="questionFormNote">Questions go into a private review queue before anything is shown on the site.</div>
+            <div class="submitMsg" id="submitMsg"></div>
+          </form>
+        </div>
+      </article>
+    </section>
+
+    <section style="margin-top:16px;">
+      <article class="dailyCard">
+        <div class="dailyCardHead">More Kids Ask, Coaches Answer</div>
+        <div class="dailyCardBody" id="qaArchive">
+          Loading more questions...
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    /* =========================
+       YOUR GOOGLE SHEET CSV URLs
+       Replace these with your actual published CSV links
+       ========================= */
+    const HISTORY_CSV_URL = "PASTE_HISTORY_CSV_URL_HERE";
+    const QUOTES_CSV_URL = "PASTE_QUOTES_CSV_URL_HERE";
+    const QUESTIONS_CSV_URL = "PASTE_QUESTIONS_CSV_URL_HERE";
+
+    /* Google Apps Script endpoint for form submissions */
+    const QUESTION_SUBMIT_URL = "PASTE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    async function fetchCsv(url){
+      const res = await fetch(url, { cache: "no-store" });
+      if(!res.ok) throw new Error("Failed to fetch CSV");
+      return await res.text();
+    }
+
+    function parseCsv(text){
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for(let i = 0; i < text.length; i++){
+        const c = text[i];
+        const next = text[i + 1];
+
+        if(c === '"'){
+          if(inQuotes && next === '"'){
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if(c === "," && !inQuotes){
+          row.push(cell);
+          cell = "";
+        } else if((c === "\n" || c === "\r") && !inQuotes){
+          if(c === "\r" && next === "\n") i++;
+          row.push(cell);
+          if(row.some(v => v !== "")){
+            rows.push(row);
+          }
+          row = [];
+          cell = "";
+        } else {
+          cell += c;
+        }
+      }
+
+      if(cell.length || row.length){
+        row.push(cell);
+        rows.push(row);
+      }
+
+      if(!rows.length) return [];
+
+      const headers = rows[0].map(h => String(h).trim());
+      return rows.slice(1).map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          obj[h] = (r[idx] || "").trim();
+        });
+        return obj;
+      });
+    }
+
+    function getMonthDayKey(){
+      const now = new Date();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      return `${mm}-${dd}`;
+    }
+
+    function dayOfYear(d){
+      const start = new Date(d.getFullYear(), 0, 0);
+      const diff = d - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
+    }
+
+    async function loadHistory(){
+      const el = document.getElementById("historyCard");
+      try{
+        const csv = await fetchCsv(HISTORY_CSV_URL);
+        const rows = parseCsv(csv);
+        const key = getMonthDayKey();
+
+        const item = rows.find(r =>
+          String(r.MonthDay || "").trim() === key &&
+          String(r.Active || "").toUpperCase() !== "FALSE"
+        );
+
+        if(!item){
+          el.innerHTML = "<div>No baseball history item has been added for today yet.</div>";
+          return;
+        }
+
+        el.innerHTML = `
+          <div class="dailyHistoryDate">${item.Year || ""}</div>
+          <div class="dailyHistoryTitle">${item.Title || ""}</div>
+          <div>${item.Text || ""}</div>
+        `;
+      }catch(err){
+        el.textContent = "Unable to load baseball history right now.";
+        console.error(err);
+      }
+    }
+
+    async function loadQuote(){
+      const el = document.getElementById("quoteCard");
+      try{
+        const csv = await fetchCsv(QUOTES_CSV_URL);
+        const rows = parseCsv(csv).filter(r =>
+          String(r.Active || "").toUpperCase() !== "FALSE" &&
+          String(r.Quote || "").trim()
+        );
+
+        if(!rows.length){
+          el.textContent = "No quote is available yet.";
+          return;
+        }
+
+        const index = dayOfYear(new Date()) % rows.length;
+        const item = rows[index];
+
+        el.innerHTML = `
+          <div class="dailyQuote">“${item.Quote || ""}”</div>
+          <div class="dailyQuoteSpeaker">— ${item.Speaker || "Unknown"}</div>
+        `;
+      }catch(err){
+        el.textContent = "Unable to load quote right now.";
+        console.error(err);
+      }
+    }
+
+    async function loadFeaturedQuestion(){
+      const el = document.getElementById("featuredQuestionCard");
+      const archiveEl = document.getElementById("qaArchive");
+
+      try{
+        const csv = await fetchCsv(QUESTIONS_CSV_URL);
+        const rows = parseCsv(csv).filter(r =>
+          String(r.Status || "").toLowerCase() === "approved" &&
+          String(r.DisplayOnSite || "").toUpperCase() === "TRUE"
+        );
+
+        if(!rows.length){
+          el.textContent = "No approved questions have been posted yet.";
+          archiveEl.textContent = "No approved questions have been posted yet.";
+          return;
+        }
+
+        const sorted = [...rows].sort((a, b) => {
+          const da = new Date(a.AnsweredAt || a.SubmittedAt || 0).getTime();
+          const db = new Date(b.AnsweredAt || b.SubmittedAt || 0).getTime();
+          return db - da;
+        });
+
+        const featured = sorted[0];
+        const archive = sorted.slice(1, 7);
+
+        el.innerHTML = `
+          <div class="featuredQ">
+            <div class="featuredQLabel">Featured Question</div>
+            <div class="featuredQName">${featured.KidName || "WBL Player"}${featured.Team ? " • " + featured.Team : ""}</div>
+            <div class="featuredQQuestion">${featured.Question || ""}</div>
+            <div class="featuredQAnswer"><strong>Answer:</strong> ${featured.Answer || ""}</div>
+          </div>
+        `;
+
+        if(!archive.length){
+          archiveEl.innerHTML = "<div>No more answered questions yet.</div>";
+          return;
+        }
+
+        archiveEl.innerHTML = `
+          <div class="archiveList">
+            ${archive.map(item => `
+              <div class="archiveItem">
+                <div class="archiveMeta">${item.KidName || "WBL Player"}${item.Team ? " • " + item.Team : ""}</div>
+                <div class="archiveQ"><strong>Q:</strong> ${item.Question || ""}</div>
+                <div class="archiveA"><strong>A:</strong> ${item.Answer || ""}</div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }catch(err){
+        el.textContent = "Unable to load questions right now.";
+        archiveEl.textContent = "Unable to load questions right now.";
+        console.error(err);
+      }
+    }
+
+    async function submitKidQuestion(evt){
+      evt.preventDefault();
+
+      const msg = document.getElementById("submitMsg");
+      const kidName = document.getElementById("kidName").value.trim();
+      const teamName = document.getElementById("teamName").value.trim();
+      const kidQuestion = document.getElementById("kidQuestion").value.trim();
+
+      if(!kidName || !kidQuestion){
+        msg.textContent = "Please enter a name and a question.";
+        return;
+      }
+
+      if(!QUESTION_SUBMIT_URL || QUESTION_SUBMIT_URL.includes("PASTE_")){
+        msg.textContent = "Submission form is not connected yet.";
+        return;
+      }
+
+      msg.textContent = "Sending your question...";
+
+      try{
+        const formData = new URLSearchParams();
+        formData.append("kidName", kidName);
+        formData.append("teamName", teamName);
+        formData.append("kidQuestion", kidQuestion);
+
+        const res = await fetch(QUESTION_SUBMIT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData.toString()
+        });
+
+        if(!res.ok) throw new Error("Submit failed");
+
+        document.getElementById("kidQuestionForm").reset();
+        msg.textContent = "Thanks! Your question was sent for review.";
+      }catch(err){
+        msg.textContent = "Sorry, there was a problem sending your question.";
+        console.error(err);
+      }
+    }
+
+    document.getElementById("kidQuestionForm").addEventListener("submit", submitKidQuestion);
+
+    loadHistory();
+    loadQuote();
+    loadFeaturedQuestion();
+  </script>
+</body>
+</html>
