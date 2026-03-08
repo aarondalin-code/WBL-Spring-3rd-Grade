@@ -15,296 +15,215 @@
     gtag('config', 'G-VVXQ5JN459');
   </script>
 
-  <style>
-    .dailyFunPage .brandCenter{
-      text-align:center;
-      align-items:center;
-      justify-content:center;
-    }
+<style>
 
-    .dailyFunPage .brandCenter h1{
-      text-align:center;
-      margin-left:auto;
-      margin-right:auto;
-    }
+.dailyFunPage{
+  --accent:#1d4ed8;
+  --accentLight:#dbeafe;
+  --softBg:#f8fafc;
+  --textDark:#1f2937;
+  --textSoft:#6b7280;
+}
 
-    .dailyFunPage .tagline{
-      text-align:center;
-    }
+.dailyFunPage .brandCenter{
+  text-align:center;
+}
 
-    .dailyFunPage .dailyIntroCard{
-      margin-bottom:18px;
-    }
+.dailyFunPage .brandCenter h1{
+  font-size:2.1rem;
+  letter-spacing:.03em;
+}
 
-    .dailyFunPage .dailyIntroCard .cardBody{
-      text-align:center;
-      padding:22px 20px;
-    }
+.dailyFunPage .dailyIntroCard .cardBody{
+  text-align:center;
+  padding:26px;
+}
 
-    .dailyFunPage .dailyIntroTitle{
-      font-size:1.5rem;
-      font-weight:900;
-      margin:0 0 6px;
-      color:#122033;
-    }
+.dailyFunPage .dailyIntroTitle{
+  font-size:1.6rem;
+  font-weight:900;
+  color:var(--accent);
+  margin-bottom:6px;
+}
 
-    .dailyFunPage .dailyIntroText{
-      color:#5b6472;
-      margin:0;
-      max-width:700px;
-      margin-left:auto;
-      margin-right:auto;
-      line-height:1.5;
-    }
+.dailyFunPage .dailyIntroText{
+  max-width:720px;
+  margin:auto;
+  line-height:1.6;
+  color:var(--textSoft);
+}
 
-    .dailyFunPage .dailyFunGrid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:18px;
-      align-items:stretch;
-      margin-bottom:18px;
-    }
+.dailyFunPage .dailyFunGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+  margin-bottom:18px;
+}
 
-    .dailyFunPage .dailyFunGrid > .card{
-      height:100%;
-    }
+.dailyFunPage .card{
+  border:1px solid #e2e8f0;
+  box-shadow:0 10px 28px rgba(0,0,0,.05);
+  border-radius:16px;
+  overflow:hidden;
+}
 
-    .dailyFunPage .dailyFunGrid > .card .cardBody{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
+.dailyFunPage .cardBody{
+  padding:18px;
+}
 
-    .dailyFunPage .card{
-      box-shadow:0 8px 24px rgba(10, 37, 64, 0.08);
-      border:1px solid #dde6f0;
-    }
+.dailyFunPage .dailySectionTitle{
+  font-size:1.15rem;
+  font-weight:900;
+  color:var(--accent);
+  margin-bottom:14px;
+  border-bottom:2px solid var(--accentLight);
+  padding-bottom:6px;
+}
 
-    .dailyFunPage .dailyFunGrid > .card::before,
-    .dailyFunPage .dailyArchiveCard::before,
-    .dailyFunPage .dailyIntroCard::before{
-      content:"";
-      display:block;
-      height:5px;
-      background:linear-gradient(90deg, #1d4ed8, #60a5fa);
-    }
+.dailyFunPage .dailyHistoryList{
+  display:grid;
+  gap:12px;
+}
 
-    .dailyFunPage .dailySectionTitle{
-      font-size:1.08rem;
-      font-weight:900;
-      margin:0 0 14px;
-      color:#122033;
-      letter-spacing:.01em;
-    }
+.dailyFunPage .dailyHistoryItem{
+  background:var(--softBg);
+  padding:12px;
+  border-radius:12px;
+}
 
-    .dailyFunPage .dailyHistoryList{
-      display:grid;
-      gap:12px;
-    }
+.dailyFunPage .dailyHistoryDate{
+  font-weight:800;
+  color:var(--accent);
+  margin-bottom:4px;
+}
 
-    .dailyFunPage .dailyHistoryItem{
-      padding:12px;
-      border:1px solid #dfe5ee;
-      border-radius:12px;
-      background:#fff;
-      box-shadow:0 2px 8px rgba(10,37,64,.04);
-    }
+.dailyFunPage .dailyHistoryTitle{
+  font-weight:800;
+  margin-bottom:6px;
+  color:var(--textDark);
+}
 
-    .dailyFunPage .dailyHistoryDate{
-      font-size:.95rem;
-      font-weight:800;
-      color:#5b6472;
-      margin-bottom:6px;
-    }
+.dailyFunPage .dailyHistoryText{
+  color:#374151;
+  line-height:1.5;
+}
 
-    .dailyFunPage .dailyHistoryTitle{
-      font-size:1.14rem;
-      font-weight:900;
-      margin-bottom:8px;
-      color:#122033;
-      line-height:1.35;
-    }
+.dailyFunPage .dailyQuote{
+  font-size:1.25rem;
+  line-height:1.6;
+  font-style:italic;
+  color:#111827;
+  margin-bottom:10px;
+}
 
-    .dailyFunPage .dailyHistoryText{
-      line-height:1.5;
-      color:#122033;
-    }
+.dailyFunPage .dailyQuoteSpeaker{
+  font-weight:800;
+  color:var(--accent);
+}
 
-    .dailyFunPage .dailyQuote{
-      font-size:1.16rem;
-      line-height:1.6;
-      margin-bottom:12px;
-      color:#122033;
-    }
+.dailyFunPage .dailyFactText{
+  font-size:1.2rem;
+  font-weight:800;
+  color:#111827;
+  line-height:1.6;
+  margin-bottom:8px;
+}
 
-    .dailyFunPage .dailyQuoteSpeaker{
-      font-weight:800;
-      color:#5b6472;
-    }
+.dailyFunPage .dailyFactCategory{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--textSoft);
+}
 
-    .dailyFunPage .dailyFactText{
-      font-size:1.08rem;
-      line-height:1.6;
-      color:#122033;
-      font-weight:700;
-      margin-bottom:10px;
-    }
+.dailyFunPage .featuredQName{
+  font-weight:800;
+  color:var(--accent);
+}
 
-    .dailyFunPage .dailyFactCategory{
-      font-size:.9rem;
-      color:#5b6472;
-      font-weight:700;
-    }
+.dailyFunPage .featuredQQuestion{
+  font-size:1.05rem;
+  line-height:1.6;
+}
 
-    .dailyFunPage .featuredQ{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      flex:1;
-    }
+.dailyFunPage .featuredQAnswer{
+  background:var(--softBg);
+  padding:12px;
+  border-radius:12px;
+  border-left:4px solid var(--accent);
+}
 
-    .dailyFunPage .featuredQLabel{
-      font-size:.82rem;
-      text-transform:uppercase;
-      letter-spacing:.05em;
-      color:#5b6472;
-      font-weight:900;
-    }
+.dailyFunPage .questionFormRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
 
-    .dailyFunPage .featuredQName{
-      font-weight:800;
-      color:#122033;
-    }
+.dailyFunPage .questionForm input,
+.dailyFunPage .questionForm textarea{
+  border:1px solid #d1d5db;
+  border-radius:12px;
+  padding:12px;
+  font-size:.95rem;
+}
 
-    .dailyFunPage .featuredQQuestion{
-      font-size:1.03rem;
-      line-height:1.5;
-      color:#122033;
-    }
+.dailyFunPage .questionForm textarea{
+  min-height:120px;
+}
 
-    .dailyFunPage .featuredQAnswer{
-      background:#f7f9fc;
-      border:1px solid #dfe5ee;
-      border-radius:12px;
-      padding:12px;
-      line-height:1.55;
-      margin-top:auto;
-    }
+.dailyFunPage .questionForm button{
+  background:var(--accent);
+  color:white;
+  font-weight:800;
+  border:none;
+  border-radius:12px;
+  padding:12px 16px;
+  cursor:pointer;
+  transition:all .15s ease;
+}
 
-    .dailyFunPage .questionForm{
-      display:grid;
-      gap:12px;
-      flex:1;
-    }
+.dailyFunPage .questionForm button:hover{
+  background:#1e40af;
+  transform:translateY(-1px);
+}
 
-    .dailyFunPage .questionFormRow{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
+.dailyFunPage .archiveItem{
+  background:var(--softBg);
+  border-radius:12px;
+  padding:12px;
+}
 
-    .dailyFunPage .questionForm input,
-    .dailyFunPage .questionForm textarea{
-      width:100%;
-      border:1px solid #cfd8e3;
-      border-radius:12px;
-      padding:12px 14px;
-      font:inherit;
-      box-sizing:border-box;
-      background:#fff;
-    }
+.dailyFunPage .archiveMeta{
+  font-weight:800;
+  color:var(--accent);
+}
 
-    .dailyFunPage .questionForm input:focus,
-    .dailyFunPage .questionForm textarea:focus{
-      outline:none;
-      border-color:#3b82f6;
-      box-shadow:0 0 0 3px rgba(59,130,246,.15);
-    }
+.dailyFunPage .archiveQ{
+  margin-top:4px;
+}
 
-    .dailyFunPage .questionForm textarea{
-      min-height:120px;
-      resize:vertical;
-    }
+.dailyFunPage .archiveA{
+  margin-top:6px;
+}
 
-    .dailyFunPage .questionForm button{
-      border:0;
-      border-radius:12px;
-      padding:12px 16px;
-      font-weight:900;
-      cursor:pointer;
-      background:#1d4ed8;
-      color:#fff;
-      box-shadow:0 6px 14px rgba(29,78,216,.22);
-      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
-    }
+.dailyFunPage .dailyAskCard{
+  grid-column:1 / -1;
+}
 
-    .dailyFunPage .questionForm button:hover{
-      background:#1e40af;
-      transform:translateY(-1px);
-      box-shadow:0 8px 18px rgba(29,78,216,.28);
-    }
+@media (max-width:900px){
+  .dailyFunPage .dailyFunGrid{
+    grid-template-columns:1fr;
+  }
 
-    .dailyFunPage .questionFormNote,
-    .dailyFunPage .submitMsg{
-      font-size:.95rem;
-      color:#5b6472;
-      line-height:1.45;
-    }
+  .dailyFunPage .questionFormRow{
+    grid-template-columns:1fr;
+  }
 
-    .dailyFunPage .dailyAskCard{
-      grid-column:1 / -1;
-    }
+  .dailyFunPage .dailyAskCard{
+    grid-column:auto;
+  }
+}
 
-    .dailyFunPage .dailyArchiveCard{
-      margin-top:2px;
-    }
-
-    .dailyFunPage .archiveList{
-      display:grid;
-      gap:12px;
-    }
-
-    .dailyFunPage .archiveItem{
-      border:1px solid #dfe5ee;
-      border-radius:12px;
-      padding:12px;
-      background:#fff;
-      box-shadow:0 2px 8px rgba(10,37,64,.04);
-    }
-
-    .dailyFunPage .archiveMeta{
-      font-size:.9rem;
-      color:#5b6472;
-      margin-bottom:6px;
-      font-weight:800;
-    }
-
-    .dailyFunPage .archiveQ{
-      margin-bottom:8px;
-      line-height:1.5;
-      color:#122033;
-    }
-
-    .dailyFunPage .archiveA{
-      color:#122033;
-      line-height:1.5;
-    }
-
-    @media (max-width: 900px){
-      .dailyFunPage .dailyFunGrid{
-        grid-template-columns:1fr;
-      }
-
-      .dailyFunPage .questionFormRow{
-        grid-template-columns:1fr;
-      }
-
-      .dailyFunPage .dailyAskCard{
-        grid-column:auto;
-      }
-    }
-  </style>
-</head>
+</style></head>
 
 <body class="watermarkPage dailyFunPage hasHamburger">
   <header class="siteHeader">
