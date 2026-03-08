@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Daily Fun • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-dailyfun1" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-dailyfun2" />
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVXQ5JN459"></script>
@@ -16,254 +16,294 @@
   </script>
 
   <style>
-  .dailyFunPage .brandCenter{
-    text-align:center;
-    align-items:center;
-    justify-content:center;
-  }
+    .dailyFunPage .brandCenter{
+      text-align:center;
+      align-items:center;
+      justify-content:center;
+    }
 
-  .dailyFunPage .brandCenter h1{
-    text-align:center;
-    margin-left:auto;
-    margin-right:auto;
-  }
+    .dailyFunPage .brandCenter h1{
+      text-align:center;
+      margin-left:auto;
+      margin-right:auto;
+    }
 
-  .dailyFunPage .tagline{
-    text-align:center;
-  }
+    .dailyFunPage .tagline{
+      text-align:center;
+    }
 
-  .dailyFunPage .dailyIntroCard{
-    margin-bottom:18px;
-  }
+    .dailyFunPage .dailyIntroCard{
+      margin-bottom:18px;
+    }
 
-  .dailyFunPage .dailyIntroCard .cardBody{
-    text-align:center;
-    padding:22px 20px;
-  }
+    .dailyFunPage .dailyIntroCard .cardBody{
+      text-align:center;
+      padding:22px 20px;
+    }
 
-  .dailyFunPage .dailyIntroTitle{
-    font-size:1.5rem;
-    font-weight:900;
-    margin:0 0 6px;
-    color:#122033;
-  }
+    .dailyFunPage .dailyIntroTitle{
+      font-size:1.5rem;
+      font-weight:900;
+      margin:0 0 6px;
+      color:#122033;
+    }
 
-  .dailyFunPage .dailyIntroText{
-    color:#5b6472;
-    margin:0;
-    max-width:700px;
-    margin-left:auto;
-    margin-right:auto;
-    line-height:1.5;
-  }
+    .dailyFunPage .dailyIntroText{
+      color:#5b6472;
+      margin:0;
+      max-width:700px;
+      margin-left:auto;
+      margin-right:auto;
+      line-height:1.5;
+    }
 
-  .dailyFunPage .dailyFunGrid{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:18px;
-    align-items:stretch;
-    margin-bottom:18px;
-  }
-
-  .dailyFunPage .dailyFunGrid > .card{
-    height:100%;
-  }
-
-  .dailyFunPage .dailyFunGrid > .card .cardBody{
-    height:100%;
-    display:flex;
-    flex-direction:column;
-  }
-
-  .dailyFunPage .card{
-    box-shadow:0 8px 24px rgba(10, 37, 64, 0.08);
-    border:1px solid #dde6f0;
-  }
-
-  .dailyFunPage .dailyFunGrid > .card::before,
-  .dailyFunPage .dailyArchiveCard::before,
-  .dailyFunPage .dailyIntroCard::before{
-    content:"";
-    display:block;
-    height:5px;
-    background:linear-gradient(90deg, #1d4ed8, #60a5fa);
-  }
-
-  .dailyFunPage .dailySectionTitle{
-    font-size:1.08rem;
-    font-weight:900;
-    margin:0 0 14px;
-    color:#122033;
-    letter-spacing:.01em;
-  }
-
-  .dailyFunPage .dailyHistoryDate{
-    font-size:.95rem;
-    font-weight:800;
-    color:#5b6472;
-    margin-bottom:6px;
-  }
-
-  .dailyFunPage .dailyHistoryTitle{
-    font-size:1.14rem;
-    font-weight:900;
-    margin-bottom:8px;
-    color:#122033;
-    line-height:1.35;
-  }
-
-  .dailyFunPage .dailyQuote{
-    font-size:1.16rem;
-    line-height:1.6;
-    margin-bottom:12px;
-    color:#122033;
-  }
-
-  .dailyFunPage .dailyQuoteSpeaker{
-    font-weight:800;
-    color:#5b6472;
-  }
-
-  .dailyFunPage .featuredQ{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    flex:1;
-  }
-
-  .dailyFunPage .featuredQLabel{
-    font-size:.82rem;
-    text-transform:uppercase;
-    letter-spacing:.05em;
-    color:#5b6472;
-    font-weight:900;
-  }
-
-  .dailyFunPage .featuredQName{
-    font-weight:800;
-    color:#122033;
-  }
-
-  .dailyFunPage .featuredQQuestion{
-    font-size:1.03rem;
-    line-height:1.5;
-    color:#122033;
-  }
-
-  .dailyFunPage .featuredQAnswer{
-    background:#f7f9fc;
-    border:1px solid #dfe5ee;
-    border-radius:12px;
-    padding:12px;
-    line-height:1.55;
-    margin-top:auto;
-  }
-
-  .dailyFunPage .questionForm{
-    display:grid;
-    gap:12px;
-    flex:1;
-  }
-
-  .dailyFunPage .questionFormRow{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-  }
-
-  .dailyFunPage .questionForm input,
-  .dailyFunPage .questionForm textarea{
-    width:100%;
-    border:1px solid #cfd8e3;
-    border-radius:12px;
-    padding:12px 14px;
-    font:inherit;
-    box-sizing:border-box;
-    background:#fff;
-  }
-
-  .dailyFunPage .questionForm input:focus,
-  .dailyFunPage .questionForm textarea:focus{
-    outline:none;
-    border-color:#3b82f6;
-    box-shadow:0 0 0 3px rgba(59,130,246,.15);
-  }
-
-  .dailyFunPage .questionForm textarea{
-    min-height:120px;
-    resize:vertical;
-  }
-
-  .dailyFunPage .questionForm button{
-    border:0;
-    border-radius:12px;
-    padding:12px 16px;
-    font-weight:900;
-    cursor:pointer;
-    background:#1d4ed8;
-    color:#fff;
-    box-shadow:0 6px 14px rgba(29,78,216,.22);
-    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
-  }
-
-  .dailyFunPage .questionForm button:hover{
-    background:#1e40af;
-    transform:translateY(-1px);
-    box-shadow:0 8px 18px rgba(29,78,216,.28);
-  }
-
-  .dailyFunPage .questionFormNote,
-  .dailyFunPage .submitMsg{
-    font-size:.95rem;
-    color:#5b6472;
-    line-height:1.45;
-  }
-
-  .dailyFunPage .dailyArchiveCard{
-    margin-top:2px;
-  }
-
-  .dailyFunPage .archiveList{
-    display:grid;
-    gap:12px;
-  }
-
-  .dailyFunPage .archiveItem{
-    border:1px solid #dfe5ee;
-    border-radius:12px;
-    padding:12px;
-    background:#fff;
-    box-shadow:0 2px 8px rgba(10,37,64,.04);
-  }
-
-  .dailyFunPage .archiveMeta{
-    font-size:.9rem;
-    color:#5b6472;
-    margin-bottom:6px;
-    font-weight:800;
-  }
-
-  .dailyFunPage .archiveQ{
-    margin-bottom:8px;
-    line-height:1.5;
-    color:#122033;
-  }
-
-  .dailyFunPage .archiveA{
-    color:#122033;
-    line-height:1.5;
-  }
-
-  @media (max-width: 900px){
     .dailyFunPage .dailyFunGrid{
-      grid-template-columns:1fr;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:18px;
+      align-items:stretch;
+      margin-bottom:18px;
+    }
+
+    .dailyFunPage .dailyFunGrid > .card{
+      height:100%;
+    }
+
+    .dailyFunPage .dailyFunGrid > .card .cardBody{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .dailyFunPage .card{
+      box-shadow:0 8px 24px rgba(10, 37, 64, 0.08);
+      border:1px solid #dde6f0;
+    }
+
+    .dailyFunPage .dailyFunGrid > .card::before,
+    .dailyFunPage .dailyArchiveCard::before,
+    .dailyFunPage .dailyIntroCard::before{
+      content:"";
+      display:block;
+      height:5px;
+      background:linear-gradient(90deg, #1d4ed8, #60a5fa);
+    }
+
+    .dailyFunPage .dailySectionTitle{
+      font-size:1.08rem;
+      font-weight:900;
+      margin:0 0 14px;
+      color:#122033;
+      letter-spacing:.01em;
+    }
+
+    .dailyFunPage .dailyHistoryList{
+      display:grid;
+      gap:12px;
+    }
+
+    .dailyFunPage .dailyHistoryItem{
+      padding:12px;
+      border:1px solid #dfe5ee;
+      border-radius:12px;
+      background:#fff;
+      box-shadow:0 2px 8px rgba(10,37,64,.04);
+    }
+
+    .dailyFunPage .dailyHistoryDate{
+      font-size:.95rem;
+      font-weight:800;
+      color:#5b6472;
+      margin-bottom:6px;
+    }
+
+    .dailyFunPage .dailyHistoryTitle{
+      font-size:1.14rem;
+      font-weight:900;
+      margin-bottom:8px;
+      color:#122033;
+      line-height:1.35;
+    }
+
+    .dailyFunPage .dailyHistoryText{
+      line-height:1.5;
+      color:#122033;
+    }
+
+    .dailyFunPage .dailyQuote{
+      font-size:1.16rem;
+      line-height:1.6;
+      margin-bottom:12px;
+      color:#122033;
+    }
+
+    .dailyFunPage .dailyQuoteSpeaker{
+      font-weight:800;
+      color:#5b6472;
+    }
+
+    .dailyFunPage .dailyFactText{
+      font-size:1.08rem;
+      line-height:1.6;
+      color:#122033;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .dailyFunPage .dailyFactCategory{
+      font-size:.9rem;
+      color:#5b6472;
+      font-weight:700;
+    }
+
+    .dailyFunPage .featuredQ{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;
+    }
+
+    .dailyFunPage .featuredQLabel{
+      font-size:.82rem;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:#5b6472;
+      font-weight:900;
+    }
+
+    .dailyFunPage .featuredQName{
+      font-weight:800;
+      color:#122033;
+    }
+
+    .dailyFunPage .featuredQQuestion{
+      font-size:1.03rem;
+      line-height:1.5;
+      color:#122033;
+    }
+
+    .dailyFunPage .featuredQAnswer{
+      background:#f7f9fc;
+      border:1px solid #dfe5ee;
+      border-radius:12px;
+      padding:12px;
+      line-height:1.55;
+      margin-top:auto;
+    }
+
+    .dailyFunPage .questionForm{
+      display:grid;
+      gap:12px;
+      flex:1;
     }
 
     .dailyFunPage .questionFormRow{
-      grid-template-columns:1fr;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
     }
-  }
-</style>
+
+    .dailyFunPage .questionForm input,
+    .dailyFunPage .questionForm textarea{
+      width:100%;
+      border:1px solid #cfd8e3;
+      border-radius:12px;
+      padding:12px 14px;
+      font:inherit;
+      box-sizing:border-box;
+      background:#fff;
+    }
+
+    .dailyFunPage .questionForm input:focus,
+    .dailyFunPage .questionForm textarea:focus{
+      outline:none;
+      border-color:#3b82f6;
+      box-shadow:0 0 0 3px rgba(59,130,246,.15);
+    }
+
+    .dailyFunPage .questionForm textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .dailyFunPage .questionForm button{
+      border:0;
+      border-radius:12px;
+      padding:12px 16px;
+      font-weight:900;
+      cursor:pointer;
+      background:#1d4ed8;
+      color:#fff;
+      box-shadow:0 6px 14px rgba(29,78,216,.22);
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+
+    .dailyFunPage .questionForm button:hover{
+      background:#1e40af;
+      transform:translateY(-1px);
+      box-shadow:0 8px 18px rgba(29,78,216,.28);
+    }
+
+    .dailyFunPage .questionFormNote,
+    .dailyFunPage .submitMsg{
+      font-size:.95rem;
+      color:#5b6472;
+      line-height:1.45;
+    }
+
+    .dailyFunPage .dailyAskCard{
+      grid-column:1 / -1;
+    }
+
+    .dailyFunPage .dailyArchiveCard{
+      margin-top:2px;
+    }
+
+    .dailyFunPage .archiveList{
+      display:grid;
+      gap:12px;
+    }
+
+    .dailyFunPage .archiveItem{
+      border:1px solid #dfe5ee;
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+      box-shadow:0 2px 8px rgba(10,37,64,.04);
+    }
+
+    .dailyFunPage .archiveMeta{
+      font-size:.9rem;
+      color:#5b6472;
+      margin-bottom:6px;
+      font-weight:800;
+    }
+
+    .dailyFunPage .archiveQ{
+      margin-bottom:8px;
+      line-height:1.5;
+      color:#122033;
+    }
+
+    .dailyFunPage .archiveA{
+      color:#122033;
+      line-height:1.5;
+    }
+
+    @media (max-width: 900px){
+      .dailyFunPage .dailyFunGrid{
+        grid-template-columns:1fr;
+      }
+
+      .dailyFunPage .questionFormRow{
+        grid-template-columns:1fr;
+      }
+
+      .dailyFunPage .dailyAskCard{
+        grid-column:auto;
+      }
+    }
+  </style>
 </head>
 
 <body class="watermarkPage dailyFunPage hasHamburger">
@@ -301,7 +341,7 @@
       <article class="card dailyIntroCard">
         <div class="cardBody">
           <h2 class="dailyIntroTitle">Daily Fun</h2>
-          <p class="dailyIntroText">Baseball history, famous quotes, and questions from WBL kids.</p>
+          <p class="dailyIntroText">Baseball history, famous quotes, fun facts, and questions from WBL kids.</p>
         </div>
       </article>
 
@@ -322,12 +362,19 @@
 
         <article class="card">
           <div class="cardBody">
+            <div class="dailySectionTitle">Baseball Fact of the Day</div>
+            <div id="factCard">Loading today’s baseball fact...</div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="cardBody">
             <div class="dailySectionTitle">Featured Kid Question</div>
             <div id="featuredQuestionCard">Loading featured question...</div>
           </div>
         </article>
 
-        <article class="card">
+        <article class="card dailyAskCard">
           <div class="cardBody">
             <div class="dailySectionTitle">Ask a Baseball Question</div>
 
@@ -366,12 +413,14 @@
         </article>
       </div>
 
-  <article class="card dailyArchiveCard">
-  <div class="cardBody">
-    <div class="dailySectionTitle">More Kids Ask, Coaches Answer</div>
-    <div id="qaArchive">Loading more questions...</div>
-  </div>
-</article>
+      <article class="card dailyArchiveCard">
+        <div class="cardBody">
+          <div class="dailySectionTitle">More Kids Ask, Coaches Answer</div>
+          <div id="qaArchive">Loading more questions...</div>
+        </div>
+      </article>
+    </section>
+  </main>
 
   <script src="./data.js"></script>
   <script>
@@ -382,6 +431,9 @@
     const QUOTES_CSV_URL =
       window.SHEET?.BASEBALL_QUOTES_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1596942991&single=true&output=csv";
+
+    const FACTS_CSV_URL =
+      window.SHEET?.BASEBALL_FACTS_CSV_URL || "";
 
     const QUESTIONS_CSV_URL =
       window.SHEET?.KIDS_QUESTIONS_CSV_URL ||
@@ -461,25 +513,32 @@
 
     async function loadHistory(){
       const el = document.getElementById("historyCard");
+
       try {
         const csv = await fetchCsv(HISTORY_CSV_URL);
         const rows = parseCsv(csv);
         const key = getMonthDayKey();
 
-        const item = rows.find(r =>
+        const items = rows.filter(r =>
           String(r.MonthDay || "").trim() === key &&
           String(r.Active || "").toUpperCase() !== "FALSE"
         );
 
-        if (!item) {
+        if (!items.length) {
           el.innerHTML = "<div>No baseball history item has been added for today yet.</div>";
           return;
         }
 
         el.innerHTML = `
-          <div class="dailyHistoryDate">${item.Year || ""}</div>
-          <div class="dailyHistoryTitle">${item.Title || ""}</div>
-          <div>${item.Text || ""}</div>
+          <div class="dailyHistoryList">
+            ${items.map(item => `
+              <div class="dailyHistoryItem">
+                <div class="dailyHistoryDate">${item.Year || ""}</div>
+                <div class="dailyHistoryTitle">${item.Title || ""}</div>
+                <div class="dailyHistoryText">${item.Text || ""}</div>
+              </div>
+            `).join("")}
+          </div>
         `;
       } catch (err) {
         el.textContent = "Unable to load baseball history right now.";
@@ -489,6 +548,7 @@
 
     async function loadQuote(){
       const el = document.getElementById("quoteCard");
+
       try {
         const csv = await fetchCsv(QUOTES_CSV_URL);
         const rows = parseCsv(csv).filter(r =>
@@ -510,6 +570,39 @@
         `;
       } catch (err) {
         el.textContent = "Unable to load quote right now.";
+        console.error(err);
+      }
+    }
+
+    async function loadFact(){
+      const el = document.getElementById("factCard");
+
+      try {
+        if (!FACTS_CSV_URL) {
+          el.textContent = "No baseball fact feed is connected yet.";
+          return;
+        }
+
+        const csv = await fetchCsv(FACTS_CSV_URL);
+        const rows = parseCsv(csv).filter(r =>
+          String(r.Active || "").toUpperCase() !== "FALSE" &&
+          String(r.Fact || "").trim()
+        );
+
+        if (!rows.length) {
+          el.textContent = "No baseball fact is available yet.";
+          return;
+        }
+
+        const index = dayOfYear(new Date()) % rows.length;
+        const item = rows[index];
+
+        el.innerHTML = `
+          <div class="dailyFactText">${item.Fact || ""}</div>
+          <div class="dailyFactCategory">${item.Category ? "Category: " + item.Category : ""}</div>
+        `;
+      } catch (err) {
+        el.textContent = "Unable to load baseball fact right now.";
         console.error(err);
       }
     }
@@ -618,6 +711,7 @@
 
     loadHistory();
     loadQuote();
+    loadFact();
     loadFeaturedQuestion();
   </script>
 
