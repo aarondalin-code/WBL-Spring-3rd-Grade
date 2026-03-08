@@ -3060,4 +3060,48 @@ body.watermarkPage::before{
   }
 
 }
+/* ==========================================
+   HOME PAGE – Horizontal game cards
+   ========================================== */
 
+#thisWeekGames .miniGameCard,
+#lastWeekFinals .miniGameCard{
+  display:grid;
+  grid-template-columns:140px 1fr 90px;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+}
+
+#thisWeekGames .miniGameMeta,
+#lastWeekFinals .miniGameMeta{
+  margin:0;
+  line-height:1.25;
+}
+
+#thisWeekGames .miniMatchupRow,
+#lastWeekFinals .miniMatchupRow{
+  margin:0;
+  align-items:center;
+}
+
+#thisWeekGames .miniStatus,
+#lastWeekFinals .miniStatus{
+  margin:0;
+  text-align:right;
+  white-space:nowrap;
+}
+
+/* Mobile fallback */
+@media (max-width:700px){
+  #thisWeekGames .miniGameCard,
+  #lastWeekFinals .miniGameCard{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  #thisWeekGames .miniStatus,
+  #lastWeekFinals .miniStatus{
+    text-align:left;
+  }
+}
