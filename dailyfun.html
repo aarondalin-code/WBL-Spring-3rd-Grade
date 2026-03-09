@@ -16,6 +16,82 @@
   </script>
 
   <style>
+
+.dailyFunPage .movieTitle{
+  font-size:1.15rem;
+  font-weight:900;
+  color:var(--textDark);
+  margin-bottom:8px;
+}
+
+.dailyFunPage .movieMeta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.dailyFunPage .movieTag{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+  background:#e0ecff;
+  color:#1d4ed8;
+  font-size:.82rem;
+  font-weight:800;
+}
+
+.dailyFunPage .kidTag{
+  background:#ecfdf5;
+  color:#047857;
+}
+
+.dailyFunPage .movieDescription{
+  line-height:1.55;
+  color:#374151;
+  margin-bottom:12px;
+}
+
+.dailyFunPage .movieTrailerWrap{
+  position:relative;
+  width:100%;
+  padding-top:56.25%;
+  border-radius:14px;
+  overflow:hidden;
+  background:#111827;
+}
+
+.dailyFunPage .movieTrailer{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
+
+.dailyFunPage .movieNoTrailer{
+  color:var(--textSoft);
+  font-size:.95rem;
+}
+
+.dailyFunPage .birthdayPlayer{
+  font-size:1.15rem;
+  font-weight:900;
+  color:var(--textDark);
+  margin-bottom:6px;
+}
+
+.dailyFunPage .birthdayMeta{
+  color:var(--accent);
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.dailyFunPage .birthdayFact{
+  line-height:1.55;
+  color:#374151;
+}
+
 /* Weekly Champion Highlight Card */
 
 .weeklyChampionCard{
@@ -532,20 +608,34 @@
           </div>
         </article>
 
+ <article class="card weeklyChampionCard">
+  <div class="cardBody">
+    <div class="dailySectionTitle">🥇 Weekly Trivia Champion</div>
+    <div id="triviaWeeklyChampion">Loading weekly champion...</div>
+  </div>
+</article>  
+        
     <article class="card">
           <div class="cardBody">
             <div class="dailySectionTitle">Top 10 Trivia Leaders</div>
             <div id="triviaLeaderboard">Loading scoreboard...</div>
           </div>
         </article> 
-        
-   <article class="card weeklyChampionCard">
+
+<article class="card">
   <div class="cardBody">
-    <div class="dailySectionTitle">🥇 Weekly Trivia Champion</div>
-    <div id="triviaWeeklyChampion">Loading weekly champion...</div>
+    <div class="dailySectionTitle">🎬 Baseball Movie of the Week</div>
+    <div id="movieCard">Loading movie of the week...</div>
   </div>
-</article>        
-        
+</article>
+
+<article class="card">
+  <div class="cardBody">
+    <div class="dailySectionTitle">🎂 MLB Birthday Today</div>
+    <div id="birthdayCard">Loading birthday spotlight...</div>
+  </div>
+</article>
+            
         <article class="card">
           <div class="cardBody">
             <div class="dailySectionTitle">This Day in Baseball History</div>
@@ -651,6 +741,11 @@
       window.SHEET?.TRIVIA_LEADERBOARD_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1411514113&single=true&output=csv";
 
+const MOVIES_CSV_URL =
+  window.SHEET?.BASEBALL_MOVIES_CSV_URL || "";
+
+const BIRTHDAYS_CSV_URL =
+  window.SHEET?.BASEBALL_BIRTHDAYS_CSV_URL || "";
 
 const TRIVIA_WEEKLY_CSV_URL =
   window.SHEET?.TRIVIA_WEEKLY_CSV_URL || "";
@@ -712,6 +807,32 @@ const TRIVIA_WEEKLY_CSV_URL =
       });
     }
 
+function getYouTubeEmbedUrl(url){
+  if (!url) return "";
+
+  try {
+    const u = new URL(url);
+
+    // Standard youtube watch URL
+    if (u.hostname.includes("youtube.com")) {
+      const v = u.searchParams.get("v");
+      if (v) return `https://www.youtube.com/embed/${v}`;
+      // Already an embed URL
+      if (u.pathname.startsWith("/embed/")) return url;
+    }
+
+    // Short youtu.be URL
+    if (u.hostname.includes("youtu.be")) {
+      const id = u.pathname.replace("/", "").trim();
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+
+    return "";
+  } catch (err) {
+    return "";
+  }
+}
+    
     function getMonthDayKey(){
       const now = new Date();
       const mm = String(now.getMonth() + 1).padStart(2, "0");
@@ -880,6 +1001,96 @@ const TRIVIA_WEEKLY_CSV_URL =
       }
     }
 
+async function loadMovieOfTheWeek(){
+  const el = document.getElementById("movieCard");
+
+  try {
+    if (!MOVIES_CSV_URL) {
+      el.textContent = "Movie feed is not connected yet.";
+      return;
+    }
+
+    const csv = await fetchCsv(MOVIES_CSV_URL);
+    const rows = parseCsv(csv).filter(r =>
+      String(r.Active || "").toUpperCase() !== "FALSE" &&
+      String(r.Title || "").trim()
+    );
+
+    if (!rows.length) {
+      el.textContent = "No baseball movies available yet.";
+      return;
+    }
+
+    const weekIndex = Math.floor(dayOfYear(new Date()) / 7) % rows.length;
+    const movie = rows[weekIndex];
+    const embedUrl = getYouTubeEmbedUrl(movie.TrailerURL || "");
+
+    el.innerHTML = `
+      <div class="movieTitle">${movie.Title || ""}${movie.Year ? " (" + movie.Year + ")" : ""}</div>
+      <div class="movieMeta">
+        ${movie.Category ? `<span class="movieTag">${movie.Category}</span>` : ""}
+        ${String(movie.KidFriendly || "").toUpperCase() === "TRUE" ? `<span class="movieTag kidTag">Kid Friendly</span>` : ""}
+      </div>
+      <div class="movieDescription">${movie.Description || ""}</div>
+      ${
+        embedUrl
+          ? `<div class="movieTrailerWrap">
+               <iframe
+                 class="movieTrailer"
+                 src="${embedUrl}"
+                 title="Movie Trailer"
+                 frameborder="0"
+                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                 allowfullscreen>
+               </iframe>
+             </div>`
+          : `<div class="movieNoTrailer">Trailer link coming soon.</div>`
+      }
+    `;
+  } catch (err) {
+    el.textContent = "Unable to load movie of the week right now.";
+    console.error(err);
+  }
+}
+
+async function loadBirthdaySpotlight(){
+  const el = document.getElementById("birthdayCard");
+
+  try {
+    if (!BIRTHDAYS_CSV_URL) {
+      el.textContent = "Birthday feed is not connected yet.";
+      return;
+    }
+
+    const csv = await fetchCsv(BIRTHDAYS_CSV_URL);
+    const rows = parseCsv(csv).filter(r =>
+      String(r.Active || "").toUpperCase() !== "FALSE" &&
+      String(r.MonthDay || "").trim() === getMonthDayKey()
+    );
+
+    if (!rows.length) {
+      el.innerHTML = "<div>No MLB birthday spotlight for today yet.</div>";
+      return;
+    }
+
+    const item = rows[0];
+    const age = item.BirthYear ? (new Date().getFullYear() - Number(item.BirthYear)) : "";
+
+    el.innerHTML = `
+      <div class="birthdayPlayer">${item.Player || ""}</div>
+      <div class="birthdayMeta">
+        ${item.BirthYear ? `Born ${item.BirthYear}` : ""}
+        ${age ? ` • Would be ${age}` : ""}
+      </div>
+      <div class="birthdayFact">${item.ShortFact || ""}</div>
+    `;
+  } catch (err) {
+    el.textContent = "Unable to load birthday spotlight right now.";
+    console.error(err);
+  }
+}
+
+    
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
 
@@ -1222,6 +1433,8 @@ async function loadTriviaWeeklyChampion(){
     loadFeaturedQuestion();
     loadTrivia();
     loadTriviaLeaderboard();
+    loadMovieOfTheWeek();
+    loadBirthdaySpotlight();
     loadTriviaWeeklyChampion();
   </script>
 
