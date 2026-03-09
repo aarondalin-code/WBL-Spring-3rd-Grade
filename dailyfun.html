@@ -866,6 +866,13 @@ const TRIVIA_WEEKLY_CSV_URL =
       });
     }
 
+function normalizeTeamName(value){
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .trim();
+}
+    
 async function loadTeamColors(){
   if (Object.keys(teamColorMap).length) return teamColorMap;
 
@@ -1326,7 +1333,7 @@ async function loadTriviaWeeklyChampion(){
             </div>
             <div class="weeklyChampionMain">
               <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-  ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[String(row.Team || "").trim()] || '#2563eb'}">${row.Team}</div>` : ""}           
+${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[normalizeTeamName(row.Team)] || '#2563eb'}">${row.Team}</div>` : ""}       
   </div>
           </div>
         `).join("")}
