@@ -280,31 +280,26 @@
       return a.name.localeCompare(b.name);
     });
 
-    for (const t of teams) {
-      const logoUrl = t.logo || "";
-const nameStyle = t.color ? `style="color:${t.color}"` : "";
-      const a = document.createElement("a");
-      a.className = "teamTile";
-      a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
-
-      a.innerHTML = `
-        <span class="teamAccent" aria-hidden="true"></span>
-
-        <div class="teamTileRow">
-          <div class="teamTileLogoWrap">
-<img class="teamTileLogo" src="${logoUrl}" alt="${t.name} logo" onerror="this.style.display='none';">
-
-          </div>
-
-          <div class="teamTileText">
-            <div class="teamName" ${nameStyle}>${t.name}</div>
-            <div class="teamCta">View roster →</div>
-          </div>
-        </div>
-      `;
-
-      grid.appendChild(a);
-    }
+for (const t of teams) {
+  const logoUrl = t.logo || "";
+  const nameStyle = t.color ? `style="color:${t.color}"` : "";
+  const a = document.createElement("a");
+  a.className = "teamTile";
+  a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
+  a.innerHTML = `
+    <span class="teamAccent" aria-hidden="true"></span>
+    <div class="teamTileRow">
+      <div class="teamTileLogoWrap">
+        <img class="teamTileLogo" src="${logoUrl}" alt="${t.name} logo" onerror="this.style.display='none';">
+      </div>
+      <div class="teamTileText">
+        <div class="teamName" ${nameStyle}>${t.name}</div>
+        <div class="teamCta">View roster →</div>
+      </div>
+    </div>
+  `;
+  grid.appendChild(a);
+}
 
     // Helpful empty state
     if (!teams.length) {
