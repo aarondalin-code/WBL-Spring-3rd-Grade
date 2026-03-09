@@ -267,21 +267,41 @@
       font-weight:800;
     }
 
-    .dailyFunPage .triviaChoices{
-      display:grid;
-      gap:10px;
-      margin-bottom:12px;
-    }
+.dailyFunPage .triviaChoices{
+  display:grid;
+  gap:12px;
+  margin-bottom:12px;
+}
 
-    .dailyFunPage .triviaChoice{
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      background:var(--softBg);
-      border:1px solid #dbe3ef;
-      border-radius:12px;
-      padding:10px 12px;
-    }
+.dailyFunPage .triviaChoice{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:12px;
+  background:var(--softBg);
+  border:1px solid #dbe3ef;
+  border-radius:12px;
+  padding:14px 16px;
+  text-align:left;
+}
+
+.dailyFunPage .triviaChoice input[type="radio"]{
+  margin:0;
+  flex:0 0 auto;
+}
+
+.dailyFunPage .triviaChoice span{
+  display:block;
+  flex:1;
+  text-align:left;
+  line-height:1.4;
+  color:var(--textDark);
+}
+
+.dailyFunPage .triviaChoice strong{
+  display:inline;
+  margin-right:6px;
+}
 
     .dailyFunPage .triviaForm{
       display:grid;
