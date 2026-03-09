@@ -486,6 +486,20 @@
             <div id="triviaLeaderboard">Loading scoreboard...</div>
           </div>
         </article> 
+
+        <article class="card">
+  <div class="cardBody">
+    <div class="dailySectionTitle">🏆 Today’s Leaders</div>
+    <div id="triviaTodayLeaders">Loading today’s leaders...</div>
+  </div>
+</article>
+
+        <article class="card">
+  <div class="cardBody">
+    <div class="dailySectionTitle">🥇 Weekly Trivia Champion</div>
+    <div id="triviaWeeklyChampion">Loading weekly champion...</div>
+  </div>
+</article>
         
         <article class="card">
           <div class="cardBody">
@@ -591,6 +605,12 @@
     const TRIVIA_LEADERBOARD_CSV_URL =
       window.SHEET?.TRIVIA_LEADERBOARD_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1411514113&single=true&output=csv";
+
+const TRIVIA_TODAY_CSV_URL =
+  window.SHEET?.TRIVIA_TODAY_CSV_URL || "";
+
+const TRIVIA_WEEKLY_CSV_URL =
+  window.SHEET?.TRIVIA_WEEKLY_CSV_URL || "";
 
     const TRIVIA_API_URL =
       window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
@@ -817,6 +837,100 @@
       }
     }
 
+async function loadTriviaTodayLeaders(){
+  const el = document.getElementById("triviaTodayLeaders");
+
+  try {
+    if (!TRIVIA_TODAY_CSV_URL) {
+      el.textContent = "Today's leaders feed is not connected yet.";
+      return;
+    }
+
+    const csv = await fetchCsv(TRIVIA_TODAY_CSV_URL);
+    const rows = parseCsv(csv);
+
+    if (!rows.length || String(rows[0].PlayerName || "").trim() === "No entries yet") {
+      el.textContent = "No trivia entries yet today.";
+      return;
+    }
+
+    const topRows = rows.slice(0, 5);
+
+    el.innerHTML = `
+      <div class="leaderboardTableWrap">
+        <table class="leaderboardTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Team</th>
+              <th>Correct</th>
+              <th>Attempted</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${topRows.map((row, idx) => `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>${row.PlayerName || ""}</td>
+                <td>${row.Team || ""}</td>
+                <td>${row.Correct || 0}</td>
+                <td>${row.Attempted || 0}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (err) {
+    el.textContent = "Unable to load today's leaders right now.";
+    console.error(err);
+  }
+}
+
+async function loadTriviaWeeklyChampion(){
+  const el = document.getElementById("triviaWeeklyChampion");
+
+  try {
+    if (!TRIVIA_WEEKLY_CSV_URL) {
+      el.textContent = "Weekly champion feed is not connected yet.";
+      return;
+    }
+
+    const csv = await fetchCsv(TRIVIA_WEEKLY_CSV_URL);
+    const rows = parseCsv(csv);
+
+    if (!rows.length || String(rows[0].PlayerName || "").trim() === "No entries yet") {
+      el.textContent = "No weekly trivia data yet.";
+      return;
+    }
+
+    const champ = rows[0];
+    const accuracyRaw = String(champ.Accuracy || "").trim();
+    let accuracyText = accuracyRaw;
+
+    if (accuracyRaw && !accuracyRaw.endsWith("%")) {
+      const num = parseFloat(accuracyRaw);
+      if (!isNaN(num)) accuracyText = `${Math.round(num * 100)}%`;
+    }
+
+    el.innerHTML = `
+      <div class="featuredQ">
+        <div class="featuredQLabel">This Week’s Leader</div>
+        <div class="featuredQName">${champ.PlayerName || ""}${champ.Team ? " • " + champ.Team : ""}</div>
+        <div class="featuredQQuestion">
+          Correct Answers: <strong>${champ.Correct || 0}</strong><br>
+          Attempts: <strong>${champ.Attempted || 0}</strong><br>
+          Accuracy: <strong>${accuracyText || ""}</strong>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    el.textContent = "Unable to load weekly champion right now.";
+    console.error(err);
+  }
+}    
+    
     async function loadTrivia(){
       const el = document.getElementById("triviaCard");
 
@@ -1087,6 +1201,8 @@
     loadFeaturedQuestion();
     loadTrivia();
     loadTriviaLeaderboard();
+    loadTriviaTodayLeaders();
+    loadTriviaWeeklyChampion();
   </script>
 
   <script src="./nav.js"></script>
