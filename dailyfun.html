@@ -952,21 +952,100 @@ function findBestHistoryItem(rows){
   return null;
 }
 
+let baseballHistoryCache = null;
+
+function pickRandom(arr){
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function formatDisplayDate(dateObj){
+  return dateObj.toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric"
+  });
+}
+
+function getMonthDayFromDate(dateObj){
+  const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const dd = String(dateObj.getDate()).padStart(2, "0");
+  return `${mm}-${dd}`;
+}
+
+function findHistoryItemsForKey(rows, key){
+  return rows.filter(r =>
+    String(r.MonthDay || "").trim() === key &&
+    String(r.Active || "").toUpperCase() !== "FALSE"
+  );
+}
+
+async function getHistoryRows(){
+  if (baseballHistoryCache) return baseballHistoryCache;
+  const csv = await fetchCsv(HISTORY_CSV_URL);
+  baseballHistoryCache = parseCsv(csv);
+  return baseballHistoryCache;
+}
+
+function findBestHistoryItem(rows){
+  const today = new Date();
+  const todayKey = getMonthDayFromDate(today);
+
+  const exactItems = findHistoryItemsForKey(rows, todayKey);
+  if (exactItems.length) {
+    return {
+      item: pickRandom(exactItems),
+      displayDate: today
+    };
+  }
+
+  for (let offset = 1; offset <= 7; offset++) {
+
+    const earlier = new Date(today);
+    earlier.setDate(today.getDate() - offset);
+
+    const later = new Date(today);
+    later.setDate(today.getDate() + offset);
+
+    const earlierItems = findHistoryItemsForKey(rows, getMonthDayFromDate(earlier));
+    if (earlierItems.length) {
+      return {
+        item: pickRandom(earlierItems),
+        displayDate: earlier
+      };
+    }
+
+    const laterItems = findHistoryItemsForKey(rows, getMonthDayFromDate(later));
+    if (laterItems.length) {
+      return {
+        item: pickRandom(laterItems),
+        displayDate: later
+      };
+    }
+  }
+
+  return null;
+}
+
 async function loadHistory(){
   const el = document.getElementById("historyCard");
+
   try {
     const rows = await getHistoryRows();
-    const item = findBestHistoryItem(rows);
+    const result = findBestHistoryItem(rows);
 
-    if (!item) {
-      el.innerHTML = "<div>No baseball history item has been added yet.</div>";
+    if (!result) {
+      el.innerHTML = "<div>No baseball history item available.</div>";
       return;
     }
+
+    const { item, displayDate } = result;
+
+    const prettyDate = formatDisplayDate(displayDate);
+    const yearText = String(item.Year || "").trim();
 
     el.innerHTML = `
       <div class="dailyHistoryList">
         <div class="dailyHistoryItem">
-          <div class="dailyHistoryDate">${item.Year || ""}</div>
+          <div class="dailyHistoryDate">${prettyDate}${yearText ? " • " + yearText : ""}</div>
           <div class="dailyHistoryTitle">${item.Title || ""}</div>
           <div class="dailyHistoryText">${item.Text || ""}</div>
         </div>
@@ -977,7 +1056,6 @@ async function loadHistory(){
     console.error(err);
   }
 }
-
     async function loadQuote(){
       const el = document.getElementById("quoteCard");
 
