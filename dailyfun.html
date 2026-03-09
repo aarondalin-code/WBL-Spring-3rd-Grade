@@ -253,6 +253,111 @@
     grid-column:auto;
   }
 }
+
+.dailyFunPage .triviaQuestion{
+  font-size:1.05rem;
+  line-height:1.55;
+  margin-bottom:12px;
+  color:var(--textDark);
+  font-weight:800;
+}
+
+.dailyFunPage .triviaChoices{
+  display:grid;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.dailyFunPage .triviaChoice{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  background:var(--softBg);
+  border:1px solid #dbe3ef;
+  border-radius:12px;
+  padding:10px 12px;
+}
+
+.dailyFunPage .triviaForm{
+  display:grid;
+  gap:12px;
+}
+
+.dailyFunPage .triviaFormRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.dailyFunPage .triviaForm input{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #d1d5db;
+  border-radius:12px;
+  padding:12px;
+  font:inherit;
+}
+
+.dailyFunPage .triviaSubmitBtn{
+  background:var(--accent);
+  color:#fff;
+  font-weight:800;
+  border:none;
+  border-radius:12px;
+  padding:12px 16px;
+  cursor:pointer;
+  width:auto;
+  display:inline-block;
+  align-self:flex-start;
+}
+
+.dailyFunPage .triviaSubmitBtn:hover{
+  background:#1e40af;
+}
+
+.dailyFunPage .triviaMsg{
+  line-height:1.5;
+  color:var(--textSoft);
+}
+
+.dailyFunPage .triviaMsg.good{
+  color:#166534;
+  font-weight:800;
+}
+
+.dailyFunPage .triviaMsg.bad{
+  color:#b91c1c;
+  font-weight:800;
+}
+
+.dailyFunPage .leaderboardTableWrap{
+  overflow-x:auto;
+}
+
+.dailyFunPage .leaderboardTable{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.dailyFunPage .leaderboardTable th,
+.dailyFunPage .leaderboardTable td{
+  padding:10px 8px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left;
+  font-size:.95rem;
+}
+
+.dailyFunPage .leaderboardTable th{
+  color:var(--accent);
+  font-weight:900;
+}
+
+@media (max-width:900px){
+  .dailyFunPage .triviaFormRow{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 
 <body class="watermarkPage dailyFunPage hasHamburger">
@@ -323,6 +428,20 @@
           </div>
         </article>
 
+       <article class="card">
+  <div class="cardBody">
+    <div class="dailySectionTitle">Trivia Question of the Day</div>
+    <div id="triviaCard">Loading today’s trivia...</div>
+  </div>
+</article>
+        
+        <article class="card">
+  <div class="cardBody">
+    <div class="dailySectionTitle">Trivia Scoreboard</div>
+    <div id="triviaLeaderboard">Loading scoreboard...</div>
+  </div>
+</article>
+           
         <article class="card dailyAskCard">
           <div class="cardBody">
             <div class="dailySectionTitle">Ask a Baseball Question</div>
