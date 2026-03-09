@@ -1247,7 +1247,6 @@ async function loadBirthdaySpotlight(){
     
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
-
   try {
     if (!TRIVIA_WEEKLY_CSV_URL) {
       el.textContent = "Weekly champion feed is not connected yet.";
@@ -1282,12 +1281,10 @@ async function loadTriviaWeeklyChampion(){
     const now = new Date();
     const start = new Date(now);
     start.setDate(now.getDate() - now.getDay());
-
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
 
     const options = { month: "short", day: "numeric" };
-
     const weekLabel =
       start.toLocaleDateString(undefined, options) +
       " – " +
@@ -1295,28 +1292,35 @@ async function loadTriviaWeeklyChampion(){
 
     el.innerHTML = `
       <div class="weeklyChampionWrap">
+        <div class="weeklyChampionBadge">Weekly Champ</div>
 
         ${tiedRows.map(row => `
-          <div class="weeklyChampionPlayer">
-            ${row.PlayerName || ""}${row.Team ? " • " + row.Team : ""}
+          <div class="weeklyChampionHero">
+            <div class="weeklyChampionAvatar">
+              ${String(row.PlayerName || "").trim().charAt(0).toUpperCase()}
+            </div>
+            <div class="weeklyChampionMain">
+              <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
+              ${row.Team ? `<div class="weeklyChampionTeam">${row.Team}</div>` : ""}
+            </div>
           </div>
         `).join("")}
 
-        <div class="weeklyChampionStats">
-          ${topCorrect} Correct • ${topAttempted} Attempts • ${accuracyText}
+        <div class="weeklyChampionChips">
+          <div class="weeklyChampionChip"><strong>${topCorrect}</strong><span>Correct</span></div>
+          <div class="weeklyChampionChip"><strong>${topAttempted}</strong><span>Attempts</span></div>
+          <div class="weeklyChampionChip"><strong>${accuracyText}</strong><span>Accuracy</span></div>
         </div>
 
-        <div class="weeklyChampionWeek">
-          Week of ${weekLabel}
-        </div>
-
+        <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
       </div>
     `;
   } catch (err) {
     el.textContent = "Unable to load weekly champion right now.";
     console.error(err);
   }
-}    
+}
+    
     async function loadTrivia(){
       const el = document.getElementById("triviaCard");
 
