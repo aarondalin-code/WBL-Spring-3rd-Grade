@@ -274,36 +274,76 @@
 }
 
 .dailyFunPage .triviaChoice{
+  display:block;
+}
+
+.dailyFunPage .triviaChoice input[type="radio"]{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.dailyFunPage .triviaChoiceLabel{
   display:flex;
   align-items:center;
   gap:14px;
+  width:100%;
   padding:14px 18px;
   border:2px solid #dbe3ef;
   border-radius:16px;
   background:#f8fafc;
   cursor:pointer;
   transition:all .15s ease;
+  box-sizing:border-box;
 }
 
-.dailyFunPage .triviaChoice:hover{
+.dailyFunPage .triviaChoiceLabel:hover{
   background:#eef2ff;
   border-color:#c7d2fe;
 }
 
-.dailyFunPage .triviaChoice input{
-  transform:scale(1.2);
-  cursor:pointer;
+.dailyFunPage .triviaChoice input[type="radio"]:checked + .triviaChoiceLabel{
+  border-color:#1d4ed8;
+  background:#eff6ff;
 }
 
-.dailyFunPage .triviaChoice span{
+.dailyFunPage .triviaChoiceBullet{
+  width:20px;
+  height:20px;
+  border:2px solid #94a3b8;
+  border-radius:50%;
+  flex:0 0 20px;
+  position:relative;
+  box-sizing:border-box;
+}
+
+.dailyFunPage .triviaChoice input[type="radio"]:checked + .triviaChoiceLabel .triviaChoiceBullet::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:10px;
+  height:10px;
+  background:#1d4ed8;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+}
+
+.dailyFunPage .triviaChoiceText{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  text-align:left;
+  color:var(--textDark);
+  line-height:1.4;
   font-size:1.05rem;
-  font-weight:600;
-  color:#1f2937;
+  font-weight:700;
 }
 
-.dailyFunPage .triviaChoice strong{
+.dailyFunPage .triviaChoiceLetter{
   color:#1d4ed8;
-  margin-right:6px;
+  font-weight:900;
+  min-width:28px;
 }
 
     .dailyFunPage .triviaForm{
@@ -808,24 +848,51 @@
           <form id="triviaForm" class="triviaForm">
             <div class="triviaQuestion">${item.Question || ""}</div>
 
-            <div class="triviaChoices">
-              <label class="triviaChoice">
-                <input type="radio" name="selectedAnswer" value="A" required />
-                <span><strong>A.</strong> ${item.ChoiceA || ""}</span>
-              </label>
-              <label class="triviaChoice">
-                <input type="radio" name="selectedAnswer" value="B" required />
-                <span><strong>B.</strong> ${item.ChoiceB || ""}</span>
-              </label>
-              <label class="triviaChoice">
-                <input type="radio" name="selectedAnswer" value="C" required />
-                <span><strong>C.</strong> ${item.ChoiceC || ""}</span>
-              </label>
-              <label class="triviaChoice">
-                <input type="radio" name="selectedAnswer" value="D" required />
-                <span><strong>D.</strong> ${item.ChoiceD || ""}</span>
-              </label>
-            </div>
+        <div class="triviaChoices">
+  <label class="triviaChoice">
+    <input type="radio" name="selectedAnswer" value="A" required />
+    <span class="triviaChoiceLabel">
+      <span class="triviaChoiceBullet"></span>
+      <span class="triviaChoiceText">
+        <span class="triviaChoiceLetter">A.</span>
+        <span>${item.ChoiceA || ""}</span>
+      </span>
+    </span>
+  </label>
+
+  <label class="triviaChoice">
+    <input type="radio" name="selectedAnswer" value="B" required />
+    <span class="triviaChoiceLabel">
+      <span class="triviaChoiceBullet"></span>
+      <span class="triviaChoiceText">
+        <span class="triviaChoiceLetter">B.</span>
+        <span>${item.ChoiceB || ""}</span>
+      </span>
+    </span>
+  </label>
+
+  <label class="triviaChoice">
+    <input type="radio" name="selectedAnswer" value="C" required />
+    <span class="triviaChoiceLabel">
+      <span class="triviaChoiceBullet"></span>
+      <span class="triviaChoiceText">
+        <span class="triviaChoiceLetter">C.</span>
+        <span>${item.ChoiceC || ""}</span>
+      </span>
+    </span>
+  </label>
+
+  <label class="triviaChoice">
+    <input type="radio" name="selectedAnswer" value="D" required />
+    <span class="triviaChoiceLabel">
+      <span class="triviaChoiceBullet"></span>
+      <span class="triviaChoiceText">
+        <span class="triviaChoiceLetter">D.</span>
+        <span>${item.ChoiceD || ""}</span>
+      </span>
+    </span>
+  </label>
+</div>
 
             <div class="triviaFormRow">
               <input type="text" id="triviaPlayerName" maxlength="30" placeholder="First name or nickname" required />
