@@ -24,15 +24,14 @@
   position:relative;
 }
 
-.weeklyChampionCard::before{
-  content:"🏆";
-  position:absolute;
-  top:10px;
-  right:14px;
-  font-size:1.4rem;
-  opacity:.9;
+.weeklyChampionWeek{
+  margin-top:6px;
+  font-size:.85rem;
+  color:#6b7280;
+  font-weight:600;
 }
 
+    
 .weeklyChampionCard .dailySectionTitle{
   color:#b45309;
 }
@@ -914,9 +913,22 @@ async function loadTriviaWeeklyChampion(){
       if (!isNaN(num)) accuracyText = `${Math.round(num * 100)}%`;
     }
 
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(now.getDate() - now.getDay());
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+
+    const options = { month: "short", day: "numeric" };
+
+    const weekLabel =
+      start.toLocaleDateString(undefined, options) +
+      " – " +
+      end.toLocaleDateString(undefined, options);
+
     el.innerHTML = `
       <div class="weeklyChampionWrap">
-        <div class="weeklyChampionTitle">🏆 Weekly Trivia Champion</div>
 
         ${tiedRows.map(row => `
           <div class="weeklyChampionPlayer">
@@ -928,17 +940,17 @@ async function loadTriviaWeeklyChampion(){
           ${topCorrect} Correct • ${topAttempted} Attempts • ${accuracyText}
         </div>
 
-        <div class="weeklyChampionNote">
-          Perfect week!
+        <div class="weeklyChampionWeek">
+          Week of ${weekLabel}
         </div>
+
       </div>
     `;
   } catch (err) {
     el.textContent = "Unable to load weekly champion right now.";
     console.error(err);
   }
-}
-    
+}    
     async function loadTrivia(){
       const el = document.getElementById("triviaCard");
 
