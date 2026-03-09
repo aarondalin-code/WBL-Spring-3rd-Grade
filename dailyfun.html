@@ -270,36 +270,39 @@
 .dailyFunPage .triviaChoices{
   display:grid;
   gap:12px;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
 .dailyFunPage .triviaChoice{
   display:flex;
   align-items:center;
-  justify-content:flex-start;
-  gap:12px;
-  background:var(--softBg);
-  border:1px solid #dbe3ef;
-  border-radius:12px;
-  padding:14px 16px;
-  text-align:left;
+  gap:14px;
+  padding:14px 18px;
+  border:2px solid #dbe3ef;
+  border-radius:16px;
+  background:#f8fafc;
+  cursor:pointer;
+  transition:all .15s ease;
 }
 
-.dailyFunPage .triviaChoice input[type="radio"]{
-  margin:0;
-  flex:0 0 auto;
+.dailyFunPage .triviaChoice:hover{
+  background:#eef2ff;
+  border-color:#c7d2fe;
+}
+
+.dailyFunPage .triviaChoice input{
+  transform:scale(1.2);
+  cursor:pointer;
 }
 
 .dailyFunPage .triviaChoice span{
-  display:block;
-  flex:1;
-  text-align:left;
-  line-height:1.4;
-  color:var(--textDark);
+  font-size:1.05rem;
+  font-weight:600;
+  color:#1f2937;
 }
 
 .dailyFunPage .triviaChoice strong{
-  display:inline;
+  color:#1d4ed8;
   margin-right:6px;
 }
 
