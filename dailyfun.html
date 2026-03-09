@@ -873,7 +873,7 @@ async function loadTeamColors(){
   const rows = parseCsv(csv);
 
   rows.forEach(row => {
-    const team = String(row.Team || "").trim();
+   const team = normalizeTeamName(row.TeamName);
     const color = String(row.TeamColor || "").trim();
 
     if (team && color){
