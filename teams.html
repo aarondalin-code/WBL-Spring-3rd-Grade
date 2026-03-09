@@ -281,7 +281,7 @@
     });
 
     for (const t of teams) {
-      const logoUrl = t.logo || (window.DEFAULT_TEAM_LOGO || "./logo.png");
+      const logoUrl = t.logo || "";
 const nameStyle = t.color ? `style="color:${t.color}"` : "";
       const a = document.createElement("a");
       a.className = "teamTile";
@@ -292,8 +292,9 @@ const nameStyle = t.color ? `style="color:${t.color}"` : "";
 
         <div class="teamTileRow">
           <div class="teamTileLogoWrap">
-            <img class="teamTileLogo" src="${logoUrl}" alt="${t.name} logo"
-                 onerror="this.onerror=null; this.src='./logo.png';">
+<img class="teamTileLogo" src="${logoUrl}" alt="${t.name} logo"
+  onerror="this.style.display='none';">
+
           </div>
 
           <div class="teamTileText">
@@ -348,13 +349,12 @@ const nameStyle = t.color ? `style="color:${t.color}"` : "";
     if (slug && teamMetaBySlug.has(slug)) return teamMetaBySlug.get(slug);
     if (name && teamMetaByName.has(name)) return teamMetaByName.get(name);
 
-    return {
-      name: safe(p.TeamName) || "Team",
-      slug: safe(p.TeamSlug) || "",
-      logo: window.DEFAULT_TEAM_LOGO || "./logo.png",
-      color: ""
-    };
-  }
+return {
+  name: safe(p.TeamName) || "Team",
+  slug: safe(p.TeamSlug) || "",
+  logo: "",
+  color: ""
+};
 
   function practiceLinesHTML(p){
     const day   = safe(p.PracticeDay);
@@ -469,8 +469,9 @@ const nameStyle = t.color ? `style="color:${t.color}"` : "";
       card.innerHTML = `
         <div class="cardBody">
           <div class="practiceHead">
-            <img class="practiceLogo" src="${meta.logo}" alt="${safe(meta.name)} logo"
-                 onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
+<img class="practiceLogo" src="${meta.logo}" alt="${safe(meta.name)} logo"
+  onerror="this.style.display='none';">
+            
             <a class="practiceTeamName" ${nameStyle} href="${href}">${safe(meta.name)}</a>
           </div>
 
@@ -499,12 +500,13 @@ const nameStyle = t.color ? `style="color:${t.color}"` : "";
         const name = safe(r.TeamName);
         const slug = safe(r.TeamSlug);
         if (!name || !slug) return;
-        const meta = {
-          name,
-          slug,
-          logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
-          color: safe(r.TeamColor) || ""
-        };
+const meta = {
+  name,
+  slug,
+  logo: safe(r.TeamLogo) || "",
+  color: safe(r.TeamColor) || ""
+};
+        
         teamMetaBySlug.set(norm(slug), meta);
         teamMetaByName.set(norm(name), meta);
       });
