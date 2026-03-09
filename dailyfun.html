@@ -551,27 +551,112 @@
       font-weight:800;
     }
 
-    .dailyFunPage .leaderboardTableWrap{
-      overflow-x:auto;
-    }
+ .dailyFunPage .leaderboardList{
+  display:grid;
+  gap:12px;
+}
 
-    .dailyFunPage .leaderboardTable{
-      width:100%;
-      border-collapse:collapse;
-    }
+.dailyFunPage .leaderboardRow{
+  display:grid;
+  grid-template-columns:56px minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  background:var(--softBg);
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:12px;
+}
 
-    .dailyFunPage .leaderboardTable th,
-    .dailyFunPage .leaderboardTable td{
-      padding:10px 8px;
-      border-bottom:1px solid #e5e7eb;
-      text-align:left;
-      font-size:.95rem;
-    }
+.dailyFunPage .leaderboardRank{
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:1rem;
+  background:#dbeafe;
+  color:#1d4ed8;
+}
 
-    .dailyFunPage .leaderboardTable th{
-      color:var(--accent);
-      font-weight:900;
-    }
+.dailyFunPage .leaderboardRank.is1{
+  background:#facc15;
+  color:#78350f;
+}
+
+.dailyFunPage .leaderboardRank.is2{
+  background:#e5e7eb;
+  color:#374151;
+}
+
+.dailyFunPage .leaderboardRank.is3{
+  background:#fdba74;
+  color:#7c2d12;
+}
+
+.dailyFunPage .leaderboardMain{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+.dailyFunPage .leaderboardPlayer{
+  font-size:1.02rem;
+  font-weight:900;
+  color:var(--textDark);
+  line-height:1.2;
+}
+
+.dailyFunPage .leaderboardTeam{
+  margin-top:5px;
+  display:inline-flex;
+  align-items:center;
+  align-self:flex-start;
+  width:max-content;
+  padding:4px 9px;
+  border-radius:999px;
+  background:var(--teamColor,#e0ecff);
+  color:#fff;
+  font-size:.76rem;
+  font-weight:900;
+  letter-spacing:.02em;
+  text-shadow:0 1px 2px rgba(0,0,0,.25);
+}
+
+.dailyFunPage .leaderboardStats{
+  text-align:right;
+  display:grid;
+  gap:4px;
+}
+
+.dailyFunPage .leaderboardStat{
+  font-size:.84rem;
+  color:#6b7280;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.dailyFunPage .leaderboardStat strong{
+  color:#111827;
+  font-weight:900;
+}
+
+@media (max-width:700px){
+  .dailyFunPage .leaderboardRow{
+    grid-template-columns:48px 1fr;
+  }
+
+  .dailyFunPage .leaderboardStats{
+    grid-column:1 / -1;
+    text-align:left;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    padding-left:60px;
+  }
+}
 
     @media (max-width:900px){
       .dailyFunPage .dailyFunGrid{
@@ -672,7 +757,7 @@
         
     <article class="card">
           <div class="cardBody">
-            <div class="dailySectionTitle">Top 10 Season Long Trivia Leaders</div>
+            <div class="dailySectionTitle">Top 10 Season Trivia Leaders</div>
             <div id="triviaLeaderboard">Loading scoreboard...</div>
           </div>
         </article> 
@@ -1515,63 +1600,62 @@ ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[
       }
     }
 
-    async function loadTriviaLeaderboard(){
-      const el = document.getElementById("triviaLeaderboard");
+   async function loadTriviaLeaderboard(){
+  const el = document.getElementById("triviaLeaderboard");
 
-      try {
-        if (!TRIVIA_LEADERBOARD_CSV_URL) {
-          el.textContent = "Leaderboard feed is not connected yet.";
-          return;
-        }
+  try {
+    await loadTeamColors();
 
-        const csv = await fetchCsv(TRIVIA_LEADERBOARD_CSV_URL);
-        const rows = parseCsv(csv);
-
-        if (!rows.length) {
-          el.textContent = "No trivia scores yet.";
-          return;
-        }
-
-        const topRows = rows.slice(0, 10);
-
-        el.innerHTML = `
-          <div class="leaderboardTableWrap">
-            <table class="leaderboardTable">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Player</th>
-                  <th>Team</th>
-                  <th>Correct</th>
-                  <th>Attempted</th>
-                  <th>Accuracy</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${topRows.map((row, idx) => {
-                  const accuracyRaw = parseFloat(row.Accuracy || 0);
-                  const accuracyPct = isNaN(accuracyRaw) ? "" : `${Math.round(accuracyRaw * 1)}%`;
-
-                  return `
-                    <tr>
-                      <td>${idx + 1}</td>
-                      <td>${row.PlayerName || ""}</td>
-                      <td>${row.Team || ""}</td>
-                      <td>${row.Correct || 0}</td>
-                      <td>${row.Attempted || 0}</td>
-                      <td>${accuracyPct}</td>
-                    </tr>
-                  `;
-                }).join("")}
-              </tbody>
-            </table>
-          </div>
-        `;
-      } catch (err) {
-        el.textContent = "Unable to load scoreboard right now.";
-        console.error(err);
-      }
+    if (!TRIVIA_LEADERBOARD_CSV_URL) {
+      el.textContent = "Leaderboard feed is not connected yet.";
+      return;
     }
+
+    const csv = await fetchCsv(TRIVIA_LEADERBOARD_CSV_URL);
+    const rows = parseCsv(csv);
+
+    if (!rows.length) {
+      el.textContent = "No trivia scores yet.";
+      return;
+    }
+
+    const topRows = rows.slice(0, 10);
+
+    el.innerHTML = `
+      <div class="leaderboardList">
+        ${topRows.map((row, idx) => {
+          const rank = idx + 1;
+          const accuracyRaw = parseFloat(row.Accuracy || 0);
+          const accuracyPct = isNaN(accuracyRaw) ? "" : `${Math.round(accuracyRaw)}%`;
+          const teamName = String(row.Team || "").trim();
+          const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
+
+          return `
+            <div class="leaderboardRow">
+              <div class="leaderboardRank ${rank === 1 ? "is1" : ""} ${rank === 2 ? "is2" : ""} ${rank === 3 ? "is3" : ""}">
+                ${rank}
+              </div>
+
+              <div class="leaderboardMain">
+                <div class="leaderboardPlayer">${row.PlayerName || ""}</div>
+                ${teamName ? `<div class="leaderboardTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
+              </div>
+
+              <div class="leaderboardStats">
+                <div class="leaderboardStat"><strong>${row.Correct || 0}</strong> correct</div>
+                <div class="leaderboardStat"><strong>${row.Attempted || 0}</strong> attempts</div>
+                <div class="leaderboardStat"><strong>${accuracyPct}</strong> accuracy</div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  } catch (err) {
+    el.textContent = "Unable to load scoreboard right now.";
+    console.error(err);
+  }
+}
 
     async function submitKidQuestion(evt){
       evt.preventDefault();
