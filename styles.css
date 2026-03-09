@@ -3293,6 +3293,9 @@ Paste at VERY BOTTOM of styles.css
 
 .weeklyChampionMain{
   min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
 }
 
 .weeklyChampionPlayer{
@@ -3300,17 +3303,23 @@ Paste at VERY BOTTOM of styles.css
   font-weight:900;
   color:#111827;
   line-height:1.15;
+  text-align:left;
 }
 
 .weeklyChampionTeam{
   margin-top:4px;
-  display:inline-flex;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  align-self:flex-start;
+  width:max-content;
   padding:3px 8px;
   border-radius:999px;
   background:#e0ecff;
   color:#1d4ed8;
   font-size:.78rem;
   font-weight:800;
+  text-align:left;
 }
 
 .weeklyChampionChips{
