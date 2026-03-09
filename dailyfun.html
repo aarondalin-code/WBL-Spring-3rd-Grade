@@ -928,7 +928,7 @@
               <tbody>
                 ${topRows.map((row, idx) => {
                   const accuracyRaw = parseFloat(row.Accuracy || 0);
-                  const accuracyPct = isNaN(accuracyRaw) ? "" : `${Math.round(accuracyRaw * 100)}%`;
+                  const accuracyPct = isNaN(accuracyRaw) ? "" : `${Math.round(accuracyRaw * 1)}%`;
 
                   return `
                     <tr>
