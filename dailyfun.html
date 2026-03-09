@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Daily Fun • WBL 3rd Grade 2026</title>
-  <link rel="stylesheet" href="./styles.css?v=wbl2026-dailyfun2" />
+  <link rel="stylesheet" href="./styles.css?v=wbl2026-dailyfun3" />
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVXQ5JN459"></script>
@@ -15,350 +15,364 @@
     gtag('config', 'G-VVXQ5JN459');
   </script>
 
-<style>
-.dailyFunPage{
-  --accent:#1d4ed8;
-  --accentLight:#dbeafe;
-  --softBg:#f8fafc;
-  --textDark:#1f2937;
-  --textSoft:#6b7280;
-}
+  <style>
+    .dailyFunPage{
+      --accent:#1d4ed8;
+      --accentLight:#dbeafe;
+      --softBg:#f8fafc;
+      --textDark:#1f2937;
+      --textSoft:#6b7280;
+    }
 
-.dailyFunPage .brandCenter{
-  text-align:center;
-}
+    .dailyFunPage .brandCenter{
+      text-align:center;
+    }
 
-.dailyFunPage .brandCenter h1{
-  font-size:2.1rem;
-  letter-spacing:.03em;
-}
+    .dailyFunPage .brandCenter h1{
+      font-size:2.1rem;
+      letter-spacing:.03em;
+    }
 
-.dailyFunPage .dailyIntroCard .cardBody{
-  text-align:center;
-  padding:26px;
-}
+    .dailyFunPage .dailyIntroCard .cardBody{
+      text-align:center;
+      padding:26px;
+    }
 
-.dailyFunPage .dailyIntroTitle{
-  font-size:1.6rem;
-  font-weight:900;
-  color:var(--accent);
-  margin-bottom:6px;
-}
+    .dailyFunPage .dailyIntroTitle{
+      font-size:1.6rem;
+      font-weight:900;
+      color:var(--accent);
+      margin-bottom:6px;
+    }
 
-.dailyFunPage .dailyIntroText{
-  max-width:720px;
-  margin:auto;
-  line-height:1.6;
-  color:var(--textSoft);
-}
+    .dailyFunPage .dailyIntroText{
+      max-width:720px;
+      margin:auto;
+      line-height:1.6;
+      color:var(--textSoft);
+    }
 
-.dailyFunPage .dailyFunGrid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:18px;
-  margin-bottom:18px;
-  align-items:stretch;
-}
+    .dailyFunPage .dailyFunGrid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+      margin-bottom:18px;
+      align-items:stretch;
+    }
 
-.dailyFunPage .dailyFunGrid > .card{
-  height:100%;
-}
+    .dailyFunPage .dailyFunGrid > .card{
+      height:100%;
+    }
 
-.dailyFunPage .card{
-  border:1px solid #e2e8f0;
-  box-shadow:0 10px 28px rgba(0,0,0,.05);
-  border-radius:16px;
-  overflow:hidden;
-}
+    .dailyFunPage .card{
+      border:1px solid #e2e8f0;
+      box-shadow:0 10px 28px rgba(0,0,0,.05);
+      border-radius:16px;
+      overflow:hidden;
+    }
 
-.dailyFunPage .cardBody{
-  padding:18px;
-}
+    .dailyFunPage .cardBody{
+      padding:18px;
+    }
 
-.dailyFunPage .dailyFunGrid > .card .cardBody{
-  height:100%;
-  display:flex;
-  flex-direction:column;
-}
+    .dailyFunPage .dailyFunGrid > .card .cardBody{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
 
-.dailyFunPage .dailySectionTitle{
-  font-size:1.15rem;
-  font-weight:900;
-  color:var(--accent);
-  margin-bottom:14px;
-  border-bottom:2px solid var(--accentLight);
-  padding-bottom:6px;
-}
+    .dailyFunPage .dailySectionTitle{
+      font-size:1.15rem;
+      font-weight:900;
+      color:var(--accent);
+      margin-bottom:14px;
+      border-bottom:2px solid var(--accentLight);
+      padding-bottom:6px;
+    }
 
-.dailyFunPage .dailyHistoryList{
-  display:grid;
-  gap:12px;
-}
+    .dailyFunPage .dailyHistoryList{
+      display:grid;
+      gap:12px;
+    }
 
-.dailyFunPage .dailyHistoryItem{
-  background:var(--softBg);
-  padding:12px;
-  border-radius:12px;
-}
+    .dailyFunPage .dailyHistoryItem{
+      background:var(--softBg);
+      padding:12px;
+      border-radius:12px;
+    }
 
-.dailyFunPage .dailyHistoryDate{
-  font-weight:800;
-  color:var(--accent);
-  margin-bottom:4px;
-}
+    .dailyFunPage .dailyHistoryDate{
+      font-weight:800;
+      color:var(--accent);
+      margin-bottom:4px;
+    }
 
-.dailyFunPage .dailyHistoryTitle{
-  font-weight:800;
-  margin-bottom:6px;
-  color:var(--textDark);
-}
+    .dailyFunPage .dailyHistoryTitle{
+      font-weight:800;
+      margin-bottom:6px;
+      color:var(--textDark);
+    }
 
-.dailyFunPage .dailyHistoryText{
-  color:#374151;
-  line-height:1.5;
-}
+    .dailyFunPage .dailyHistoryText{
+      color:#374151;
+      line-height:1.5;
+    }
 
-.dailyFunPage .dailyQuote{
-  font-size:1.25rem;
-  line-height:1.6;
-  font-style:italic;
-  color:#111827;
-  margin-bottom:10px;
-}
+    .dailyFunPage .dailyQuote{
+      font-size:1.25rem;
+      line-height:1.6;
+      font-style:italic;
+      color:#111827;
+      margin-bottom:10px;
+    }
 
-.dailyFunPage .dailyQuoteSpeaker{
-  font-weight:800;
-  color:var(--accent);
-}
+    .dailyFunPage .dailyQuoteSpeaker{
+      font-weight:800;
+      color:var(--accent);
+    }
 
-.dailyFunPage .dailyFactText{
-  font-size:1.2rem;
-  font-weight:800;
-  color:#111827;
-  line-height:1.6;
-  margin-bottom:8px;
-}
+    .dailyFunPage .dailyFactText{
+      font-size:1.2rem;
+      font-weight:800;
+      color:#111827;
+      line-height:1.6;
+      margin-bottom:8px;
+    }
 
-.dailyFunPage .dailyFactCategory{
-  font-size:.85rem;
-  font-weight:700;
-  color:var(--textSoft);
-}
+    .dailyFunPage .dailyFactCategory{
+      font-size:.85rem;
+      font-weight:700;
+      color:var(--textSoft);
+    }
 
-.dailyFunPage .featuredQ{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  flex:1;
-}
+    .dailyFunPage .featuredQ{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;
+    }
 
-.dailyFunPage .featuredQName{
-  font-weight:800;
-  color:var(--accent);
-}
+    .dailyFunPage .featuredQLabel{
+      font-size:.82rem;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--textSoft);
+      font-weight:900;
+    }
 
-.dailyFunPage .featuredQQuestion{
-  font-size:1.05rem;
-  line-height:1.6;
-}
+    .dailyFunPage .featuredQName{
+      font-weight:800;
+      color:var(--accent);
+    }
 
-.dailyFunPage .featuredQAnswer{
-  background:var(--softBg);
-  padding:12px;
-  border-radius:12px;
-  border-left:4px solid var(--accent);
-  margin-top:auto;
-}
+    .dailyFunPage .featuredQQuestion{
+      font-size:1.05rem;
+      line-height:1.6;
+    }
 
-.dailyFunPage .questionForm{
-  display:grid;
-  gap:12px;
-  flex:1;
-}
+    .dailyFunPage .featuredQAnswer{
+      background:var(--softBg);
+      padding:12px;
+      border-radius:12px;
+      border-left:4px solid var(--accent);
+      margin-top:auto;
+    }
 
-.dailyFunPage .questionFormRow{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
+    .dailyFunPage .questionForm{
+      display:grid;
+      gap:12px;
+      flex:1;
+    }
 
-.dailyFunPage .questionForm input,
-.dailyFunPage .questionForm textarea{
-  width:100%;
-  box-sizing:border-box;
-  border:1px solid #d1d5db;
-  border-radius:12px;
-  padding:12px;
-  font-size:.95rem;
-  font:inherit;
-}
+    .dailyFunPage .questionFormRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
 
-.dailyFunPage .questionForm textarea{
-  min-height:120px;
-  resize:vertical;
-}
+    .dailyFunPage .questionForm input,
+    .dailyFunPage .questionForm textarea{
+      width:100%;
+      box-sizing:border-box;
+      border:1px solid #d1d5db;
+      border-radius:12px;
+      padding:12px;
+      font-size:.95rem;
+      font:inherit;
+    }
 
-.dailyFunPage .questionForm button{
-  background:var(--accent);
-  color:#fff;
-  font-weight:800;
-  border:none;
-  border-radius:12px;
-  padding:12px 16px;
-  cursor:pointer;
-  transition:all .15s ease;
-  width:auto;
-  display:inline-block;
-  align-self:flex-start;
-}
+    .dailyFunPage .questionForm textarea{
+      min-height:120px;
+      resize:vertical;
+    }
 
-.dailyFunPage .questionForm button:hover{
-  background:#1e40af;
-  transform:translateY(-1px);
-}
+    .dailyFunPage .questionForm button{
+      background:var(--accent);
+      color:#fff;
+      font-weight:800;
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      cursor:pointer;
+      transition:all .15s ease;
+      width:auto;
+      display:inline-block;
+      align-self:flex-start;
+    }
 
-.dailyFunPage .archiveItem{
-  background:var(--softBg);
-  border-radius:12px;
-  padding:12px;
-}
+    .dailyFunPage .questionForm button:hover{
+      background:#1e40af;
+      transform:translateY(-1px);
+    }
 
-.dailyFunPage .archiveMeta{
-  font-weight:800;
-  color:var(--accent);
-}
+    .dailyFunPage .questionFormNote,
+    .dailyFunPage .submitMsg{
+      line-height:1.45;
+      color:var(--textSoft);
+    }
 
-.dailyFunPage .archiveQ{
-  margin-top:4px;
-}
+    .dailyFunPage .archiveList{
+      display:grid;
+      gap:12px;
+    }
 
-.dailyFunPage .archiveA{
-  margin-top:6px;
-}
+    .dailyFunPage .archiveItem{
+      background:var(--softBg);
+      border-radius:12px;
+      padding:12px;
+    }
 
-.dailyFunPage .dailyAskCard{
-  grid-column:1 / -1;
-}
+    .dailyFunPage .archiveMeta{
+      font-weight:800;
+      color:var(--accent);
+    }
 
-@media (max-width:900px){
-  .dailyFunPage .dailyFunGrid{
-    grid-template-columns:1fr;
-  }
+    .dailyFunPage .archiveQ{
+      margin-top:4px;
+    }
 
-  .dailyFunPage .questionFormRow{
-    grid-template-columns:1fr;
-  }
+    .dailyFunPage .archiveA{
+      margin-top:6px;
+    }
 
-  .dailyFunPage .dailyAskCard{
-    grid-column:auto;
-  }
-}
+    .dailyFunPage .dailyAskCard{
+      grid-column:1 / -1;
+    }
 
-.dailyFunPage .triviaQuestion{
-  font-size:1.05rem;
-  line-height:1.55;
-  margin-bottom:12px;
-  color:var(--textDark);
-  font-weight:800;
-}
+    .dailyFunPage .triviaQuestion{
+      font-size:1.05rem;
+      line-height:1.55;
+      margin-bottom:12px;
+      color:var(--textDark);
+      font-weight:800;
+    }
 
-.dailyFunPage .triviaChoices{
-  display:grid;
-  gap:10px;
-  margin-bottom:12px;
-}
+    .dailyFunPage .triviaChoices{
+      display:grid;
+      gap:10px;
+      margin-bottom:12px;
+    }
 
-.dailyFunPage .triviaChoice{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  background:var(--softBg);
-  border:1px solid #dbe3ef;
-  border-radius:12px;
-  padding:10px 12px;
-}
+    .dailyFunPage .triviaChoice{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      background:var(--softBg);
+      border:1px solid #dbe3ef;
+      border-radius:12px;
+      padding:10px 12px;
+    }
 
-.dailyFunPage .triviaForm{
-  display:grid;
-  gap:12px;
-}
+    .dailyFunPage .triviaForm{
+      display:grid;
+      gap:12px;
+    }
 
-.dailyFunPage .triviaFormRow{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
+    .dailyFunPage .triviaFormRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
 
-.dailyFunPage .triviaForm input{
-  width:100%;
-  box-sizing:border-box;
-  border:1px solid #d1d5db;
-  border-radius:12px;
-  padding:12px;
-  font:inherit;
-}
+    .dailyFunPage .triviaForm input{
+      width:100%;
+      box-sizing:border-box;
+      border:1px solid #d1d5db;
+      border-radius:12px;
+      padding:12px;
+      font:inherit;
+    }
 
-.dailyFunPage .triviaSubmitBtn{
-  background:var(--accent);
-  color:#fff;
-  font-weight:800;
-  border:none;
-  border-radius:12px;
-  padding:12px 16px;
-  cursor:pointer;
-  width:auto;
-  display:inline-block;
-  align-self:flex-start;
-}
+    .dailyFunPage .triviaSubmitBtn{
+      background:var(--accent);
+      color:#fff;
+      font-weight:800;
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      cursor:pointer;
+      width:auto;
+      display:inline-block;
+      align-self:flex-start;
+    }
 
-.dailyFunPage .triviaSubmitBtn:hover{
-  background:#1e40af;
-}
+    .dailyFunPage .triviaSubmitBtn:hover{
+      background:#1e40af;
+    }
 
-.dailyFunPage .triviaMsg{
-  line-height:1.5;
-  color:var(--textSoft);
-}
+    .dailyFunPage .triviaMsg{
+      line-height:1.5;
+      color:var(--textSoft);
+    }
 
-.dailyFunPage .triviaMsg.good{
-  color:#166534;
-  font-weight:800;
-}
+    .dailyFunPage .triviaMsg.good{
+      color:#166534;
+      font-weight:800;
+    }
 
-.dailyFunPage .triviaMsg.bad{
-  color:#b91c1c;
-  font-weight:800;
-}
+    .dailyFunPage .triviaMsg.bad{
+      color:#b91c1c;
+      font-weight:800;
+    }
 
-.dailyFunPage .leaderboardTableWrap{
-  overflow-x:auto;
-}
+    .dailyFunPage .leaderboardTableWrap{
+      overflow-x:auto;
+    }
 
-.dailyFunPage .leaderboardTable{
-  width:100%;
-  border-collapse:collapse;
-}
+    .dailyFunPage .leaderboardTable{
+      width:100%;
+      border-collapse:collapse;
+    }
 
-.dailyFunPage .leaderboardTable th,
-.dailyFunPage .leaderboardTable td{
-  padding:10px 8px;
-  border-bottom:1px solid #e5e7eb;
-  text-align:left;
-  font-size:.95rem;
-}
+    .dailyFunPage .leaderboardTable th,
+    .dailyFunPage .leaderboardTable td{
+      padding:10px 8px;
+      border-bottom:1px solid #e5e7eb;
+      text-align:left;
+      font-size:.95rem;
+    }
 
-.dailyFunPage .leaderboardTable th{
-  color:var(--accent);
-  font-weight:900;
-}
+    .dailyFunPage .leaderboardTable th{
+      color:var(--accent);
+      font-weight:900;
+    }
 
-@media (max-width:900px){
-  .dailyFunPage .triviaFormRow{
-    grid-template-columns:1fr;
-  }
-}
+    @media (max-width:900px){
+      .dailyFunPage .dailyFunGrid{
+        grid-template-columns:1fr;
+      }
 
-</style>
+      .dailyFunPage .questionFormRow,
+      .dailyFunPage .triviaFormRow{
+        grid-template-columns:1fr;
+      }
+
+      .dailyFunPage .dailyAskCard{
+        grid-column:auto;
+      }
+    }
+  </style>
+</head>
 
 <body class="watermarkPage dailyFunPage hasHamburger">
   <header class="siteHeader">
@@ -395,7 +409,7 @@
       <article class="card dailyIntroCard">
         <div class="cardBody">
           <h2 class="dailyIntroTitle">Daily Fun</h2>
-          <p class="dailyIntroText">Baseball history, famous quotes, fun facts, and questions from WBL kids.</p>
+          <p class="dailyIntroText">Baseball history, famous quotes, fun facts, trivia, and questions from WBL kids.</p>
         </div>
       </article>
 
@@ -428,20 +442,20 @@
           </div>
         </article>
 
-       <article class="card">
-  <div class="cardBody">
-    <div class="dailySectionTitle">Trivia Question of the Day</div>
-    <div id="triviaCard">Loading today’s trivia...</div>
-  </div>
-</article>
-        
         <article class="card">
-  <div class="cardBody">
-    <div class="dailySectionTitle">Trivia Scoreboard</div>
-    <div id="triviaLeaderboard">Loading scoreboard...</div>
-  </div>
-</article>
-           
+          <div class="cardBody">
+            <div class="dailySectionTitle">Trivia Question of the Day</div>
+            <div id="triviaCard">Loading today’s trivia...</div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="cardBody">
+            <div class="dailySectionTitle">Trivia Scoreboard</div>
+            <div id="triviaLeaderboard">Loading scoreboard...</div>
+          </div>
+        </article>
+
         <article class="card dailyAskCard">
           <div class="cardBody">
             <div class="dailySectionTitle">Ask a Baseball Question</div>
@@ -511,26 +525,17 @@
       window.SHEET?.KIDS_QUESTIONS_API_URL ||
       "https://script.google.com/macros/s/AKfycbzI_HtEsDPhd53HKPO1Rr_xhWl6BFAgGbHVqb0mhk2qukvUz23d8xalewu0juBBlMQEPg/exec";
 
-const TRIVIA_CSV_URL =
-  window.SHEET?.BASEBALL_TRIVIA_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1107767543&single=true&output=csv";
+    const TRIVIA_CSV_URL =
+      window.SHEET?.BASEBALL_TRIVIA_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1107767543&single=true&output=csv";
 
-const TRIVIA_LEADERBOARD_CSV_URL =
-  window.SHEET?.TRIVIA_LEADERBOARD_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1411514113&single=true&output=csv";
+    const TRIVIA_LEADERBOARD_CSV_URL =
+      window.SHEET?.TRIVIA_LEADERBOARD_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1411514113&single=true&output=csv";
 
-const TRIVIA_API_URL =
-  window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
+    const TRIVIA_API_URL =
+      window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
 
-
-
-
-
-
-
-
-
-
-
-    
     async function fetchCsv(url){
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch CSV");
@@ -753,6 +758,199 @@ const TRIVIA_API_URL =
       }
     }
 
+    async function loadTrivia(){
+      const el = document.getElementById("triviaCard");
+
+      try {
+        if (!TRIVIA_CSV_URL) {
+          el.textContent = "Trivia feed is not connected yet.";
+          return;
+        }
+
+        const csv = await fetchCsv(TRIVIA_CSV_URL);
+        const rows = parseCsv(csv);
+        const key = getMonthDayKey();
+
+        const item = rows.find(r =>
+          String(r.MonthDay || "").trim() === key &&
+          String(r.Active || "").toUpperCase() !== "FALSE"
+        );
+
+        if (!item) {
+          el.textContent = "No trivia question has been added for today yet.";
+          return;
+        }
+
+        el.innerHTML = `
+          <form id="triviaForm" class="triviaForm">
+            <div class="triviaQuestion">${item.Question || ""}</div>
+
+            <div class="triviaChoices">
+              <label class="triviaChoice">
+                <input type="radio" name="selectedAnswer" value="A" required />
+                <span><strong>A.</strong> ${item.ChoiceA || ""}</span>
+              </label>
+              <label class="triviaChoice">
+                <input type="radio" name="selectedAnswer" value="B" required />
+                <span><strong>B.</strong> ${item.ChoiceB || ""}</span>
+              </label>
+              <label class="triviaChoice">
+                <input type="radio" name="selectedAnswer" value="C" required />
+                <span><strong>C.</strong> ${item.ChoiceC || ""}</span>
+              </label>
+              <label class="triviaChoice">
+                <input type="radio" name="selectedAnswer" value="D" required />
+                <span><strong>D.</strong> ${item.ChoiceD || ""}</span>
+              </label>
+            </div>
+
+            <div class="triviaFormRow">
+              <input type="text" id="triviaPlayerName" maxlength="30" placeholder="First name or nickname" required />
+              <input type="text" id="triviaTeamName" maxlength="40" placeholder="Team name" />
+            </div>
+
+            <input type="hidden" id="triviaId" value="${item.ID || ""}" />
+
+            <button type="submit" class="triviaSubmitBtn">Submit Trivia Answer</button>
+            <div id="triviaMsg" class="triviaMsg"></div>
+          </form>
+        `;
+
+        document.getElementById("triviaForm").addEventListener("submit", submitTrivia);
+      } catch (err) {
+        el.textContent = "Unable to load trivia right now.";
+        console.error(err);
+      }
+    }
+
+    async function submitTrivia(evt){
+      evt.preventDefault();
+
+      const msg = document.getElementById("triviaMsg");
+      const playerName = document.getElementById("triviaPlayerName").value.trim();
+      const teamName = document.getElementById("triviaTeamName").value.trim();
+      const triviaId = document.getElementById("triviaId").value.trim();
+      const selected = document.querySelector('input[name="selectedAnswer"]:checked');
+
+      if (!playerName || !triviaId || !selected) {
+        msg.className = "triviaMsg bad";
+        msg.textContent = "Please enter your name and choose an answer.";
+        return;
+      }
+
+      msg.className = "triviaMsg";
+      msg.textContent = "Submitting your answer...";
+
+      try {
+        const formData = new URLSearchParams();
+        formData.append("action", "submitTrivia");
+        formData.append("playerName", playerName);
+        formData.append("teamName", teamName);
+        formData.append("triviaId", triviaId);
+        formData.append("selectedAnswer", selected.value);
+
+        const res = await fetch(TRIVIA_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData.toString()
+        });
+
+        if (!res.ok) throw new Error("Trivia submit failed");
+
+        const data = await res.json();
+
+        if (data.status === "ALREADY_SUBMITTED") {
+          msg.className = "triviaMsg bad";
+          msg.textContent = data.message || "You already answered today's trivia.";
+          return;
+        }
+
+        if (data.status !== "OK") {
+          msg.className = "triviaMsg bad";
+          msg.textContent = data.message || "There was a problem submitting your answer.";
+          return;
+        }
+
+        if (data.correct) {
+          msg.className = "triviaMsg good";
+          msg.textContent = `Correct! ${data.explanation ? data.explanation : ""}`;
+        } else {
+          msg.className = "triviaMsg bad";
+          msg.textContent = `Not quite. ${data.explanation ? data.explanation : ""}`;
+        }
+
+        const form = document.getElementById("triviaForm");
+        if (form) {
+          const controls = form.querySelectorAll("input, button");
+          controls.forEach(el => el.disabled = true);
+        }
+
+        loadTriviaLeaderboard();
+      } catch (err) {
+        msg.className = "triviaMsg bad";
+        msg.textContent = "Sorry, there was a problem submitting your answer.";
+        console.error(err);
+      }
+    }
+
+    async function loadTriviaLeaderboard(){
+      const el = document.getElementById("triviaLeaderboard");
+
+      try {
+        if (!TRIVIA_LEADERBOARD_CSV_URL) {
+          el.textContent = "Leaderboard feed is not connected yet.";
+          return;
+        }
+
+        const csv = await fetchCsv(TRIVIA_LEADERBOARD_CSV_URL);
+        const rows = parseCsv(csv);
+
+        if (!rows.length) {
+          el.textContent = "No trivia scores yet.";
+          return;
+        }
+
+        const topRows = rows.slice(0, 10);
+
+        el.innerHTML = `
+          <div class="leaderboardTableWrap">
+            <table class="leaderboardTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Player</th>
+                  <th>Team</th>
+                  <th>Correct</th>
+                  <th>Attempted</th>
+                  <th>Accuracy</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${topRows.map((row, idx) => {
+                  const accuracyRaw = parseFloat(row.Accuracy || 0);
+                  const accuracyPct = isNaN(accuracyRaw) ? "" : `${Math.round(accuracyRaw * 100)}%`;
+
+                  return `
+                    <tr>
+                      <td>${idx + 1}</td>
+                      <td>${row.PlayerName || ""}</td>
+                      <td>${row.Team || ""}</td>
+                      <td>${row.Correct || 0}</td>
+                      <td>${row.Attempted || 0}</td>
+                      <td>${accuracyPct}</td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (err) {
+        el.textContent = "Unable to load scoreboard right now.";
+        console.error(err);
+      }
+    }
+
     async function submitKidQuestion(evt){
       evt.preventDefault();
 
@@ -801,6 +999,8 @@ const TRIVIA_API_URL =
     loadQuote();
     loadFact();
     loadFeaturedQuestion();
+    loadTrivia();
+    loadTriviaLeaderboard();
   </script>
 
   <script src="./nav.js"></script>
