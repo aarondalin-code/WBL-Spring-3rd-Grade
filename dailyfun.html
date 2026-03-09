@@ -902,56 +902,6 @@ function getYouTubeEmbedUrl(url){
       return Math.floor(diff / oneDay);
     }
 
- let baseballHistoryCache = null;
-
-function pickRandom(arr){
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function getMonthDayFromDate(d){
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${mm}-${dd}`;
-}
-
-function findHistoryItemsForDate(rows, key){
-  return rows.filter(r =>
-    String(r.MonthDay || "").trim() === key &&
-    String(r.Active || "").toUpperCase() !== "FALSE"
-  );
-}
-
-async function getHistoryRows(){
-  if (baseballHistoryCache) return baseballHistoryCache;
-  const csv = await fetchCsv(HISTORY_CSV_URL);
-  baseballHistoryCache = parseCsv(csv);
-  return baseballHistoryCache;
-}
-
-function findBestHistoryItem(rows){
-  const today = new Date();
-  const todayKey = getMonthDayFromDate(today);
-
-  const exactItems = findHistoryItemsForDate(rows, todayKey);
-  if (exactItems.length) return pickRandom(exactItems);
-
-  for (let offset = 1; offset <= 7; offset++) {
-    const earlier = new Date(today);
-    earlier.setDate(today.getDate() - offset);
-
-    const later = new Date(today);
-    later.setDate(today.getDate() + offset);
-
-    const earlierItems = findHistoryItemsForDate(rows, getMonthDayFromDate(earlier));
-    if (earlierItems.length) return pickRandom(earlierItems);
-
-    const laterItems = findHistoryItemsForDate(rows, getMonthDayFromDate(later));
-    if (laterItems.length) return pickRandom(laterItems);
-  }
-
-  return null;
-}
-
 let baseballHistoryCache = null;
 
 function pickRandom(arr){
