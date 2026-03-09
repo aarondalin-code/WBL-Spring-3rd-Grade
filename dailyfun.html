@@ -511,6 +511,26 @@
       window.SHEET?.KIDS_QUESTIONS_API_URL ||
       "https://script.google.com/macros/s/AKfycbzI_HtEsDPhd53HKPO1Rr_xhWl6BFAgGbHVqb0mhk2qukvUz23d8xalewu0juBBlMQEPg/exec";
 
+const TRIVIA_CSV_URL =
+  window.SHEET?.BASEBALL_TRIVIA_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1107767543&single=true&output=csv";
+
+const TRIVIA_LEADERBOARD_CSV_URL =
+  window.SHEET?.TRIVIA_LEADERBOARD_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1411514113&single=true&output=csv";
+
+const TRIVIA_API_URL =
+  window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
+
+
+
+
+
+
+
+
+
+
+
+    
     async function fetchCsv(url){
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch CSV");
