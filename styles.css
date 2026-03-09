@@ -3216,3 +3216,32 @@ Paste at VERY BOTTOM of styles.css
     white-space:normal;
   }
 }
+
+/* Baseball History Card */
+
+.dailyHistoryItem{
+  background:#fff;
+  border:3px solid #0b4f26;
+  border-radius:10px;
+  padding:14px 16px;
+  box-shadow:0 3px 8px rgba(0,0,0,.15);
+  margin-top:6px;
+}
+
+.dailyHistoryDate{
+  font-weight:700;
+  color:#0b4f26;
+  font-size:1.05rem;
+  margin-bottom:4px;
+}
+
+.dailyHistoryTitle{
+  font-weight:700;
+  font-size:1.15rem;
+  margin-bottom:6px;
+}
+
+.dailyHistoryText{
+  font-size:.95rem;
+  line-height:1.4;
+}
