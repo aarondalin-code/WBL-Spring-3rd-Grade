@@ -17,6 +17,71 @@
 
   <style>
 
+.dailyFunPage .birthdayList{
+  display:grid;
+  gap:14px;
+}
+
+.dailyFunPage .birthdayItem{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  background:var(--softBg);
+  border-radius:14px;
+  padding:12px;
+}
+
+.dailyFunPage .birthdayPhoto{
+  width:64px;
+  height:64px;
+  object-fit:cover;
+  border-radius:50%;
+  border:2px solid #e5e7eb;
+  flex:0 0 64px;
+}
+
+.dailyFunPage .birthdayContent{
+  flex:1;
+  min-width:0;
+}
+
+.dailyFunPage .birthdayPlayerRow{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  margin-bottom:4px;
+}
+
+.dailyFunPage .birthdayPlayer{
+  font-size:1.05rem;
+  font-weight:900;
+  color:var(--textDark);
+}
+
+.dailyFunPage .birthdayEra{
+  display:inline-block;
+  padding:3px 8px;
+  border-radius:999px;
+  background:#e0ecff;
+  color:#1d4ed8;
+  font-size:.78rem;
+  font-weight:800;
+}
+
+.dailyFunPage .birthdayMeta{
+  color:var(--accent);
+  font-weight:700;
+  margin-bottom:6px;
+  font-size:.92rem;
+}
+
+.dailyFunPage .birthdayFact{
+  line-height:1.5;
+  color:#374151;
+}
+
+   
 .dailyFunPage .movieTitle{
   font-size:1.15rem;
   font-weight:900;
@@ -1068,26 +1133,54 @@ async function loadBirthdaySpotlight(){
       String(r.MonthDay || "").trim() === getMonthDayKey()
     );
 
-    if(!rows.length){
+    if (!rows.length) {
       el.innerHTML = "<div>No MLB birthdays listed for today yet.</div>";
       return;
     }
 
+    const currentYear = new Date().getFullYear();
+
     el.innerHTML = `
       <div class="birthdayList">
-        ${rows.map(item => `
-          <div class="birthdayItem">
-            <div class="birthdayPlayer">${item.Player}</div>
-            <div class="birthdayMeta">
-              ${item.BirthYear ? `Born ${item.BirthYear}` : ""}
+        ${rows.map(item => {
+          const birthYear = String(item.BirthYear || "").trim();
+          const ageText =
+            birthYear && !isNaN(Number(birthYear))
+              ? `Born ${birthYear} • Age ${currentYear - Number(birthYear)}`
+              : "";
+
+          const eraText = String(item.Era || "").trim();
+          const imageUrl = String(item.ImageURL || "").trim();
+          const playerName = String(item.Player || "").trim();
+          const shortFact = String(item.ShortFact || "").trim();
+
+          return `
+            <div class="birthdayItem">
+              ${imageUrl ? `
+                <img
+                  src="${imageUrl}"
+                  class="birthdayPhoto"
+                  alt="${playerName}"
+                  loading="lazy"
+                  onerror="this.style.display='none';"
+                />
+              ` : ""}
+
+              <div class="birthdayContent">
+                <div class="birthdayPlayerRow">
+                  <div class="birthdayPlayer">${playerName}</div>
+                  ${eraText ? `<div class="birthdayEra">${eraText}</div>` : ""}
+                </div>
+
+                ${ageText ? `<div class="birthdayMeta">${ageText}</div>` : ""}
+                ${shortFact ? `<div class="birthdayFact">${shortFact}</div>` : ""}
+              </div>
             </div>
-            ${item.ShortFact ? `<div class="birthdayFact">${item.ShortFact}</div>` : ""}
-          </div>
-        `).join("")}
+          `;
+        }).join("")}
       </div>
     `;
-
-  } catch(err){
+  } catch (err) {
     el.textContent = "Unable to load birthday spotlight right now.";
     console.error(err);
   }
