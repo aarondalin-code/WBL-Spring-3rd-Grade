@@ -1301,7 +1301,7 @@ async function loadTriviaWeeklyChampion(){
             </div>
             <div class="weeklyChampionMain">
               <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-              ${row.Team ? `<div class="weeklyChampionTeam">${row.Team}</div>` : ""}
+  ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${getTeamColor(row.Team)}">${row.Team}</div>` : ""}
             </div>
           </div>
         `).join("")}
