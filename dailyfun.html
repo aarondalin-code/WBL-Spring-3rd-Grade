@@ -1272,7 +1272,9 @@ async function loadBirthdaySpotlight(){
     
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
+
   try {
+      await loadTeamColors();
     if (!TRIVIA_WEEKLY_CSV_URL) {
       el.textContent = "Weekly champion feed is not connected yet.";
       return;
@@ -1326,8 +1328,8 @@ async function loadTriviaWeeklyChampion(){
             </div>
             <div class="weeklyChampionMain">
               <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-  ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${getTeamColor(row.Team)}">${row.Team}</div>` : ""}
-            </div>
+  ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[String(row.Team || "").trim()] || '#2563eb'}">${row.Team}</div>` : ""}           
+  </div>
           </div>
         `).join("")}
 
