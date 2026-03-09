@@ -757,7 +757,7 @@
         
     <article class="card">
           <div class="cardBody">
-            <div class="dailySectionTitle">Top 10 Season Trivia Leaders</div>
+            <div class="dailySectionTitle">Top 5 Season Trivia Leaders</div>
             <div id="triviaLeaderboard">Loading scoreboard...</div>
           </div>
         </article> 
@@ -1619,7 +1619,7 @@ ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[
       return;
     }
 
-    const topRows = rows.slice(0, 10);
+    const topRows = rows.slice(0, 5);
 
     el.innerHTML = `
       <div class="leaderboardList">
