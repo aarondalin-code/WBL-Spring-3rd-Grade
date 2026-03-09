@@ -830,57 +830,6 @@ const TRIVIA_WEEKLY_CSV_URL =
       }
     }
 
-async function loadTriviaTodayLeaders(){
-  const el = document.getElementById("triviaTodayLeaders");
-
-  try {
-    if (!TRIVIA_TODAY_CSV_URL) {
-      el.textContent = "Today's leaders feed is not connected yet.";
-      return;
-    }
-
-    const csv = await fetchCsv(TRIVIA_TODAY_CSV_URL);
-    const rows = parseCsv(csv);
-
-    if (!rows.length || String(rows[0].PlayerName || "").trim() === "No entries yet") {
-      el.textContent = "No trivia entries yet today.";
-      return;
-    }
-
-    const topRows = rows.slice(0, 5);
-
-    el.innerHTML = `
-      <div class="leaderboardTableWrap">
-        <table class="leaderboardTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Player</th>
-              <th>Team</th>
-              <th>Correct</th>
-              <th>Attempted</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${topRows.map((row, idx) => `
-              <tr>
-                <td>${idx + 1}</td>
-                <td>${row.PlayerName || ""}</td>
-                <td>${row.Team || ""}</td>
-                <td>${row.Correct || 0}</td>
-                <td>${row.Attempted || 0}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  } catch (err) {
-    el.textContent = "Unable to load today's leaders right now.";
-    console.error(err);
-  }
-}
-
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
 
@@ -1208,7 +1157,6 @@ async function loadTriviaWeeklyChampion(){
     loadFeaturedQuestion();
     loadTrivia();
     loadTriviaLeaderboard();
-    loadTriviaTodayLeaders();
     loadTriviaWeeklyChampion();
   </script>
 
