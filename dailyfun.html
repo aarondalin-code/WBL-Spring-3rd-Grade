@@ -1068,28 +1068,30 @@ async function loadBirthdaySpotlight(){
       String(r.MonthDay || "").trim() === getMonthDayKey()
     );
 
-    if (!rows.length) {
-      el.innerHTML = "<div>No MLB birthday spotlight for today yet.</div>";
+    if(!rows.length){
+      el.innerHTML = "<div>No MLB birthdays listed for today yet.</div>";
       return;
     }
 
-    const item = rows[0];
-    const age = item.BirthYear ? (new Date().getFullYear() - Number(item.BirthYear)) : "";
-
     el.innerHTML = `
-      <div class="birthdayPlayer">${item.Player || ""}</div>
-      <div class="birthdayMeta">
-        ${item.BirthYear ? `Born ${item.BirthYear}` : ""}
-        ${age ? ` • Would be ${age}` : ""}
+      <div class="birthdayList">
+        ${rows.map(item => `
+          <div class="birthdayItem">
+            <div class="birthdayPlayer">${item.Player}</div>
+            <div class="birthdayMeta">
+              ${item.BirthYear ? `Born ${item.BirthYear}` : ""}
+            </div>
+            ${item.ShortFact ? `<div class="birthdayFact">${item.ShortFact}</div>` : ""}
+          </div>
+        `).join("")}
       </div>
-      <div class="birthdayFact">${item.ShortFact || ""}</div>
     `;
-  } catch (err) {
+
+  } catch(err){
     el.textContent = "Unable to load birthday spotlight right now.";
     console.error(err);
   }
 }
-
     
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
