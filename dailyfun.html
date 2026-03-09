@@ -434,6 +434,37 @@
         grid-column:auto;
       }
     }
+    .weeklyChampionWrap{
+    text-align:center;
+    padding:8px 0;
+}
+
+.weeklyChampionTitle{
+  font-size:1.1rem;
+  font-weight:900;
+  color:#1d4ed8;
+  margin-bottom:10px;
+}
+
+.weeklyChampionPlayer{
+  font-size:1.2rem;
+  font-weight:800;
+  margin-bottom:4px;
+}
+
+.weeklyChampionStats{
+  margin-top:6px;
+  font-size:.95rem;
+  color:#374151;
+}
+
+.weeklyChampionNote{
+  margin-top:8px;
+  font-size:.9rem;
+  font-weight:700;
+  color:#6b7280;
+}
+    
   </style>
 </head>
 
@@ -863,19 +894,21 @@ async function loadTriviaWeeklyChampion(){
     }
 
     el.innerHTML = `
-      <div class="featuredQ">
-        <div class="featuredQLabel">This Week’s Leaders</div>
-        <div class="featuredQQuestion">
-          ${tiedRows.map(row => `
-            <div style="margin-bottom:10px;">
-              <div class="featuredQName">${row.PlayerName || ""}${row.Team ? " • " + row.Team : ""}</div>
-            </div>
-          `).join("")}
+      <div class="weeklyChampionWrap">
+        <div class="weeklyChampionTitle">🏆 Weekly Trivia Champion</div>
+
+        ${tiedRows.map(row => `
+          <div class="weeklyChampionPlayer">
+            ${row.PlayerName || ""}${row.Team ? " • " + row.Team : ""}
+          </div>
+        `).join("")}
+
+        <div class="weeklyChampionStats">
+          ${topCorrect} Correct • ${topAttempted} Attempts • ${accuracyText}
         </div>
-        <div class="featuredQAnswer">
-          <strong>Correct Answers:</strong> ${topCorrect}<br>
-          <strong>Attempts:</strong> ${topAttempted}<br>
-          <strong>Accuracy:</strong> ${accuracyText || ""}
+
+        <div class="weeklyChampionNote">
+          Perfect week!
         </div>
       </div>
     `;
