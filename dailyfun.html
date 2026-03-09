@@ -905,23 +905,37 @@ async function loadTriviaWeeklyChampion(){
       return;
     }
 
-    const champ = rows[0];
-    const accuracyRaw = String(champ.Accuracy || "").trim();
-    let accuracyText = accuracyRaw;
+    const first = rows[0];
+    const topCorrect = String(first.Correct || "").trim();
+    const topAttempted = String(first.Attempted || "").trim();
+    const topAccuracy = String(first.Accuracy || "").trim();
 
-    if (accuracyRaw && !accuracyRaw.endsWith("%")) {
-      const num = parseFloat(accuracyRaw);
+    const tiedRows = rows.filter(row =>
+      String(row.Correct || "").trim() === topCorrect &&
+      String(row.Attempted || "").trim() === topAttempted &&
+      String(row.Accuracy || "").trim() === topAccuracy
+    );
+
+    let accuracyText = topAccuracy;
+    if (accuracyText && !accuracyText.endsWith("%")) {
+      const num = parseFloat(accuracyText);
       if (!isNaN(num)) accuracyText = `${Math.round(num * 100)}%`;
     }
 
     el.innerHTML = `
       <div class="featuredQ">
-        <div class="featuredQLabel">This Week’s Leader</div>
-        <div class="featuredQName">${champ.PlayerName || ""}${champ.Team ? " • " + champ.Team : ""}</div>
+        <div class="featuredQLabel">This Week’s Leaders</div>
         <div class="featuredQQuestion">
-          Correct Answers: <strong>${champ.Correct || 0}</strong><br>
-          Attempts: <strong>${champ.Attempted || 0}</strong><br>
-          Accuracy: <strong>${accuracyText || ""}</strong>
+          ${tiedRows.map(row => `
+            <div style="margin-bottom:10px;">
+              <div class="featuredQName">${row.PlayerName || ""}${row.Team ? " • " + row.Team : ""}</div>
+            </div>
+          `).join("")}
+        </div>
+        <div class="featuredQAnswer">
+          <strong>Correct Answers:</strong> ${topCorrect}<br>
+          <strong>Attempts:</strong> ${topAttempted}<br>
+          <strong>Accuracy:</strong> ${accuracyText || ""}
         </div>
       </div>
     `;
@@ -929,7 +943,7 @@ async function loadTriviaWeeklyChampion(){
     el.textContent = "Unable to load weekly champion right now.";
     console.error(err);
   }
-}    
+}
     
     async function loadTrivia(){
       const el = document.getElementById("triviaCard");
