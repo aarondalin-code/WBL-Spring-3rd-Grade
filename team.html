@@ -228,6 +228,19 @@ body.teamPage #addCalendarBtn{
     </div>
   </section>
 
+<section class="card" id="rsvpSection" style="margin-top:14px; display:none;">
+  <div class="cardBody">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+      <h3 style="margin:0;">Next Game RSVP</h3>
+      <div id="rsvpGameMeta" class="muted small"></div>
+    </div>
+
+    <div id="rsvpSummary" class="muted small" style="margin-top:10px;"></div>
+    <div id="rsvpList" style="margin-top:12px;"></div>
+    <p id="rsvpMsg" class="muted small" style="margin-top:12px;"></p>
+  </div>
+</section>
+
   <!-- Roster -->
   <section class="card" style="margin-top:14px;">
     <div class="cardBody">
@@ -596,10 +609,104 @@ function renderPlayerModal(player, teamDisplayName, teamRows){
     ics.push("END:VCALENDAR");
     return ics.join("\r\n");
   }
+function formatRsvpDate(dateStr) {
+  if (!safe(dateStr)) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d)) return safe(dateStr);
+  return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+}
 
-  // -----------------------------
-  // Init
-  // -----------------------------
+function formatRsvpTime(timeStr) {
+  if (!safe(timeStr)) return "";
+  const d = new Date(timeStr);
+  if (!isNaN(d) && d.getFullYear() < 1905) {
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+  return safe(timeStr);
+}
+
+async function fetchRsvpBoard(teamSlug, token) {
+  const base = window.SHEET?.RSVP_API_URL;
+  if (!base) throw new Error("Missing RSVP_API_URL in data.js");
+
+  const url = new URL(base);
+  url.searchParams.set("action", "getRsvpBoard");
+  url.searchParams.set("teamSlug", teamSlug);
+  if (token) url.searchParams.set("token", token);
+  url.searchParams.set("t", Date.now());
+
+  const res = await fetch(url.toString(), { cache: "no-store" });
+  if (!res.ok) throw new Error(`RSVP request failed (${res.status})`);
+  return await res.json();
+}
+
+function renderRsvpBoard(data, teamDisplayName) {
+  const section = document.getElementById("rsvpSection");
+  const gameMeta = document.getElementById("rsvpGameMeta");
+  const summary = document.getElementById("rsvpSummary");
+  const list = document.getElementById("rsvpList");
+  const msg = document.getElementById("rsvpMsg");
+
+  if (!section || !gameMeta || !summary || !list || !msg) return;
+
+  section.style.display = "";
+  list.innerHTML = "";
+  msg.textContent = "";
+
+  if (!data || data.status !== "OK") {
+    msg.textContent = "Unable to load RSVP info.";
+    return;
+  }
+
+  if (!data.game) {
+    gameMeta.textContent = "";
+    summary.textContent = "No upcoming game found yet.";
+    return;
+  }
+
+  const opponent = safe(data.game.teamA) === safe(teamDisplayName)
+    ? safe(data.game.teamB)
+    : safe(data.game.teamA);
+
+  gameMeta.textContent = `${formatRsvpDate(data.game.date)} • ${formatRsvpTime(data.game.time)}${safe(data.game.field) ? " • " + safe(data.game.field) : ""} • vs ${opponent}`;
+
+  const c = data.counts || {};
+  summary.textContent = `Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}`;
+
+  const players = Array.isArray(data.players) ? data.players : [];
+  if (!players.length) {
+    msg.textContent = "No roster players found for this team yet.";
+    return;
+  }
+
+  players.forEach(p => {
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.justifyContent = "space-between";
+    row.style.alignItems = "center";
+    row.style.gap = "12px";
+    row.style.padding = "10px 0";
+    row.style.borderTop = "1px solid rgba(255,255,255,.08)";
+
+    const left = document.createElement("div");
+    left.innerHTML = `<strong>${safe(p.name) || safe(p.playerId)}</strong>${safe(p.number) ? ` <span class="muted small">#${safe(p.number)}</span>` : ""}`;
+
+    const right = document.createElement("div");
+    right.className = "muted small";
+    const response = safe(p.response).toUpperCase();
+    right.textContent = response || "NO RESPONSE";
+
+    row.appendChild(left);
+    row.appendChild(right);
+    list.appendChild(row);
+  });
+}
+
+
+
+
+
+  
   (async function init(){
     const slug = safe(getParam("team"));
     if (!slug) {
@@ -637,6 +744,19 @@ window.__TEAM_ROWS__ = teamRows;
         safe(g.TeamB) === teamDisplayName
       );
 
+const familyToken = safe(getParam("t"));
+
+try {
+  const rsvpData = await fetchRsvpBoard(slug, familyToken);
+  renderRsvpBoard(rsvpData, teamDisplayName);
+} catch (e) {
+  console.error("RSVP load failed:", e);
+  const msg = document.getElementById("rsvpMsg");
+  const section = document.getElementById("rsvpSection");
+  if (section) section.style.display = "";
+  if (msg) msg.textContent = "RSVP section unavailable right now.";
+}
+      
       const calBtn = document.getElementById("addCalendarBtn");
       if (calBtn){
         calBtn.addEventListener("click", () => {
