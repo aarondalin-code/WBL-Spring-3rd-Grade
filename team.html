@@ -147,81 +147,107 @@ body.teamPage #addCalendarBtn{
       }
     }
   
-  /* RSVP block */
+/* RSVP block */
+body.teamPage #rsvpSection .cardBody{
+  padding: 14px !important;
+}
+
 body.teamPage .rsvpHeaderOfficial{
   display:grid;
-  grid-template-columns:auto auto auto;
+  grid-template-columns: auto auto auto;
   justify-content:center;
   align-items:center;
-  gap:20px;
-  margin-top:10px;
+  gap:16px;
+  margin-top:0;
+  margin-bottom:4px;
 }
 
 body.teamPage .rsvpTeamSide{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
 }
-    
+
 body.teamPage .rsvpTeamSide.rightSide{
   flex-direction:row-reverse;
 }
 
 body.teamPage .rsvpMiniLogo{
-  width:34px;
-  height:34px;
+  width:28px;
+  height:28px;
   object-fit:contain;
-  flex:0 0 34px;
+  flex:0 0 28px;
 }
 
 body.teamPage .rsvpTeamName{
   font-weight:900;
-  line-height:1.1;
+  line-height:1.05;
+  font-size:14px;
 }
 
 body.teamPage .rsvpCenterMeta{
   text-align:center;
-  min-width:140px;
+  min-width:auto;
 }
 
 body.teamPage .rsvpCenterMeta .rsvpAt{
-  font-size:20px;
+  font-size:18px;
   font-weight:900;
   line-height:1;
 }
 
 body.teamPage .rsvpCenterMeta .rsvpMetaLine{
-  margin-top:4px;
+  margin-top:2px;
+  font-size:12px;
 }
 
 body.teamPage .rsvpGrid{
   display:grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap:10px 14px;
-  margin-top:14px;
+  gap:8px 10px;
+  margin-top:10px;
 }
 
 body.teamPage .rsvpPlayerCell{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
-  padding:10px 12px;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  background:rgba(255,255,255,.03);
+  gap:8px;
+  padding:7px 9px;
+  border:1px solid rgba(15,23,42,.08);
+  border-radius:10px;
+  background:rgba(15,23,42,.02);
 }
 
 body.teamPage .rsvpStatus{
-  font-size:12px;
+  font-size:11px;
   font-weight:900;
-  letter-spacing:.3px;
+  letter-spacing:.2px;
   white-space:nowrap;
 }
 
 @media (max-width: 900px){
   body.teamPage .rsvpGrid{
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px){
+  body.teamPage .rsvpHeaderOfficial{
+    grid-template-columns: 1fr;
+    justify-content:stretch;
+    text-align:center;
+    gap:8px;
+  }
+
+  body.teamPage .rsvpTeamSide,
+  body.teamPage .rsvpTeamSide.rightSide{
+    justify-content:center;
+    flex-direction:row;
+  }
+
+  body.teamPage .rsvpGrid{
+    grid-template-columns: 1fr;
   }
 }
 
@@ -323,19 +349,6 @@ body.teamPage .rsvpStatus{
     </div>
   </section>
 
-<section class="card" id="rsvpSection" style="margin-top:14px; display:none;">
-  <div class="cardBody">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-      <h3 style="margin:0;">Next Game RSVP</h3>
-      <div id="rsvpGameMeta" class="muted small"></div>
-    </div>
-
-    <div id="rsvpSummary" class="muted small" style="margin-top:10px;"></div>
-    <div id="rsvpList" style="margin-top:12px;"></div>
-    <p id="rsvpMsg" class="muted small" style="margin-top:12px;"></p>
-  </div>
-</section>
-
   <!-- Roster -->
   <section class="card" style="margin-top:14px;">
     <div class="cardBody">
@@ -343,11 +356,19 @@ body.teamPage .rsvpStatus{
         <h3 style="margin:0;">Roster</h3>
         <a class="btnSecondary" href="./teams.html">← Back to Teams</a>
       </div>
-
       <div id="rosterGrid" class="rosterGrid" style="margin-top:12px;"></div>
       <p id="rosterMsg" class="muted small" style="margin-top:12px;"></p>
     </div>
   </section>
+
+<section class="card" id="rsvpSection" style="margin-top:14px; display:none;">
+  <div class="cardBody">
+    <div id="rsvpGameMeta"></div>
+    <div id="rsvpSummary" class="muted small" style="margin-top:8px;"></div>
+    <div id="rsvpList" style="margin-top:10px;"></div>
+    <p id="rsvpMsg" class="muted small" style="margin-top:10px;"></p>
+  </div>
+</section>
 </main>
 
 <!-- Player modal -->
@@ -754,13 +775,12 @@ function renderRsvpBoard(data, teamDisplayName) {
   }
 
   if (!data.game) {
-    gameMeta.textContent = "";
-    summary.textContent = "No upcoming game found yet.";
+    gameMeta.innerHTML = `<div class="muted small">No upcoming game found yet.</div>`;
+    summary.textContent = "";
     return;
   }
 
   const teamRows = window.__TEAM_ROWS__ || [];
-
   const ourMeta = getTeamMetaByName(teamDisplayName, teamRows);
   const opponentName = safe(data.game.teamA) === safe(teamDisplayName)
     ? safe(data.game.teamB)
@@ -776,12 +796,8 @@ function renderRsvpBoard(data, teamDisplayName) {
   gameMeta.innerHTML = `
     <div class="rsvpHeaderOfficial">
       <div class="rsvpTeamSide">
-        <img
-          class="rsvpMiniLogo"
-          src="${ourLogo}"
-          alt="${teamDisplayName} logo"
-          onerror="this.onerror=null; this.src='${defaultLogo}';"
-        >
+        <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo"
+          onerror="this.onerror=null; this.src='${defaultLogo}';">
         <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
           ${teamDisplayName}
         </div>
@@ -790,21 +806,15 @@ function renderRsvpBoard(data, teamDisplayName) {
       <div class="rsvpCenterMeta">
         <div class="rsvpAt">@</div>
         <div class="rsvpMetaLine muted small">${formatRsvpDate(data.game.date)}</div>
-        <div class="rsvpMetaLine muted small">
-          ${formatRsvpTime(data.game.time)}${safe(data.game.field) ? ` • ${safe(data.game.field)}` : ""}
-        </div>
+        <div class="rsvpMetaLine muted small">${formatRsvpTime(data.game.time)}${safe(data.game.field) ? ` • ${safe(data.game.field)}` : ""}</div>
       </div>
 
       <div class="rsvpTeamSide rightSide">
+        <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo"
+          onerror="this.onerror=null; this.src='${defaultLogo}';">
         <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
           ${opponentName}
         </div>
-        <img
-          class="rsvpMiniLogo"
-          src="${oppLogo}"
-          alt="${opponentName} logo"
-          onerror="this.onerror=null; this.src='${defaultLogo}';"
-        >
       </div>
     </div>
   `;
