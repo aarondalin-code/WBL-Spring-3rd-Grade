@@ -501,14 +501,14 @@ async function loadGameDayTicker(){
     const todayCode = weatherData.hourly.weathercode[todayIdx];
     const todayLabel = weatherLabelFromCode(todayCode);
     const todayIcon = weatherIconFromCode(todayCode);
-   
+
     const gameTemp = weatherData.hourly.temperature_2m[gameIdx];
     const gameRain = weatherData.hourly.precipitation_probability[gameIdx];
     const gameWind = weatherData.hourly.windspeed_10m[gameIdx];
     const gameCode = weatherData.hourly.weathercode[gameIdx];
     const gameLabel = weatherLabelFromCode(gameCode);
     const gameIcon = weatherIconFromCode(gameCode);
-    
+
     const gameDateText = target.toLocaleDateString(undefined, {
       weekday: "short",
       month: "short",
@@ -527,11 +527,16 @@ async function loadGameDayTicker(){
     if (alertType === "watch") card.classList.add("is-watch");
     if (alertType === "alert") card.classList.add("is-alert");
 
-  const todayText =
-  `${todayIcon} Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}% • Wind ${todayWind} mph`;
+    const isSameCalendarDay =
+      now.getFullYear() === target.getFullYear() &&
+      now.getMonth() === target.getMonth() &&
+      now.getDate() === target.getDate();
 
-const gameText =
-  `${gameIcon} Next Game Day: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}% • Wind ${gameWind} mph`;
+    const todayText =
+      `${todayIcon} Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}% • Wind ${todayWind} mph`;
+
+    const gameText =
+      `${gameIcon} ${isSameCalendarDay ? "Game Day Weather" : "Next Game Day"}: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}% • Wind ${gameWind} mph`;
 
     const noteText = note && (note.prefix || note.text)
       ? `${note.prefix ? note.prefix + ": " : ""}${note.text || ""}`
@@ -541,14 +546,31 @@ const gameText =
       ? `<span class="homeTickerUpdated">(last updated: ${note.updated})</span>`
       : "";
 
+    let parts = [];
+
+    if (alertType === "alert") {
+      parts.push(`<span>${noteText}</span>${updatedText}`);
+
+      if (isSameCalendarDay) {
+        parts.push(`<span>${gameText}</span>`);
+      } else {
+        parts.push(`<span>${todayText}</span>`);
+        parts.push(`<span>${gameText}</span>`);
+      }
+    } else {
+      if (isSameCalendarDay) {
+        parts.push(`<span>${gameText}</span>`);
+      } else {
+        parts.push(`<span>${todayText}</span>`);
+        parts.push(`<span>${gameText}</span>`);
+      }
+
+      parts.push(`<span>${noteText}</span>${updatedText}`);
+    }
+
     track.innerHTML = `
       <span class="homeTickerText">
-        <span>${todayText}</span>
-        <span class="homeTickerSep">|</span>
-        <span>${gameText}</span>
-        <span class="homeTickerSep">|</span>
-        <span>${noteText}</span>
-        ${updatedText}
+        ${parts.join('<span class="homeTickerSep">|</span>')}
       </span>
     `;
 
