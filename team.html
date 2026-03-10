@@ -851,87 +851,79 @@ function renderRsvpBoard(data, teamDisplayName) {
   list.appendChild(grid);
 }
 
+(async function init(){
+  const slug = safe(getParam("team"));
+  if (!slug){
+    location.replace("./teams.html");
+    return;
+  }
 
-  
-  (async function init(){
-    const slug = safe(getParam("team"));
-    if (!slug) {
-      alert("Missing team parameter.");
-      window.location.href = "./teams.html";
+  try {
+    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+    const teamRows = parseCsv(teamsCsv);
+    window.__TEAM_ROWS__ = teamRows;
+
+    const teamRow = teamRows.find(t => safe(t.TeamSlug) === slug);
+    if (!teamRow){
+      location.replace("./teams.html");
       return;
     }
 
-    try {
-      const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-      const teamRows = parseCsv(teamsCsv);
-window.__TEAM_ROWS__ = teamRows;
-      const teamRow = teamRows.find(r => safe(r.TeamSlug) === slug);
-      if (!teamRow) {
-        alert("Team not found. Check TeamSlug in your Teams tab.");
-        window.location.href = "./teams.html";
-        return;
-      }
+    setHeaderFromTeamRow(teamRow);
 
-      setHeaderFromTeamRow(teamRow);
-      const teamDisplayName = safe(teamRow.TeamName) || slug;
+    const teamDisplayName = safe(teamRow.TeamName);
+    const familyToken = safe(getParam("t"));
 
-      const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
-      const rosterRows = parseCsv(rosterCsv);
+    const rosterPromise = fetchCsv(window.SHEET?.ROSTER_CSV_URL);
+    const gamesPromise = fetchCsv(window.SHEET?.GAMES_CSV_URL);
+    const rsvpPromise = fetchRsvpBoard(slug, familyToken).catch(e => {
+      console.error("RSVP load failed:", e);
+      return null;
+    });
 
-      const players = rosterRows.filter(r => safe(r.TeamSlug) === slug);
-      buildRosterGrid(players, teamDisplayName);
+    const [rosterCsv, gamesCsv, rsvpData] = await Promise.all([
+      rosterPromise,
+      gamesPromise,
+      rsvpPromise
+    ]);
 
-      // games -> calendar
-      const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
-      const gameRows = parseCsv(gamesCsv);
+    const rosterRows = parseCsv(rosterCsv);
+    const players = rosterRows.filter(p => safe(p.TeamSlug) === slug);
 
-      const teamGames = gameRows.filter(g =>
-        safe(g.TeamA) === teamDisplayName ||
-        safe(g.TeamB) === teamDisplayName
-      );
+    buildRosterGrid(players, teamDisplayName);
 
-const familyToken = safe(getParam("t"));
+    const gameRows = parseCsv(gamesCsv);
+    const teamGames = gameRows.filter(g =>
+      safe(g.TeamA) === teamDisplayName ||
+      safe(g.TeamB) === teamDisplayName
+    );
 
-try {
-  const rsvpData = await fetchRsvpBoard(slug, familyToken);
-  renderRsvpBoard(rsvpData, teamDisplayName);
-} catch (e) {
-  console.error("RSVP load failed:", e);
-  const msg = document.getElementById("rsvpMsg");
-  const section = document.getElementById("rsvpSection");
-  if (section) section.style.display = "";
-  if (msg) msg.textContent = "RSVP section unavailable right now.";
-}
-      
-      const calBtn = document.getElementById("addCalendarBtn");
-      if (calBtn){
-        calBtn.addEventListener("click", () => {
-          const icsContent = generateTeamICS(teamDisplayName, teamGames);
-          const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = `${teamDisplayName}-WBL-2026-Schedule.ics`;
-          link.click();
-        });
-      }
-
-    } catch (err) {
-      console.error(err);
-      alert("Team page error: check TEAMS_CSV_URL / ROSTER_CSV_URL / GAMES_CSV_URL in data.js and confirm your CSV headers.");
+    if (rsvpData) {
+      renderRsvpBoard(rsvpData, teamDisplayName);
+    } else {
+      const msg = document.getElementById("rsvpMsg");
+      const section = document.getElementById("rsvpSection");
+      if (section) section.style.display = "";
+      if (msg) msg.textContent = "RSVP section unavailable right now.";
     }
-  })();
-</script>
 
-<script>
-  (function () {
-    const params = new URLSearchParams(window.location.search);
-    const team = (params.get("team") || "").trim();
-
-    if (team && typeof gtag === "function") {
-      gtag("event", "view_team", { team_name: team });
+    const calBtn = document.getElementById("addCalendarBtn");
+    if (calBtn){
+      calBtn.addEventListener("click", () => {
+        if (!teamGames.length){
+          alert("No games found for this team yet.");
+          return;
+        }
+        const ics = generateTeamICS(teamDisplayName, teamGames);
+        downloadICS(`${slug}-schedule.ics`, ics);
+      });
     }
-  })();
+  } catch (err){
+    console.error(err);
+    const msg = document.getElementById("rosterMsg");
+    if (msg) msg.textContent = "Unable to load team page right now.";
+  }
+})();
 </script>
   
 <script src="./nav.js"></script>
