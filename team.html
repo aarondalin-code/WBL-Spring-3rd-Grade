@@ -909,14 +909,23 @@
       `;
 
       const c = data.counts || {};
-      summary.innerHTML = `
-  <div style="font-weight:700; color:#000; margin-bottom:4px;">
+   summary.innerHTML = `
+  <div style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:6px;">
     Next Game
   </div>
-  <div>
+
+  <div class="muted small">
     Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}
   </div>
 `;
+
+if (!familyToken) {
+  summary.innerHTML += `
+    <div class="muted small" style="margin-top:8px;">
+      Don't see RSVP buttons? Use your family's saved RSVP link.
+    </div>
+  `;
+}   
 if (!familyToken) {
   summary.innerHTML += `
     <div class="muted small" style="margin-top:6px;">
