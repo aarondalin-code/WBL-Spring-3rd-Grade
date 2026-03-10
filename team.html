@@ -921,31 +921,47 @@ function renderRsvpBoard(data, teamDisplayName) {
         if (safe(p.response) === choice) btn.classList.add("active");
         btn.textContent = choice.toUpperCase();
 
-        btn.addEventListener("click", async () => {
-          try {
-            controls.querySelectorAll("button").forEach(b => b.disabled = true);
+ btn.addEventListener("click", async () => {
+  const buttons = Array.from(controls.querySelectorAll("button"));
+  const previousResponse = safe(p.response);
 
-            const result = await submitRsvpChoice(
-              teamSlug,
-              familyToken,
-              data.game.gameId,
-              p.playerId,
-              choice,
-              ""
-            );
+  try {
+    buttons.forEach(b => {
+      b.disabled = true;
+      b.classList.remove("active");
+    });
 
-            if (!result || result.status !== "OK") {
-              throw new Error(result?.message || "Unable to save RSVP");
-            }
+    btn.classList.add("active");
 
-            const freshData = await fetchRsvpBoard(teamSlug, familyToken);
-            renderRsvpBoard(freshData, teamDisplayName);
-          } catch (err) {
-            console.error(err);
-            alert("Unable to save RSVP right now.");
-            controls.querySelectorAll("button").forEach(b => b.disabled = false);
-          }
-        });
+    const result = await submitRsvpChoice(
+      teamSlug,
+      familyToken,
+      data.game.gameId,
+      p.playerId,
+      choice,
+      ""
+    );
+
+    if (!result || result.status !== "OK") {
+      throw new Error(result?.message || "Unable to save RSVP");
+    }
+
+    const freshData = await fetchRsvpBoard(teamSlug, familyToken);
+    renderRsvpBoard(freshData, teamDisplayName);
+  } catch (err) {
+    console.error(err);
+
+    buttons.forEach(b => {
+      b.classList.remove("active");
+      b.disabled = false;
+      if (b.textContent.toLowerCase() === previousResponse) {
+        b.classList.add("active");
+      }
+    });
+
+    alert("Unable to save RSVP right now.");
+  }
+});
 
         controls.appendChild(btn);
       });
