@@ -1056,162 +1056,61 @@ function renderRsvpBoard(data, teamDisplayName) {
         controls.appendChild(btn);
       });
 
-      saveBtn.addEventListener("click", async () => {
-        const buttons = Array.from(controls.querySelectorAll("button"));
-        const trimmedNote = noteInput.value.trim();
+saveBtn.addEventListener("click", async () => {
+  const buttons = Array.from(controls.querySelectorAll("button"));
+  const trimmedNote = noteInput.value.trim();
 
-        try {
-          buttons.forEach(b => b.disabled = true);
-          saveBtn.disabled = true;
-          cancelBtn.disabled = true;
-          noteInput.disabled = true;
-
-          const maybeBtn = buttons.find(b => b.textContent.toLowerCase() === "maybe");
-          if (maybeBtn) {
-            buttons.forEach(b => b.classList.remove("active"));
-            maybeBtn.classList.add("active");
-          }
-
-          const result = await submitRsvpChoice(
-            teamSlug,
-            familyToken,
-            data.game.gameId,
-            p.playerId,
-            "maybe",
-            trimmedNote
-          );
-
-          if (!result || result.status !== "OK") {
-            throw new Error(result?.message || "Unable to save maybe note");
-          }
-
-          const freshData = await fetchRsvpBoard(teamSlug, familyToken);
-          renderRsvpBoard(freshData, teamDisplayName);
-        } catch (err) {
-          console.error(err);
-          buttons.forEach(b => b.disabled = false);
-          saveBtn.disabled = false;
-          cancelBtn.disabled = false;
-          noteInput.disabled = false;
-          alert("Unable to save maybe note right now.");
-        }
-      });
-
-      cancelBtn.addEventListener("click", () => {
-        noteInput.value = note || "";
-        noteWrap.style.display = "none";
-        controls.querySelectorAll("button").forEach(b => {
-          b.classList.remove("active");
-          if (b.textContent.toLowerCase() === safe(p.response)) {
-            b.classList.add("active");
-          }
-        });
-      });
-
-      right.appendChild(controls);
-      right.appendChild(noteWrap);
-
-      if (note && safe(p.response) === "maybe") {
-        const noteText = document.createElement("div");
-        noteText.className = "rsvpNoteText muted";
-        noteText.textContent = note;
-        right.appendChild(noteText);
-      }
-    } else {
-      const status = document.createElement("div");
-      status.className = "rsvpStatus muted";
-      status.textContent = response || "NO RESPONSE";
-      right.appendChild(status);
-
-      if (note && safe(p.response) === "maybe") {
-        const noteText = document.createElement("div");
-        noteText.className = "rsvpNoteText muted";
-        noteText.textContent = note;
-        right.appendChild(noteText);
-      }
-    }
-
-    cell.appendChild(left);
-    cell.appendChild(right);
-    grid.appendChild(cell);
-  });
-
-  list.appendChild(grid);
-}
-
-(async function init(){
-  const slug = safe(getParam("team"));
-  if (!slug){
-    location.replace("./teams.html");
-    return;
+  let noteTextEl = right.querySelector(".rsvpNoteText");
+  if (!noteTextEl) {
+    noteTextEl = document.createElement("div");
+    noteTextEl.className = "rsvpNoteText muted";
+    right.appendChild(noteTextEl);
   }
 
   try {
-    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-    const teamRows = parseCsv(teamsCsv);
-    window.__TEAM_ROWS__ = teamRows;
+    buttons.forEach(b => b.disabled = true);
+    saveBtn.disabled = true;
+    cancelBtn.disabled = true;
+    noteInput.disabled = true;
 
-    const teamRow = teamRows.find(t => safe(t.TeamSlug) === slug);
-    if (!teamRow){
-      location.replace("./teams.html");
-      return;
+    const maybeBtn = buttons.find(b => b.textContent.toLowerCase() === "maybe");
+    if (maybeBtn) {
+      buttons.forEach(b => b.classList.remove("active"));
+      maybeBtn.classList.add("active");
     }
 
-    setHeaderFromTeamRow(teamRow);
+    noteWrap.style.display = "none";
+    noteTextEl.textContent = trimmedNote;
 
-    const teamDisplayName = safe(teamRow.TeamName);
-    const familyToken = safe(getParam("t"));
-
-    const rosterPromise = fetchCsv(window.SHEET?.ROSTER_CSV_URL);
-    const gamesPromise = fetchCsv(window.SHEET?.GAMES_CSV_URL);
-    const rsvpPromise = fetchRsvpBoard(slug, familyToken).catch(e => {
-      console.error("RSVP load failed:", e);
-      return null;
-    });
-
-    const [rosterCsv, gamesCsv, rsvpData] = await Promise.all([
-      rosterPromise,
-      gamesPromise,
-      rsvpPromise
-    ]);
-
-    const rosterRows = parseCsv(rosterCsv);
-    const players = rosterRows.filter(p => safe(p.TeamSlug) === slug);
-
-    buildRosterGrid(players, teamDisplayName);
-
-    const gameRows = parseCsv(gamesCsv);
-    const teamGames = gameRows.filter(g =>
-      safe(g.TeamA) === teamDisplayName ||
-      safe(g.TeamB) === teamDisplayName
+    const result = await submitRsvpChoice(
+      teamSlug,
+      familyToken,
+      data.game.gameId,
+      p.playerId,
+      "maybe",
+      trimmedNote
     );
 
-    if (rsvpData) {
-      renderRsvpBoard(rsvpData, teamDisplayName);
-    } else {
-      const msg = document.getElementById("rsvpMsg");
-      const section = document.getElementById("rsvpSection");
-      if (section) section.style.display = "";
-      if (msg) msg.textContent = "RSVP section unavailable right now.";
+    if (!result || result.status !== "OK") {
+      throw new Error(result?.message || "Unable to save maybe note");
     }
 
-    const calBtn = document.getElementById("addCalendarBtn");
-    if (calBtn){
-      calBtn.addEventListener("click", () => {
-        if (!teamGames.length){
-          alert("No games found for this team yet.");
-          return;
-        }
-        const ics = generateTeamICS(teamDisplayName, teamGames);
-        downloadICS(`${slug}-schedule.ics`, ics);
-      });
-    }
-  } catch (err){
+    const freshData = await fetchRsvpBoard(teamSlug, familyToken);
+    renderRsvpBoard(freshData, teamDisplayName);
+  } catch (err) {
     console.error(err);
-    const msg = document.getElementById("rosterMsg");
-    if (msg) msg.textContent = "Unable to load team page right now.";
+
+    noteWrap.style.display = "flex";
+    noteInput.disabled = false;
+    saveBtn.disabled = false;
+    cancelBtn.disabled = false;
+    buttons.forEach(b => b.disabled = false);
+
+    if (noteTextEl) noteTextEl.textContent = "";
+
+    alert("Unable to save maybe note right now.");
   }
-})();
+});
 </script>
   
 <script src="./nav.js"></script>
