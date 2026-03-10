@@ -22,6 +22,13 @@
   gap:14px;
 }
 
+.dailyFunPage .triviaHelpNote{
+font-size:.8rem;
+line-height:1.4;
+color:var(--textSoft);
+margin-top:2px;
+}
+    
 .dailyFunPage .birthdayItem{
   display:flex;
   align-items:flex-start;
@@ -217,12 +224,16 @@
       height:100%;
     }
 
-    .dailyFunPage .card{
-      border:1px solid #e2e8f0;
-      box-shadow:0 10px 28px rgba(0,0,0,.05);
-      border-radius:16px;
-      overflow:hidden;
-    }
+ .dailyFunPage .card{
+border:2px solid rgba(30,63,168,.20);
+box-shadow:0 10px 28px rgba(15,23,42,.06);
+border-radius:16px;
+overflow:hidden;
+background:#fff;
+}
+.dailyFunPage .card:hover{
+border-color:rgba(30,63,168,.35);
+}
 
     .dailyFunPage .cardBody{
       padding:18px;
@@ -234,14 +245,25 @@
       flex-direction:column;
     }
 
-    .dailyFunPage .dailySectionTitle{
-      font-size:1.15rem;
-      font-weight:900;
-      color:var(--accent);
-      margin-bottom:14px;
-      border-bottom:2px solid var(--accentLight);
-      padding-bottom:6px;
-    }
+  .dailyFunPage .dailySectionTitle{
+font-size:1.15rem;
+font-weight:900;
+color:var(--accent);
+margin-bottom:14px;
+padding-bottom:8px;
+border-bottom:2px solid var(--accentLight);
+position:relative;
+}
+.dailyFunPage .dailySectionTitle::before{
+content:"";
+position:absolute;
+left:0;
+top:-2px;
+width:42px;
+height:4px;
+border-radius:999px;
+background:#1d4ed8;
+}
 
     .dailyFunPage .dailyHistoryList{
       display:grid;
@@ -672,35 +694,119 @@
         grid-column:auto;
       }
     }
+   
     .weeklyChampionWrap{
-    text-align:center;
-    padding:8px 0;
+display:flex;
+flex-direction:column;
+gap:10px;
+padding:4px 0;
 }
-
-.weeklyChampionTitle{
-  font-size:1.1rem;
-  font-weight:900;
-  color:#1d4ed8;
-  margin-bottom:10px;
+.weeklyChampionBadge{
+display:inline-flex;
+align-self:center;
+padding:3px 9px;
+border-radius:999px;
+background:#fef3c7;
+color:#92400e;
+font-size:.72rem;
+font-weight:900;
+letter-spacing:.03em;
+text-transform:uppercase;
 }
-
+.weeklyChampionHero{
+display:flex;
+align-items:center;
+gap:10px;
+padding:8px 10px;
+border-radius:12px;
+background:#fff8db;
+border:1px solid rgba(234,179,8,.30);
+}
+.weeklyChampionAvatar{
+width:38px;
+height:38px;
+border-radius:999px;
+background:#facc15;
+color:#78350f;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:1rem;
+font-weight:900;
+flex:0 0 38px;
+}
+.weeklyChampionMain{
+min-width:0;
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+}
 .weeklyChampionPlayer{
-  font-size:1.2rem;
-  font-weight:800;
-  margin-bottom:4px;
+font-size:1rem;
+font-weight:900;
+color:#111827;
+line-height:1.15;
+text-align:left;
+word-break:break-word;
 }
-
-.weeklyChampionStats{
-  margin-top:6px;
-  font-size:.95rem;
-  color:#374151;
+.weeklyChampionTeam{
+margin-top:3px;
+display:flex;
+align-items:center;
+justify-content:flex-start;
+align-self:flex-start;
+width:max-content;
+max-width:100%;
+padding:3px 8px;
+border-radius:999px;
+background:var(--teamColor,#e0ecff);
+color:#ffffff;
+font-size:.74rem;
+font-weight:800;
+text-align:left;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
-
-.weeklyChampionNote{
-  margin-top:8px;
-  font-size:.9rem;
-  font-weight:700;
-  color:#6b7280;
+.weeklyChampionChips{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:6px;
+}
+.weeklyChampionChip{
+background:#f8fafc;
+border:1px solid #e5e7eb;
+border-radius:10px;
+padding:8px 6px;
+text-align:center;
+}
+.weeklyChampionChip strong{
+display:block;
+font-size:.95rem;
+font-weight:900;
+color:#111827;
+line-height:1.1;
+}
+.weeklyChampionChip span{
+display:block;
+margin-top:2px;
+font-size:.68rem;
+font-weight:800;
+color:#6b7280;
+text-transform:uppercase;
+letter-spacing:.03em;
+}
+.weeklyChampionWeek{
+text-align:center;
+font-size:.8rem;
+color:#6b7280;
+font-weight:700;
+}
+.weeklyChampionMore{
+text-align:center;
+font-size:.78rem;
+font-weight:800;
+color:#6b7280;
 }
     
   </style>
@@ -1386,9 +1492,11 @@ async function loadTriviaWeeklyChampion(){
     const tiedRows = rows.filter(row =>
       String(row.Correct || "").trim() === topCorrect &&
       String(row.Attempted || "").trim() === topAttempted &&
-      String(row.Accuracy || "").trim() === topAccuracy
+      String(row.Accuracy || "").trim() === topAccuracy                                 
     );
-
+const displayRows = tiedRows.slice(0, 5);
+const extraCount = tiedRows.length - displayRows.length;
+    
     let accuracyText = topAccuracy;
     if (accuracyText && !accuracyText.endsWith("%")) {
       const num = parseFloat(accuracyText);
@@ -1407,31 +1515,29 @@ async function loadTriviaWeeklyChampion(){
       " – " +
       end.toLocaleDateString(undefined, options);
 
-    el.innerHTML = `
-      <div class="weeklyChampionWrap">
-        <div class="weeklyChampionBadge">Weekly Champ</div>
-
-        ${tiedRows.map(row => `
-          <div class="weeklyChampionHero">
-            <div class="weeklyChampionAvatar">
-              ${String(row.PlayerName || "").trim().charAt(0).toUpperCase()}
-            </div>
-            <div class="weeklyChampionMain">
-              <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[normalizeTeamName(row.Team)] || '#2563eb'}">${row.Team}</div>` : ""}       
-  </div>
-          </div>
-        `).join("")}
-
-        <div class="weeklyChampionChips">
-          <div class="weeklyChampionChip"><strong>${topCorrect}</strong><span>Correct</span></div>
-          <div class="weeklyChampionChip"><strong>${topAttempted}</strong><span>Attempts</span></div>
-          <div class="weeklyChampionChip"><strong>${accuracyText}</strong><span>Accuracy</span></div>
+el.innerHTML = `
+  <div class="weeklyChampionWrap">
+    <div class="weeklyChampionBadge">Weekly Champ</div>
+    ${displayRows.map(row => `
+      <div class="weeklyChampionHero">
+        <div class="weeklyChampionAvatar">
+          ${String(row.PlayerName || "").trim().charAt(0).toUpperCase()}
         </div>
-
-        <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
+        <div class="weeklyChampionMain">
+          <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
+          ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[normalizeTeamName(row.Team)] || '#2563eb'}">${row.Team}</div>` : ""}
+        </div>
       </div>
-    `;
+    `).join("")}
+    <div class="weeklyChampionChips">
+      <div class="weeklyChampionChip"><strong>${topCorrect}</strong><span>Correct</span></div>
+      <div class="weeklyChampionChip"><strong>${topAttempted}</strong><span>Attempts</span></div>
+      <div class="weeklyChampionChip"><strong>${accuracyText}</strong><span>Accuracy</span></div>
+    </div>
+    ${extraCount > 0 ? `<div class="weeklyChampionMore">+ ${extraCount} more player${extraCount === 1 ? "" : "s"}</div>` : ""}
+    <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
+  </div>
+`;
   } catch (err) {
     el.textContent = "Unable to load weekly champion right now.";
     console.error(err);
@@ -1511,14 +1617,14 @@ ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[
   </label>
 </div>
 
-            <div class="triviaFormRow">
-              <input type="text" id="triviaPlayerName" maxlength="30" placeholder="First name or nickname" required />
-              <input type="text" id="triviaTeamName" maxlength="40" placeholder="Team name" />
-            </div>
-
-            <input type="hidden" id="triviaId" value="${item.ID || ""}" />
-
-            <button type="submit" class="triviaSubmitBtn">Submit Trivia Answer</button>
+<div class="triviaFormRow">
+  <input type="text" id="triviaPlayerName" maxlength="30" placeholder="First name or nickname" required />
+  <input type="text" id="triviaTeamName" maxlength="40" placeholder="Team name" />
+</div>
+<div class="triviaHelpNote">Use the same player name each day so the trivia leaderboard stays accurate.</div>
+<input type="hidden" id="triviaId" value="${item.ID || ""}" />
+<button type="submit" class="triviaSubmitBtn">Submit Trivia Answer</button>
+           
             <div id="triviaMsg" class="triviaMsg"></div>
           </form>
         `;
