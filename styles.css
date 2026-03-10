@@ -3404,13 +3404,15 @@ Paste at VERY BOTTOM of styles.css
 .homeTickerText{
   display:inline-flex;
   align-items:center;
-  gap:10px;
-  padding-right:28px;
+  gap:14px;
+  padding-right:36px;
+  font-size:.96rem;
 }
-
 .homeTickerSep{
-  opacity:.5;
+  opacity:.35;
   font-weight:900;
+  margin:0 6px;
+  letter-spacing:.08em;
 }
 
 .homeTickerMeta{
@@ -3424,7 +3426,7 @@ Paste at VERY BOTTOM of styles.css
 }
 
 .homeTickerInner.is-scrolling .homeTickerTrack{
-  animation:homeTickerScroll 28s linear infinite;
+  animation:homeTickerScroll 36s linear infinite;
 }
 
 .homeTickerInner:hover .homeTickerTrack{
@@ -3440,8 +3442,70 @@ Paste at VERY BOTTOM of styles.css
   }
 }
 .homeTickerUpdated{
-  font-size:.82em;
+  font-size:.78em;
   font-weight:700;
-  opacity:.78;
-  margin-left:6px;
+  opacity:.65;
+  margin-left:10px;
+  font-style:italic;
+}
+.homeTickerCard::before{
+  content:"⚾";
+  position:absolute;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:1.1rem;
+  opacity:.9;
+}
+
+.homeTickerCard::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,.25) 50%,
+    transparent 70%
+  );
+  opacity:.35;
+  pointer-events:none;
+  animation:tickerShine 8s linear infinite;
+}
+
+@keyframes tickerShine{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+
+.homeTickerCard.is-watch::before{
+  content:"⛅";
+}
+
+.homeTickerCard.is-alert::before{
+  content:"🚨";
+}
+
+.homeTickerInner{
+  padding-left:32px;
+}
+
+.homeTickerInner::before,
+.homeTickerInner::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:30px;
+  pointer-events:none;
+}
+
+.homeTickerInner::before{
+  left:0;
+  background:linear-gradient(to right,#eef4ff,transparent);
+}
+
+.homeTickerInner::after{
+  right:0;
+  background:linear-gradient(to left,#eef4ff,transparent);
 }
