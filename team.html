@@ -226,6 +226,52 @@ body.teamPage .rsvpStatus{
   white-space:nowrap;
 }
 
+body.teamPage .rsvpPlayerLeft{
+  min-width:0;
+}
+
+body.teamPage .rsvpPlayerRight{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+}
+
+body.teamPage .rsvpBtns{
+  display:flex;
+  gap:4px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+body.teamPage .rsvpBtn{
+  appearance:none;
+  border:1px solid rgba(15,23,42,.12);
+  background:#fff;
+  color:#0f172a;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:10px;
+  font-weight:900;
+  line-height:1.1;
+  cursor:pointer;
+}
+
+body.teamPage .rsvpBtn:hover{
+  transform:translateY(-1px);
+}
+
+body.teamPage .rsvpBtn.active{
+  background:#0f172a;
+  color:#fff;
+  border-color:#0f172a;
+}
+
+body.teamPage .rsvpBtn:disabled{
+  opacity:.6;
+  cursor:default;
+}
+
+    
 @media (max-width: 900px){
   body.teamPage .rsvpGrid{
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -756,6 +802,23 @@ async function fetchRsvpBoard(teamSlug, token) {
   return await res.json();
 }
 
+async function submitRsvpChoice(teamSlug, token, gameId, playerId, response, note = "") {
+  const base = window.SHEET?.RSVP_API_URL;
+  if (!base) throw new Error("Missing RSVP_API_URL in data.js");
+
+  const url = new URL(base);
+  url.searchParams.set("action", "submitRsvp");
+  url.searchParams.set("teamSlug", teamSlug);
+  url.searchParams.set("token", token);
+  url.searchParams.set("gameId", gameId);
+  url.searchParams.set("playerId", playerId);
+  url.searchParams.set("response", response);
+  url.searchParams.set("note", note);
+
+  const res = await fetch(url.toString(), { cache: "no-store" });
+  if (!res.ok) throw new Error(`RSVP submit failed (${res.status})`);
+  return await res.json();
+}
 function renderRsvpBoard(data, teamDisplayName) {
   const section = document.getElementById("rsvpSection");
   const gameMeta = document.getElementById("rsvpGameMeta");
@@ -781,6 +844,9 @@ function renderRsvpBoard(data, teamDisplayName) {
   }
 
   const teamRows = window.__TEAM_ROWS__ || [];
+  const teamSlug = safe(getParam("team"));
+  const familyToken = safe(getParam("t"));
+
   const ourMeta = getTeamMetaByName(teamDisplayName, teamRows);
   const opponentName = safe(data.game.teamA) === safe(teamDisplayName)
     ? safe(data.game.teamB)
@@ -836,12 +902,61 @@ function renderRsvpBoard(data, teamDisplayName) {
     cell.className = "rsvpPlayerCell";
 
     const left = document.createElement("div");
+    left.className = "rsvpPlayerLeft";
     left.innerHTML = `<strong>${safe(p.name) || safe(p.playerId)}</strong>${safe(p.number) ? ` <span class="muted small">#${safe(p.number)}</span>` : ""}`;
 
     const right = document.createElement("div");
-    right.className = "rsvpStatus muted";
+    right.className = "rsvpPlayerRight";
+
     const response = safe(p.response).toUpperCase();
-    right.textContent = response || "NO RESPONSE";
+
+    if (p.editable && familyToken) {
+      const controls = document.createElement("div");
+      controls.className = "rsvpBtns";
+
+      ["yes", "no", "maybe"].forEach(choice => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "rsvpBtn";
+        if (safe(p.response) === choice) btn.classList.add("active");
+        btn.textContent = choice.toUpperCase();
+
+        btn.addEventListener("click", async () => {
+          try {
+            controls.querySelectorAll("button").forEach(b => b.disabled = true);
+
+            const result = await submitRsvpChoice(
+              teamSlug,
+              familyToken,
+              data.game.gameId,
+              p.playerId,
+              choice,
+              ""
+            );
+
+            if (!result || result.status !== "OK") {
+              throw new Error(result?.message || "Unable to save RSVP");
+            }
+
+            const freshData = await fetchRsvpBoard(teamSlug, familyToken);
+            renderRsvpBoard(freshData, teamDisplayName);
+          } catch (err) {
+            console.error(err);
+            alert("Unable to save RSVP right now.");
+            controls.querySelectorAll("button").forEach(b => b.disabled = false);
+          }
+        });
+
+        controls.appendChild(btn);
+      });
+
+      right.appendChild(controls);
+    } else {
+      const status = document.createElement("div");
+      status.className = "rsvpStatus muted";
+      status.textContent = response || "NO RESPONSE";
+      right.appendChild(status);
+    }
 
     cell.appendChild(left);
     cell.appendChild(right);
@@ -849,7 +964,7 @@ function renderRsvpBoard(data, teamDisplayName) {
   });
 
   list.appendChild(grid);
-}
+}  
 
 (async function init(){
   const slug = safe(getParam("team"));
