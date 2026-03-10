@@ -882,38 +882,38 @@
       const ourColor = safe(ourMeta.color);
       const oppColor = safe(oppMeta.color);
 
-      gameMeta.innerHTML = `
-        <div class="rsvpHeaderOfficial">
-          <div class="rsvpTeamSide">
-            <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo"
-              onerror="this.onerror=null; this.src='${defaultLogo}';">
-            <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
-              ${teamDisplayName}
-            </div>
-          </div>
-
-          <div class="rsvpCenterMeta">
-            <div class="rsvpAt">@</div>
-            <div class="rsvpMetaLine muted small">${formatRsvpDate(data.game.date)}</div>
-            <div class="rsvpMetaLine muted small">${formatRsvpTime(data.game.time)}${safe(data.game.field) ? ` • ${safe(data.game.field)}` : ""}</div>
-          </div>
-
-          <div class="rsvpTeamSide rightSide">
-            <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo"
-              onerror="this.onerror=null; this.src='${defaultLogo}';">
-            <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
-              ${opponentName}
-            </div>
-          </div>
-        </div>
-      `;
-
-      const c = data.counts || {};
-   summary.innerHTML = `
-  <div style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:6px;">
+gameMeta.innerHTML = `
+  <div style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:6px; text-align:left;">
     Next Game
   </div>
 
+  <div class="rsvpHeaderOfficial">
+    <div class="rsvpTeamSide">
+      <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo"
+        onerror="this.onerror=null; this.src='${defaultLogo}';">
+      <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
+        ${teamDisplayName}
+      </div>
+    </div>
+
+    <div class="rsvpCenterMeta">
+      <div class="rsvpAt">@</div>
+      <div class="rsvpMetaLine muted small">${formatRsvpDate(data.game.date)}</div>
+      <div class="rsvpMetaLine muted small">${formatRsvpTime(data.game.time)}${safe(data.game.field) ? ` • ${safe(data.game.field)}` : ""}</div>
+    </div>
+
+    <div class="rsvpTeamSide rightSide">
+      <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo"
+        onerror="this.onerror=null; this.src='${defaultLogo}';">
+      <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
+        ${opponentName}
+      </div>
+    </div>
+  </div>
+`;
+
+      const c = data.counts || {};
+   summary.innerHTML = `
   <div class="muted small">
     Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}
   </div>
@@ -926,13 +926,6 @@ if (!familyToken) {
     </div>
   `;
 }   
-if (!familyToken) {
-  summary.innerHTML += `
-    <div class="muted small" style="margin-top:6px;">
-      Don't see RSVP buttons? Use your family's saved RSVP link.
-    </div>
-  `;
-}
       
       const players = Array.isArray(data.players) ? data.players : [];
       if (!players.length) {
