@@ -450,9 +450,9 @@ async function loadGameDayTicker(){
   if (!card || !inner || !track) return;
 
   try {
+    const now = new Date();
     const target = nextGameDateTime();
 
-    // Westfield, NJ
     const lat = 40.6584;
     const lon = -74.3474;
 
@@ -472,21 +472,28 @@ async function loadGameDayTicker(){
     const weatherData = await weatherRes.json();
     if (!weatherData?.hourly?.time?.length) throw new Error("Weather data missing");
 
-    const idx = findClosestHourIndex(weatherData.hourly.time, target);
+    const todayIdx = findClosestHourIndex(weatherData.hourly.time, now);
+    const gameIdx = findClosestHourIndex(weatherData.hourly.time, target);
 
-    const temp = weatherData.hourly.temperature_2m[idx];
-    const rain = weatherData.hourly.precipitation_probability[idx];
-    const wind = weatherData.hourly.windspeed_10m[idx];
-    const code = weatherData.hourly.weathercode[idx];
-    const label = weatherLabelFromCode(code);
+    const todayTemp = weatherData.hourly.temperature_2m[todayIdx];
+    const todayRain = weatherData.hourly.precipitation_probability[todayIdx];
+    const todayWind = weatherData.hourly.windspeed_10m[todayIdx];
+    const todayCode = weatherData.hourly.weathercode[todayIdx];
+    const todayLabel = weatherLabelFromCode(todayCode);
 
-    const dateText = target.toLocaleDateString(undefined, {
+    const gameTemp = weatherData.hourly.temperature_2m[gameIdx];
+    const gameRain = weatherData.hourly.precipitation_probability[gameIdx];
+    const gameWind = weatherData.hourly.windspeed_10m[gameIdx];
+    const gameCode = weatherData.hourly.weathercode[gameIdx];
+    const gameLabel = weatherLabelFromCode(gameCode);
+
+    const gameDateText = target.toLocaleDateString(undefined, {
       weekday: "short",
       month: "short",
       day: "numeric"
     });
 
-    const timeText = target.toLocaleTimeString(undefined, {
+    const gameTimeText = target.toLocaleTimeString(undefined, {
       hour: "numeric",
       minute: "2-digit"
     });
@@ -498,28 +505,36 @@ async function loadGameDayTicker(){
     if (alertType === "watch") card.classList.add("is-watch");
     if (alertType === "alert") card.classList.add("is-alert");
 
-    const weatherText =
-      `⚾ Game Day Weather: ${dateText} • ${timeText} • ${temp}°F • ${label} • Rain ${rain}% • Wind ${wind} mph`;
+    const todayText =
+      `☀️ Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}% • Wind ${todayWind} mph`;
+
+    const gameText =
+      `⚾ Next Game Day: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}% • Wind ${gameWind} mph`;
 
     const noteText = note && (note.prefix || note.text)
-      ? `${note.prefix ? note.prefix + ": " : ""}${note.text || ""}${note.updated ? ` (${note.updated})` : ""}`
+      ? `${note.prefix ? note.prefix + ": " : ""}${note.text || ""}`
       : "WBL Update: No league message posted.";
 
-    const fullText = `
+    const updatedText = note?.updated
+      ? `<span class="homeTickerUpdated">(last updated: ${note.updated})</span>`
+      : "";
+
+    track.innerHTML = `
       <span class="homeTickerText">
-        <span>${weatherText}</span>
+        <span>${todayText}</span>
+        <span class="homeTickerSep">|</span>
+        <span>${gameText}</span>
         <span class="homeTickerSep">|</span>
         <span>${noteText}</span>
+        ${updatedText}
       </span>
     `;
 
-    track.innerHTML = fullText;
     applyTickerMode(inner, track);
-
     window.addEventListener("resize", () => applyTickerMode(inner, track), { passive:true });
   } catch (err) {
     console.error(err);
-    track.innerHTML = `<span class="homeTickerText">⚾ Game Day Weather and league update are unavailable right now.</span>`;
+    track.innerHTML = `<span class="homeTickerText">⚾ Game day weather and league update are unavailable right now.</span>`;
     inner.classList.remove("is-scrolling");
     inner.classList.add("is-static");
     card.classList.remove("is-watch", "is-alert");
