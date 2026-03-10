@@ -759,11 +759,55 @@ function renderRsvpBoard(data, teamDisplayName) {
     return;
   }
 
-  const opponent = safe(data.game.teamA) === safe(teamDisplayName)
+  const teamRows = window.__TEAM_ROWS__ || [];
+
+  const ourMeta = getTeamMetaByName(teamDisplayName, teamRows);
+  const opponentName = safe(data.game.teamA) === safe(teamDisplayName)
     ? safe(data.game.teamB)
     : safe(data.game.teamA);
+  const oppMeta = getTeamMetaByName(opponentName, teamRows);
 
-  gameMeta.textContent = `${formatRsvpDate(data.game.date)} • ${formatRsvpTime(data.game.time)}${safe(data.game.field) ? " • " + safe(data.game.field) : ""} • vs ${opponent}`;
+  const defaultLogo = window.DEFAULT_TEAM_LOGO || "./logo.png";
+  const ourLogo = safe(ourMeta.logo) || defaultLogo;
+  const oppLogo = safe(oppMeta.logo) || defaultLogo;
+  const ourColor = safe(ourMeta.color);
+  const oppColor = safe(oppMeta.color);
+
+  gameMeta.innerHTML = `
+    <div class="rsvpHeaderOfficial">
+      <div class="rsvpTeamSide">
+        <img
+          class="rsvpMiniLogo"
+          src="${ourLogo}"
+          alt="${teamDisplayName} logo"
+          onerror="this.onerror=null; this.src='${defaultLogo}';"
+        >
+        <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
+          ${teamDisplayName}
+        </div>
+      </div>
+
+      <div class="rsvpCenterMeta">
+        <div class="rsvpAt">@</div>
+        <div class="rsvpMetaLine muted small">${formatRsvpDate(data.game.date)}</div>
+        <div class="rsvpMetaLine muted small">
+          ${formatRsvpTime(data.game.time)}${safe(data.game.field) ? ` • ${safe(data.game.field)}` : ""}
+        </div>
+      </div>
+
+      <div class="rsvpTeamSide rightSide">
+        <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
+          ${opponentName}
+        </div>
+        <img
+          class="rsvpMiniLogo"
+          src="${oppLogo}"
+          alt="${opponentName} logo"
+          onerror="this.onerror=null; this.src='${defaultLogo}';"
+        >
+      </div>
+    </div>
+  `;
 
   const c = data.counts || {};
   summary.textContent = `Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}`;
@@ -774,31 +818,28 @@ function renderRsvpBoard(data, teamDisplayName) {
     return;
   }
 
+  const grid = document.createElement("div");
+  grid.className = "rsvpGrid";
+
   players.forEach(p => {
-    const row = document.createElement("div");
-    row.style.display = "flex";
-    row.style.justifyContent = "space-between";
-    row.style.alignItems = "center";
-    row.style.gap = "12px";
-    row.style.padding = "10px 0";
-    row.style.borderTop = "1px solid rgba(255,255,255,.08)";
+    const cell = document.createElement("div");
+    cell.className = "rsvpPlayerCell";
 
     const left = document.createElement("div");
     left.innerHTML = `<strong>${safe(p.name) || safe(p.playerId)}</strong>${safe(p.number) ? ` <span class="muted small">#${safe(p.number)}</span>` : ""}`;
 
     const right = document.createElement("div");
-    right.className = "muted small";
+    right.className = "rsvpStatus muted";
     const response = safe(p.response).toUpperCase();
     right.textContent = response || "NO RESPONSE";
 
-    row.appendChild(left);
-    row.appendChild(right);
-    list.appendChild(row);
+    cell.appendChild(left);
+    cell.appendChild(right);
+    grid.appendChild(cell);
   });
+
+  list.appendChild(grid);
 }
-
-
-
 
 
   
