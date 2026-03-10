@@ -3358,3 +3358,84 @@ Paste at VERY BOTTOM of styles.css
   color:#6b7280;
   font-weight:700;
 }
+/* Home - Game Day Ticker */
+
+.homeTickerCard{
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(30,63,168,.18);
+  background:linear-gradient(180deg,#eef4ff,#e7f0ff);
+  box-shadow:0 6px 18px rgba(30,63,168,.08);
+}
+
+.homeTickerCard.is-watch{
+  border-color:rgba(180,83,9,.28);
+  background:linear-gradient(180deg,#fff7db,#ffefbf);
+}
+
+.homeTickerCard.is-alert{
+  border-color:rgba(185,28,28,.28);
+  background:linear-gradient(180deg,#fee2e2,#fecaca);
+}
+
+.homeTickerInner{
+  position:relative;
+  overflow:hidden;
+  white-space:nowrap;
+  padding:12px 0;
+}
+
+.homeTickerTrack{
+  display:inline-block;
+  padding-left:16px;
+  font-weight:900;
+  color:#12306b;
+  will-change:transform;
+}
+
+.homeTickerCard.is-watch .homeTickerTrack{
+  color:#854d0e;
+}
+
+.homeTickerCard.is-alert .homeTickerTrack{
+  color:#991b1b;
+}
+
+.homeTickerText{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding-right:28px;
+}
+
+.homeTickerSep{
+  opacity:.5;
+  font-weight:900;
+}
+
+.homeTickerMeta{
+  font-weight:700;
+  opacity:.82;
+}
+
+.homeTickerInner.is-static .homeTickerTrack{
+  transform:none !important;
+  animation:none !important;
+}
+
+.homeTickerInner.is-scrolling .homeTickerTrack{
+  animation:homeTickerScroll 28s linear infinite;
+}
+
+.homeTickerInner:hover .homeTickerTrack{
+  animation-play-state:paused;
+}
+
+@keyframes homeTickerScroll{
+  0%{
+    transform:translateX(100%);
+  }
+  100%{
+    transform:translateX(-100%);
+  }
+}
