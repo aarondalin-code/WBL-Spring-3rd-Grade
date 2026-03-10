@@ -359,6 +359,173 @@ function formatPlayerName(name){
       }).filter(o => Object.values(o).some(v => safe(v) !== ""));
     }
 
+function weatherLabelFromCode(code){
+  const map = {
+    0: "Clear",
+    1: "Mostly Clear",
+    2: "Partly Cloudy",
+    3: "Cloudy",
+    45: "Fog",
+    48: "Fog",
+    51: "Light Drizzle",
+    53: "Drizzle",
+    55: "Heavy Drizzle",
+    61: "Light Rain",
+    63: "Rain",
+    65: "Heavy Rain",
+    66: "Freezing Rain",
+    67: "Heavy Freezing Rain",
+    71: "Light Snow",
+    73: "Snow",
+    75: "Heavy Snow",
+    77: "Snow Grains",
+    80: "Rain Showers",
+    81: "Rain Showers",
+    82: "Heavy Showers",
+    85: "Snow Showers",
+    86: "Heavy Snow Showers",
+    95: "Thunderstorm",
+    96: "Thunderstorm",
+    99: "Severe Thunderstorm"
+  };
+  return map[Number(code)] || "Forecast";
+}
+
+function nextGameDateTime(){
+  const now = new Date();
+  const gameDay = getDisplaySaturday(now);
+  return new Date(`${gameDay.toDateString()} ${LEAGUE_START_GAME_TIME}`);
+}
+
+function findClosestHourIndex(times, targetDate){
+  const target = targetDate.getTime();
+  let bestIdx = 0;
+  let bestDiff = Infinity;
+
+  times.forEach((t, idx) => {
+    const diff = Math.abs(new Date(t).getTime() - target);
+    if (diff < bestDiff){
+      bestDiff = diff;
+      bestIdx = idx;
+    }
+  });
+
+  return bestIdx;
+}
+
+async function loadWeatherTickerMessage(){
+  const url = window.SHEET?.WEATHER_TICKER_CSV_URL;
+  if (!url) return null;
+
+  const csv = await fetchCsv(url);
+  const rows = parseCsv(csv);
+  const active = rows.find(r => ["true","yes","1"].includes(norm(r.Active))) || null;
+
+  if (!active) return null;
+
+  return {
+    alertType: norm(active.AlertType) || "normal",
+    prefix: safe(active.MessagePrefix),
+    text: safe(active.MessageText),
+    updated: safe(active.LastUpdated)
+  };
+}
+
+function applyTickerMode(innerEl, trackEl){
+  if (!innerEl || !trackEl) return;
+
+  innerEl.classList.remove("is-static", "is-scrolling");
+
+  requestAnimationFrame(() => {
+    const needsScroll = trackEl.scrollWidth > innerEl.clientWidth;
+    innerEl.classList.add(needsScroll ? "is-scrolling" : "is-static");
+  });
+}
+
+async function loadGameDayTicker(){
+  const card = document.getElementById("gameDayTickerCard");
+  const inner = card?.querySelector(".homeTickerInner");
+  const track = document.getElementById("gameDayTickerTrack");
+
+  if (!card || !inner || !track) return;
+
+  try {
+    const target = nextGameDateTime();
+
+    // Westfield, NJ
+    const lat = 40.6584;
+    const lon = -74.3474;
+
+    const weatherUrl =
+      `https://api.open-meteo.com/v1/forecast` +
+      `?latitude=${lat}` +
+      `&longitude=${lon}` +
+      `&hourly=temperature_2m,precipitation_probability,windspeed_10m,weathercode` +
+      `&temperature_unit=fahrenheit` +
+      `&wind_speed_unit=mph` +
+      `&timezone=America%2FNew_York` +
+      `&forecast_days=7`;
+
+    const weatherRes = await fetch(weatherUrl, { cache:"no-store" });
+    if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
+
+    const weatherData = await weatherRes.json();
+    if (!weatherData?.hourly?.time?.length) throw new Error("Weather data missing");
+
+    const idx = findClosestHourIndex(weatherData.hourly.time, target);
+
+    const temp = weatherData.hourly.temperature_2m[idx];
+    const rain = weatherData.hourly.precipitation_probability[idx];
+    const wind = weatherData.hourly.windspeed_10m[idx];
+    const code = weatherData.hourly.weathercode[idx];
+    const label = weatherLabelFromCode(code);
+
+    const dateText = target.toLocaleDateString(undefined, {
+      weekday: "short",
+      month: "short",
+      day: "numeric"
+    });
+
+    const timeText = target.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit"
+    });
+
+    const note = await loadWeatherTickerMessage().catch(() => null);
+    const alertType = note?.alertType || "normal";
+
+    card.classList.remove("is-watch", "is-alert");
+    if (alertType === "watch") card.classList.add("is-watch");
+    if (alertType === "alert") card.classList.add("is-alert");
+
+    const weatherText =
+      `⚾ Game Day Weather: ${dateText} • ${timeText} • ${temp}°F • ${label} • Rain ${rain}% • Wind ${wind} mph`;
+
+    const noteText = note && (note.prefix || note.text)
+      ? `${note.prefix ? note.prefix + ": " : ""}${note.text || ""}${note.updated ? ` (${note.updated})` : ""}`
+      : "WBL Update: No league message posted.";
+
+    const fullText = `
+      <span class="homeTickerText">
+        <span>${weatherText}</span>
+        <span class="homeTickerSep">|</span>
+        <span>${noteText}</span>
+      </span>
+    `;
+
+    track.innerHTML = fullText;
+    applyTickerMode(inner, track);
+
+    window.addEventListener("resize", () => applyTickerMode(inner, track), { passive:true });
+  } catch (err) {
+    console.error(err);
+    track.innerHTML = `<span class="homeTickerText">⚾ Game Day Weather and league update are unavailable right now.</span>`;
+    inner.classList.remove("is-scrolling");
+    inner.classList.add("is-static");
+    card.classList.remove("is-watch", "is-alert");
+  }
+}
+    
     /* -------------------- Modal -------------------- */
     const overlay = document.getElementById("modalOverlay");
     const modalContent = document.getElementById("modalContent");
@@ -875,7 +1042,8 @@ function renderScheduleCard(g){
     async function initHome(){
       updateCountdown();
       setInterval(updateCountdown, 1000);
-
+        loadGameDayTicker().catch(()=>{});
+      
       // Load poll config first
       try{
         const ok = await loadPollFromSheet();
