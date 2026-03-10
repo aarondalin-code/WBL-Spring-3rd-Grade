@@ -909,8 +909,22 @@
       `;
 
       const c = data.counts || {};
-      summary.textContent = `Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}`;
-
+      summary.innerHTML = `
+  <div style="font-weight:700; color:#000; margin-bottom:4px;">
+    Next Game
+  </div>
+  <div>
+    Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}
+  </div>
+`;
+if (!familyToken) {
+  summary.innerHTML += `
+    <div class="muted small" style="margin-top:6px;">
+      Don't see RSVP buttons? Use your family's saved RSVP link.
+    </div>
+  `;
+}
+      
       const players = Array.isArray(data.players) ? data.players : [];
       if (!players.length) {
         msg.textContent = "No roster players found for this team yet.";
