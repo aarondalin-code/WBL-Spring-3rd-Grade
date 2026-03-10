@@ -336,37 +336,34 @@ for (const t of teams) {
     return 999;
   }
 
-  function getTeamMetaForPractice(p){
-    const slug = norm(p.TeamSlug);
-    const name = norm(p.TeamName);
+function getTeamMetaForPractice(p){
+  const slug = norm(p.TeamSlug);
+  const name = norm(p.TeamName);
+  if (slug && teamMetaBySlug.has(slug)) return teamMetaBySlug.get(slug);
+  if (name && teamMetaByName.has(name)) return teamMetaByName.get(name);
+  return {
+    name: safe(p.TeamName) || "Team",
+    slug: safe(p.TeamSlug) || "",
+    logo: "",
+    color: ""
+  };
+}
 
-    if (slug && teamMetaBySlug.has(slug)) return teamMetaBySlug.get(slug);
-    if (name && teamMetaByName.has(name)) return teamMetaByName.get(name);
-
-return {
-  name: safe(p.TeamName) || "Team",
-  slug: safe(p.TeamSlug) || "",
-  logo: "",
-  color: ""
-};
-
-  function practiceLinesHTML(p){
-    const day   = safe(p.PracticeDay);
-    const time  = safe(p.PracticeTime);
-    const field = safe(p.PracticeField);
-    const notes = safe(p.Notes);
-
-    if (!day && !time && !field && !notes){
-      return `<div class="muted small">Practice info coming soon.</div>`;
-    }
-
-    return `
-      ${day ? `<div class="practiceLine"><span class="practiceKey">Day</span><span class="practiceVal">${day}</span></div>` : ""}
-      ${time ? `<div class="practiceLine"><span class="practiceKey">Time</span><span class="practiceVal">${time}</span></div>` : ""}
-      ${field ? `<div class="practiceLine"><span class="practiceKey">Field</span><span class="practiceVal">${field}</span></div>` : ""}
-      ${notes ? `<div class="practiceNote muted small">${notes}</div>` : ""}
-    `;
+function practiceLinesHTML(p){
+  const day = safe(p.PracticeDay);
+  const time = safe(p.PracticeTime);
+  const field = safe(p.PracticeField);
+  const notes = safe(p.Notes);
+  if (!day && !time && !field && !notes){
+    return `<div class="muted small">Practice info coming soon.</div>`;
   }
+  return `
+    ${day ? `<div class="practiceLine"><span class="practiceKey">Day</span><span class="practiceVal">${day}</span></div>` : ""}
+    ${time ? `<div class="practiceLine"><span class="practiceKey">Time</span><span class="practiceVal">${time}</span></div>` : ""}
+    ${field ? `<div class="practiceLine"><span class="practiceKey">Field</span><span class="practiceVal">${field}</span></div>` : ""}
+    ${notes ? `<div class="practiceNote muted small">${notes}</div>` : ""}
+  `;
+}
 
   function populatePracticeFilters(){
     const daySet = new Set();
