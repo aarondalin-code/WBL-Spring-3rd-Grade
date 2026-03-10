@@ -548,25 +548,36 @@ async function loadGameDayTicker(){
 
     let parts = [];
 
-    if (alertType === "alert") {
-      parts.push(`<span>${noteText}</span>${updatedText}`);
+if (alertType === "alert") {
+  parts.push(`<span>${noteText}</span>${updatedText}`);
 
-      if (isSameCalendarDay) {
-        parts.push(`<span>${gameText}</span>`);
-      } else {
-        parts.push(`<span>${todayText}</span>`);
-        parts.push(`<span>${gameText}</span>`);
-      }
-    } else {
-      if (isSameCalendarDay) {
-        parts.push(`<span>${gameText}</span>`);
-      } else {
-        parts.push(`<span>${todayText}</span>`);
-        parts.push(`<span>${gameText}</span>`);
-      }
+  if (isSameCalendarDay) {
+    parts.push(`<span>${gameText}</span>`);
+  } else {
+    parts.push(`<span>${todayText}</span>`);
+    parts.push(`<span>${gameText}</span>`);
+  }
 
-      parts.push(`<span>${noteText}</span>${updatedText}`);
-    }
+} else if (alertType === "watch") {
+  if (isSameCalendarDay) {
+    parts.push(`<span>${gameText}</span>`);
+    parts.push(`<span>${noteText}</span>${updatedText}`);
+  } else {
+    parts.push(`<span>${todayText}</span>`);
+    parts.push(`<span>${noteText}</span>${updatedText}`);
+    parts.push(`<span>${gameText}</span>`);
+  }
+
+} else {
+  if (isSameCalendarDay) {
+    parts.push(`<span>${gameText}</span>`);
+  } else {
+    parts.push(`<span>${todayText}</span>`);
+    parts.push(`<span>${gameText}</span>`);
+  }
+
+  parts.push(`<span>${noteText}</span>${updatedText}`);
+}
 
     track.innerHTML = `
       <span class="homeTickerText">
