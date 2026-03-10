@@ -4,16 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team Roster • WBL 3rd Grade 2026</title>
-
   <link rel="stylesheet" href="./styles.css?v=wbl2026-cal2" />
+
   <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-VVXQ5JN459"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-VVXQ5JN459');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVXQ5JN459"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-VVXQ5JN459");
+  </script>
 
   <!-- TEAM PAGE ONLY: hard-stable header layout (grid, 2 rows) -->
   <style>
@@ -22,1097 +22,1189 @@
        Row 1: logo + team text | coach title/name
        Row 2: button under logo | coach pills (email/phone)
        ========================================================= */
-
     body.teamPage .teamHeaderBlock{
-      display: grid !important;
-      grid-template-columns: auto 1fr 300px !important;
-      grid-template-rows: auto auto !important;
-      column-gap: 14px !important;
-      row-gap: 10px !important;
-      align-items: start !important;
+      display:grid !important;
+      grid-template-columns:auto 1fr 300px !important;
+      grid-template-rows:auto auto !important;
+      column-gap:14px !important;
+      row-gap:10px !important;
+      align-items:start !important;
     }
 
-    /* Left top area: logo + team text on one line */
     body.teamPage .teamHeaderTopLeft{
-      grid-column: 1 / span 2 !important;
-      grid-row: 1 !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 12px !important;
-      min-width: 0 !important;
+      grid-column:1 / span 2 !important;
+      grid-row:1 !important;
+      display:flex !important;
+      align-items:center !important;
+      gap:12px !important;
+      min-width:0 !important;
     }
 
     body.teamPage .teamHeaderTopLeft .teamTextCol{
-      min-width: 0 !important;
+      min-width:0 !important;
     }
 
+    body.teamPage #addCalendarBtn{
+      grid-column:1 !important;
+      grid-row:2 !important;
+      justify-self:start !important;
+      align-self:end !important;
+      margin-bottom:6px !important;
+    }
 
-body.teamPage #addCalendarBtn{
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-  justify-self: start !important;
-
-  /* slightly higher without affecting layout */
-  align-self: end !important;
-  margin-bottom: 6px !important; /* raise button ~6px */
-}
-    /* Coach card spans both rows on the right */
     body.teamPage .teamHeaderRight{
-      grid-column: 3 !important;
-      grid-row: 1 / span 2 !important;
-      align-self: stretch !important;
+      grid-column:3 !important;
+      grid-row:1 / span 2 !important;
+      align-self:stretch !important;
     }
 
     body.teamPage .coachCard{
-      height: 100% !important;
-      display: grid !important;
-      grid-template-rows: auto 1fr auto !important;
+      height:100% !important;
+      display:grid !important;
+      grid-template-rows:auto 1fr auto !important;
     }
 
-    /* Keep title at top */
     body.teamPage .coachTitleCenter{
-      grid-row: 1 !important;
+      grid-row:1 !important;
     }
 
-    /* Spacer row 2 is the "1fr" */
-    /* Pills at bottom so they align with button bottom */
     body.teamPage .coachLinks{
-      grid-row: 3 !important;
-      align-self: end !important;
+      grid-row:3 !important;
+      align-self:end !important;
     }
 
     /* =========================================================
        BUTTON LOOK (calendar action)
        ========================================================= */
     body.teamPage button#addCalendarBtn{
-      all: unset;
-
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid #1e3fa8;
-
-      background: linear-gradient(180deg, rgba(30,63,168,.12), rgba(30,63,168,.05));
-      color: #1e3fa8;
-
-      font-weight: 900;
-      font-size: 13px;
-      letter-spacing: .3px;
-
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all .18s ease;
+      all:unset;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border-radius:999px;
+      border:1px solid #1e3fa8;
+      background:linear-gradient(180deg, rgba(30,63,168,.12), rgba(30,63,168,.05));
+      color:#1e3fa8;
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:.3px;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:all .18s ease;
     }
 
     body.teamPage button#addCalendarBtn::before{
-      content: "📅";
-      font-size: 14px;
+      content:"📅";
+      font-size:14px;
     }
 
     body.teamPage button#addCalendarBtn:hover{
-      background: #1e3fa8;
-      color: #fff;
-      box-shadow: 0 8px 18px rgba(30,63,168,.18);
-      transform: translateY(-1px);
+      background:#1e3fa8;
+      color:#fff;
+      box-shadow:0 8px 18px rgba(30,63,168,.18);
+      transform:translateY(-1px);
     }
 
     body.teamPage button#addCalendarBtn:active{
-      transform: translateY(0);
+      transform:translateY(0);
     }
 
-    /* Mobile: stack nicely, do not break */
     @media (max-width: 760px){
       body.teamPage .teamHeaderBlock{
-        grid-template-columns: auto 1fr !important;
-        grid-template-rows: auto auto auto !important;
+        grid-template-columns:auto 1fr !important;
+        grid-template-rows:auto auto auto !important;
       }
 
       body.teamPage .teamHeaderTopLeft{
-        grid-column: 1 / span 2 !important;
-        grid-row: 1 !important;
+        grid-column:1 / span 2 !important;
+        grid-row:1 !important;
       }
 
       body.teamPage #addCalendarBtn{
-        grid-column: 1 !important;
-        grid-row: 2 !important;
-        align-self: start !important;
+        grid-column:1 !important;
+        grid-row:2 !important;
+        align-self:start !important;
       }
 
       body.teamPage .teamHeaderRight{
-        grid-column: 1 / span 2 !important;
-        grid-row: 3 !important;
+        grid-column:1 / span 2 !important;
+        grid-row:3 !important;
       }
     }
-  
-/* RSVP block */
-body.teamPage #rsvpSection .cardBody{
-  padding: 14px !important;
-}
 
-body.teamPage .rsvpHeaderOfficial{
-  display:grid;
-  grid-template-columns: auto auto auto;
-  justify-content:center;
-  align-items:center;
-  gap:16px;
-  margin-top:0;
-  margin-bottom:4px;
-}
+    /* RSVP block */
+    body.teamPage #rsvpSection .cardBody{
+      padding:14px !important;
+    }
 
-body.teamPage .rsvpTeamSide{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
+    body.teamPage .rsvpHeaderOfficial{
+      display:grid;
+      grid-template-columns:auto auto auto;
+      justify-content:center;
+      align-items:center;
+      gap:16px;
+      margin-top:0;
+      margin-bottom:4px;
+    }
 
-body.teamPage .rsvpTeamSide.rightSide{
-  flex-direction:row-reverse;
-}
+    body.teamPage .rsvpTeamSide{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-body.teamPage .rsvpMiniLogo{
-  width:28px;
-  height:28px;
-  object-fit:contain;
-  flex:0 0 28px;
-}
+    body.teamPage .rsvpTeamSide.rightSide{
+      flex-direction:row-reverse;
+    }
 
-body.teamPage .rsvpTeamName{
-  font-weight:900;
-  line-height:1.05;
-  font-size:14px;
-}
+    body.teamPage .rsvpMiniLogo{
+      width:28px;
+      height:28px;
+      object-fit:contain;
+      flex:0 0 28px;
+    }
 
-body.teamPage .rsvpCenterMeta{
-  text-align:center;
-  min-width:auto;
-}
+    body.teamPage .rsvpTeamName{
+      font-weight:900;
+      line-height:1.05;
+      font-size:14px;
+    }
 
-body.teamPage .rsvpCenterMeta .rsvpAt{
-  font-size:18px;
-  font-weight:900;
-  line-height:1;
-}
+    body.teamPage .rsvpCenterMeta{
+      text-align:center;
+      min-width:auto;
+    }
 
-body.teamPage .rsvpCenterMeta .rsvpMetaLine{
-  margin-top:2px;
-  font-size:12px;
-}
+    body.teamPage .rsvpCenterMeta .rsvpAt{
+      font-size:18px;
+      font-weight:900;
+      line-height:1;
+    }
 
-body.teamPage .rsvpGrid{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap:8px 10px;
-  margin-top:10px;
-}
+    body.teamPage .rsvpCenterMeta .rsvpMetaLine{
+      margin-top:2px;
+      font-size:12px;
+    }
 
-body.teamPage .rsvpPlayerCell{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  padding:7px 9px;
-  border:1px solid rgba(15,23,42,.08);
-  border-radius:10px;
-  background:rgba(15,23,42,.02);
-}
+    body.teamPage .rsvpGrid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:8px 10px;
+      margin-top:10px;
+    }
 
-body.teamPage .rsvpStatus{
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.2px;
-  white-space:nowrap;
-}
+    body.teamPage .rsvpPlayerCell{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      padding:7px 9px;
+      border:1px solid rgba(15,23,42,.08);
+      border-radius:10px;
+      background:rgba(15,23,42,.02);
+    }
 
-body.teamPage .rsvpPlayerLeft{
-  min-width:0;
-}
+    body.teamPage .rsvpStatus{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
 
-body.teamPage .rsvpPlayerRight{
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-}
+    body.teamPage .rsvpPlayerLeft{
+      min-width:0;
+    }
 
-body.teamPage .rsvpBtns{
-  display:flex;
-  gap:4px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
+    body.teamPage .rsvpPlayerRight{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      justify-content:flex-start;
+      gap:6px;
+    }
 
-body.teamPage .rsvpBtn{
-  appearance:none;
-  border:1px solid rgba(15,23,42,.12);
-  background:#fff;
-  color:#0f172a;
-  border-radius:999px;
-  padding:4px 8px;
-  font-size:10px;
-  font-weight:900;
-  line-height:1.1;
-  cursor:pointer;
-}
+    body.teamPage .rsvpBtns{
+      display:flex;
+      gap:4px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
 
-body.teamPage .rsvpBtn:hover{
-  transform:translateY(-1px);
-}
+    body.teamPage .rsvpBtn{
+      appearance:none;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+      color:#0f172a;
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:10px;
+      font-weight:900;
+      line-height:1.1;
+      cursor:pointer;
+    }
 
-body.teamPage .rsvpBtn.active{
-  background:#0f172a;
-  color:#fff;
-  border-color:#0f172a;
-}
+    body.teamPage .rsvpBtn:hover{
+      transform:translateY(-1px);
+    }
 
-body.teamPage .rsvpBtn:disabled{
-  opacity:.6;
-  cursor:default;
-}
+    body.teamPage .rsvpBtn.active{
+      background:#0f172a;
+      color:#fff;
+      border-color:#0f172a;
+    }
 
-body.teamPage .rsvpPlayerCell{
-  align-items:flex-start;
-}
+    body.teamPage .rsvpBtn:disabled{
+      opacity:.6;
+      cursor:default;
+    }
 
-body.teamPage .rsvpPlayerRight{
-  flex-direction:column;
-  align-items:flex-end;
-  gap:6px;
-}
+    body.teamPage .rsvpNoteWrap{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      max-width:100%;
+    }
 
-body.teamPage .rsvpNoteWrap{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  max-width:100%;
-}
+    body.teamPage .rsvpNoteInput{
+      width:160px;
+      max-width:100%;
+      border:1px solid rgba(15,23,42,.12);
+      border-radius:8px;
+      padding:6px 8px;
+      font-size:12px;
+      line-height:1.2;
+    }
 
-body.teamPage .rsvpNoteInput{
-  width:160px;
-  max-width:100%;
-  border:1px solid rgba(15,23,42,.12);
-  border-radius:8px;
-  padding:6px 8px;
-  font-size:12px;
-  line-height:1.2;
-}
+    body.teamPage .rsvpMiniBtn{
+      appearance:none;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+      color:#0f172a;
+      border-radius:8px;
+      padding:6px 8px;
+      font-size:11px;
+      font-weight:800;
+      cursor:pointer;
+    }
 
-body.teamPage .rsvpMiniBtn{
-  appearance:none;
-  border:1px solid rgba(15,23,42,.12);
-  background:#fff;
-  color:#0f172a;
-  border-radius:8px;
-  padding:6px 8px;
-  font-size:11px;
-  font-weight:800;
-  cursor:pointer;
-}
+    body.teamPage .rsvpNoteText{
+      font-size:11px;
+      line-height:1.25;
+      text-align:right;
+      max-width:180px;
+    }
 
-body.teamPage .rsvpNoteText{
-  font-size:11px;
-  line-height:1.25;
-  text-align:right;
-  max-width:180px;
-}
+    @media (max-width: 900px){
+      body.teamPage .rsvpGrid{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+    }
 
+    @media (max-width: 640px){
+      body.teamPage .rsvpHeaderOfficial{
+        grid-template-columns:1fr;
+        justify-content:stretch;
+        text-align:center;
+        gap:8px;
+      }
 
-    
-    
-@media (max-width: 900px){
-  body.teamPage .rsvpGrid{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
+      body.teamPage .rsvpTeamSide,
+      body.teamPage .rsvpTeamSide.rightSide{
+        justify-content:center;
+        flex-direction:row;
+      }
 
-@media (max-width: 640px){
-  body.teamPage .rsvpHeaderOfficial{
-    grid-template-columns: 1fr;
-    justify-content:stretch;
-    text-align:center;
-    gap:8px;
-  }
-
-  body.teamPage .rsvpTeamSide,
-  body.teamPage .rsvpTeamSide.rightSide{
-    justify-content:center;
-    flex-direction:row;
-  }
-
-  body.teamPage .rsvpGrid{
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px){
-  body.teamPage .rsvpHeaderOfficial{
-    grid-template-columns: 1fr;
-    text-align:center;
-  }
-
-  body.teamPage .rsvpTeamSide,
-  body.teamPage .rsvpTeamSide.rightSide{
-    justify-content:center;
-  }
-
-  body.teamPage .rsvpGrid{
-    grid-template-columns: 1fr;
-  }
-}
-  
+      body.teamPage .rsvpGrid{
+        grid-template-columns:1fr;
+      }
+    }
   </style>
 </head>
 
 <body class="watermarkPage teamPage hasHamburger">
-<header class="siteHeader">
-  <div class="navWrap">
-    <button
-      class="navToggle"
-      type="button"
-      aria-label="Open menu"
-      aria-expanded="false"
-      aria-controls="siteNav"
-    >
-      <span></span><span></span><span></span>
-    </button>
+  <header class="siteHeader">
+    <div class="navWrap">
+      <button
+        class="navToggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="siteNav"
+      >
+        <span></span><span></span><span></span>
+      </button>
+      <div class="navOverlay" aria-hidden="true"></div>
+      <nav class="nav" id="siteNav">
+        <a href="./">Home</a>
+        <a href="./dailyfun.html">Daily Dugout</a>
+        <a href="./schedule.html">Schedule/Scores</a>
+        <a href="./standings.html">Standings</a>
+        <a href="./teams.html">Teams</a>
+        <a href="./playoffs.html">Playoffs</a>
+        <a href="./practice.html">Practice Drills</a>
+        <a href="./rules.html">Rules</a>
+        <a href="./contacts.html">Contacts</a>
+        <a href="./gallery.html">Gallery</a>
+        <a href="./uploads.html">Uploads</a>
+      </nav>
+    </div>
 
-    <div class="navOverlay" aria-hidden="true"></div>
+    <div class="brandCenter">
+      <img src="./logo.png" alt="WBL Logo" class="logoImage">
+      <h1>Team Roster</h1>
+      <div class="tagline">WBL 3rd Grade</div>
+    </div>
+  </header>
 
-    <nav class="nav" id="siteNav">
-      <a href="./">Home</a>
-      <a href="./dailyfun.html">Daily Dugout</a>
-      <a href="./schedule.html">Schedule/Scores</a>
-      <a href="./standings.html">Standings</a>
-      <a href="./teams.html">Teams</a>
-      <a href="./playoffs.html">Playoffs</a>
-      <a href="./practice.html">Practice Drills</a>
-      <a href="./rules.html">Rules</a>
-      <a href="./contacts.html">Contacts</a>
-      <a href="./gallery.html">Gallery</a>
-      <a href="./uploads.html">Uploads</a>
-    </nav>
-  </div>
-
-  <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage">
-    <h1>Team Roster</h1>
-    <div class="tagline">WBL 3rd Grade</div>
-  </div>
-</header>
-
-<main class="wrap">
-  <!-- Team header block -->
-  <section class="card" style="margin-top:12px;">
-    <div class="cardBody">
-
-      <div class="teamHeaderBlock">
-
-        <!-- Row 1 left: logo + team text (stable) -->
-        <div class="teamHeaderTopLeft">
-          <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
-          <div class="teamTextCol">
-            <div class="muted small">Team</div>
-            <h2 id="teamName" style="margin:0;">Team</h2>
-            <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
-          </div>
-        </div>
-
-        <!-- Row 2 left: calendar button under logo -->
-        <button id="addCalendarBtn" type="button" aria-label="Add team schedule to calendar">
-          Add Schedule
-        </button>
-
-        <!-- Right: coach card spans both rows -->
-        <div class="teamHeaderRight">
-          <div class="coachCard">
-            <div class="coachTitleCenter">
-              <div class="coachLabel">Head Coach</div>
-              <div class="coachName" id="coachName">TBD</div>
+  <main class="wrap">
+    <!-- Team header block -->
+    <section class="card" style="margin-top:12px;">
+      <div class="cardBody">
+        <div class="teamHeaderBlock">
+          <!-- Row 1 left: logo + team text -->
+          <div class="teamHeaderTopLeft">
+            <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
+            <div class="teamTextCol">
+              <div class="muted small">Team</div>
+              <h2 id="teamName" style="margin:0;">Team</h2>
+              <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
             </div>
+          </div>
 
-            <div class="coachLinks">
-              <a id="coachEmail" class="coachLink" href="#" style="display:none;"></a>
-              <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
+          <!-- Row 2 left: calendar button under logo -->
+          <button id="addCalendarBtn" type="button" aria-label="Add team schedule to calendar">
+            Add Schedule
+          </button>
+
+          <!-- Right: coach card spans both rows -->
+          <div class="teamHeaderRight">
+            <div class="coachCard">
+              <div class="coachTitleCenter">
+                <div class="coachLabel">Head Coach</div>
+                <div class="coachName" id="coachName">TBD</div>
+              </div>
+              <div class="coachLinks">
+                <a id="coachEmail" class="coachLink" href="#" style="display:none;"></a>
+                <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
+              </div>
             </div>
           </div>
         </div>
-
       </div>
+    </section>
 
-    </div>
-  </section>
-
-  <!-- Roster -->
-  <section class="card" style="margin-top:14px;">
-    <div class="cardBody">
-      <div class="rosterTopRow" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-        <h3 style="margin:0;">Roster</h3>
-        <a class="btnSecondary" href="./teams.html">← Back to Teams</a>
+    <!-- Roster -->
+    <section class="card" style="margin-top:14px;">
+      <div class="cardBody">
+        <div class="rosterTopRow" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h3 style="margin:0;">Roster</h3>
+          <a class="btnSecondary" href="./teams.html">← Back to Teams</a>
+        </div>
+        <div id="rosterGrid" class="rosterGrid" style="margin-top:12px;"></div>
+        <p id="rosterMsg" class="muted small" style="margin-top:12px;"></p>
       </div>
-      <div id="rosterGrid" class="rosterGrid" style="margin-top:12px;"></div>
-      <p id="rosterMsg" class="muted small" style="margin-top:12px;"></p>
+    </section>
+
+    <!-- RSVP -->
+    <section class="card" id="rsvpSection" style="margin-top:14px; display:none;">
+      <div class="cardBody">
+        <div id="rsvpGameMeta"></div>
+        <div id="rsvpSummary" class="muted small" style="margin-top:8px;"></div>
+        <div id="rsvpList" style="margin-top:10px;"></div>
+        <p id="rsvpMsg" class="muted small" style="margin-top:10px;"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Player modal -->
+  <div id="modalOverlay" class="modalOverlay" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modalClose" id="modalCloseBtn" type="button">✕</button>
+      <div id="modalContent"></div>
     </div>
-  </section>
-
-<section class="card" id="rsvpSection" style="margin-top:14px; display:none;">
-  <div class="cardBody">
-    <div id="rsvpGameMeta"></div>
-    <div id="rsvpSummary" class="muted small" style="margin-top:8px;"></div>
-    <div id="rsvpList" style="margin-top:10px;"></div>
-    <p id="rsvpMsg" class="muted small" style="margin-top:10px;"></p>
   </div>
-</section>
-</main>
 
-<!-- Player modal -->
-<div id="modalOverlay" class="modalOverlay" aria-hidden="true">
-  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button class="modalClose" id="modalCloseBtn" type="button">✕</button>
-    <div id="modalContent"></div>
-  </div>
-</div>
+  <script src="./data.js"></script>
+  <script>
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    function safe(v){ return String(v ?? "").trim(); }
 
-<script src="./data.js"></script>
+    function formatPlayerName(name){
+      const parts = safe(name).split(/\s+/).filter(Boolean);
+      if (!parts.length) return "";
+      const first = parts[0];
+      const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
+      return first + lastInitial;
+    }
 
-<script>
-  // -----------------------------
-  // Helpers
-  // -----------------------------
-  function safe(v){ return String(v ?? "").trim(); }
-function formatPlayerName(name){
-  const parts = safe(name).split(/\s+/).filter(Boolean);
-  if (!parts.length) return "";
-  const first = parts[0];
-  const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
-  return first + lastInitial;
-}
+    function getTeamMetaByName(teamName, teamRows){
+      const row = (teamRows || []).find(r => safe(r.TeamName) === safe(teamName));
+      return {
+        color: safe(row?.TeamColor),
+        logo: safe(row?.TeamLogo)
+      };
+    }
 
-function getTeamMetaByName(teamName, teamRows){
-  const row = (teamRows || []).find(r => safe(r.TeamName) === safe(teamName));
-  return {
-    color: safe(row?.TeamColor),
-    logo: safe(row?.TeamLogo)
-  };
-}
-  function getParam(name){
-    return new URLSearchParams(window.location.search).get(name) || "";
-  }
+    function getParam(name){
+      return new URLSearchParams(window.location.search).get(name) || "";
+    }
 
-  function normalizePhoneForTel(phone) {
-    return safe(phone).replace(/[^\d+]/g, "");
-  }
+    function normalizePhoneForTel(phone) {
+      return safe(phone).replace(/[^\d+]/g, "");
+    }
 
-  async function fetchCsv(url) {
-    if (!url) throw new Error("Missing CSV URL in data.js");
-    const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(url + bust, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
-    return await res.text();
-  }
+    async function fetchCsv(url) {
+      if (!url) throw new Error("Missing CSV URL in data.js");
+      const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+      const res = await fetch(url + bust, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
+      return await res.text();
+    }
 
-  // Robust CSV parser (quoted commas safe)
-  function parseCsv(text) {
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
+    // Robust CSV parser (quoted commas safe)
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cur = "";
+      let inQuotes = false;
 
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      const next = text[i + 1];
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
 
-      if (ch === '"') {
-        if (inQuotes && next === '"') { cur += '"'; i++; }
-        else inQuotes = !inQuotes;
-        continue;
+        if (ch === '"') {
+          if (inQuotes && next === '"') { cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+          continue;
+        }
+
+        if (!inQuotes && ch === ",") {
+          row.push(cur);
+          cur = "";
+          continue;
+        }
+
+        if (!inQuotes && (ch === "\n" || ch === "\r")) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cur);
+          cur = "";
+          if (row.some(v => safe(v) !== "")) rows.push(row);
+          row = [];
+          continue;
+        }
+
+        cur += ch;
       }
 
-      if (!inQuotes && ch === ",") { row.push(cur); cur = ""; continue; }
+      row.push(cur);
+      if (row.some(v => safe(v) !== "")) rows.push(row);
 
-      if (!inQuotes && (ch === "\n" || ch === "\r")) {
-        if (ch === "\r" && next === "\n") i++;
-        row.push(cur); cur = "";
-        if (row.some(v => safe(v) !== "")) rows.push(row);
-        row = [];
-        continue;
+      const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g, ""));
+      return rows
+        .filter(r => r.some(x => safe(x) !== ""))
+        .map(r => {
+          const obj = {};
+          headers.forEach((h, idx) => obj[h] = safe(r[idx]));
+          return obj;
+        });
+    }
+
+    // -----------------------------
+    // Modal
+    // -----------------------------
+    const overlay = document.getElementById("modalOverlay");
+    const modalContent = document.getElementById("modalContent");
+    const closeBtn = document.getElementById("modalCloseBtn");
+
+    function openModal(html){
+      modalContent.innerHTML = html;
+      overlay.classList.add("open");
+      document.body.classList.add("noScroll");
+      overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(){
+      overlay.classList.remove("open");
+      document.body.classList.remove("noScroll");
+      overlay.setAttribute("aria-hidden", "true");
+      modalContent.innerHTML = "";
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    // -----------------------------
+    // Render: Team header + coach
+    // -----------------------------
+    function setHeaderFromTeamRow(teamRow){
+      const teamNameEl = document.getElementById("teamName");
+      const logoEl = document.getElementById("teamLogo");
+      const subEl = document.getElementById("teamSubtitle");
+      const coachNameEl = document.getElementById("coachName");
+      const coachEmailEl = document.getElementById("coachEmail");
+      const coachPhoneEl = document.getElementById("coachPhone");
+
+      const name = safe(teamRow.TeamName) || "Team";
+      const logo = safe(teamRow.TeamLogo);
+
+      if (teamNameEl){
+        teamNameEl.textContent = name;
+        const color = safe(teamRow.TeamColor);
+        if (color) teamNameEl.style.color = color;
       }
 
-      cur += ch;
+      document.title = `${name} • WBL 3rd Grade 2026`;
+
+      if (logo) {
+        logoEl.style.display = "";
+        logoEl.src = logo;
+        logoEl.onerror = () => { logoEl.style.display = "none"; };
+      } else {
+        logoEl.removeAttribute("src");
+        logoEl.style.display = "none";
+      }
+
+      subEl.textContent = "";
+
+      const coachName = safe(teamRow.CoachName);
+      const coachEmail = safe(teamRow.CoachEmail);
+      const coachPhone = safe(teamRow.CoachPhone);
+
+      coachNameEl.textContent = coachName && coachName.toLowerCase() !== "tbd" ? coachName : "TBD";
+
+      if (coachEmail && coachEmail.toLowerCase() !== "tbd") {
+        coachEmailEl.style.display = "inline-flex";
+        coachEmailEl.textContent = coachEmail;
+        coachEmailEl.href = `mailto:${coachEmail}`;
+      } else {
+        coachEmailEl.style.display = "none";
+      }
+
+      if (coachPhone && coachPhone.toLowerCase() !== "tbd") {
+        coachPhoneEl.style.display = "inline-flex";
+        coachPhoneEl.textContent = coachPhone;
+        coachPhoneEl.href = `tel:${normalizePhoneForTel(coachPhone)}`;
+      } else {
+        coachPhoneEl.style.display = "none";
+      }
     }
 
-    row.push(cur);
-    if (row.some(v => safe(v) !== "")) rows.push(row);
-
-    const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g, ""));
-    return rows
-      .filter(r => r.some(x => safe(x) !== ""))
-      .map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => obj[h] = safe(r[idx]));
-        return obj;
-      });
-  }
-
-  // -----------------------------
-  // Modal
-  // -----------------------------
-  const overlay = document.getElementById("modalOverlay");
-  const modalContent = document.getElementById("modalContent");
-  const closeBtn = document.getElementById("modalCloseBtn");
-
-  function openModal(html){
-    modalContent.innerHTML = html;
-    overlay.classList.add("open");
-    document.body.classList.add("noScroll");
-    overlay.setAttribute("aria-hidden", "false");
-  }
-
-  function closeModal(){
-    overlay.classList.remove("open");
-    document.body.classList.remove("noScroll");
-    overlay.setAttribute("aria-hidden", "true");
-    modalContent.innerHTML = "";
-  }
-
-  closeBtn.addEventListener("click", closeModal);
-  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
-
-  // -----------------------------
-  // Render: Team header + coach
-  // -----------------------------
-  function setHeaderFromTeamRow(teamRow){
-const teamNameEl = document.getElementById("teamName");
-if (teamNameEl){
-  teamNameEl.textContent = safe(teamRow.TeamName);
-  const color = safe(teamRow.TeamColor);
-  if (color) teamNameEl.style.color = color;
-}
-const logoEl = document.getElementById("teamLogo");
-const subEl = document.getElementById("teamSubtitle");
-const coachNameEl = document.getElementById("coachName");
-const coachEmailEl = document.getElementById("coachEmail");
-const coachPhoneEl = document.getElementById("coachPhone");
-
-const name = safe(teamRow.TeamName) || "Team";
-const logo = safe(teamRow.TeamLogo);
-
-teamNameEl.textContent = name;
-document.title = `${name} • WBL 3rd Grade 2026`;
-
-if (logo) {
-  logoEl.style.display = "";
-  logoEl.src = logo;
-  logoEl.onerror = () => { logoEl.style.display = "none"; };
-} else {
-  logoEl.removeAttribute("src");
-  logoEl.style.display = "none";
-}
-
-subEl.textContent = "";
-
-    const coachName = safe(teamRow.CoachName);
-    const coachEmail = safe(teamRow.CoachEmail);
-    const coachPhone = safe(teamRow.CoachPhone);
-
-    coachNameEl.textContent = coachName && coachName.toLowerCase() !== "tbd" ? coachName : "TBD";
-
-    if (coachEmail && coachEmail.toLowerCase() !== "tbd") {
-      coachEmailEl.style.display = "inline-flex";
-      coachEmailEl.textContent = coachEmail;
-      coachEmailEl.href = `mailto:${coachEmail}`;
-    } else {
-      coachEmailEl.style.display = "none";
+    // -----------------------------
+    // Roster grid
+    // -----------------------------
+    function getPlayerId(player){
+      return safe(player.PlayerID || player.PlayerId);
     }
 
-    if (coachPhone && coachPhone.toLowerCase() !== "tbd") {
-      coachPhoneEl.style.display = "inline-flex";
-      coachPhoneEl.textContent = coachPhone;
-      coachPhoneEl.href = `tel:${normalizePhoneForTel(coachPhone)}`;
-    } else {
-      coachPhoneEl.style.display = "none";
+    function playerPhotoFromId(playerId){
+      if (!playerId) return "";
+      return `./player-photos/${encodeURIComponent(playerId)}.jpg`;
     }
-  }
 
-  // -----------------------------
-  // Roster grid
-  // -----------------------------
-  function getPlayerId(player){
-    return safe(player.PlayerID || player.PlayerId);
-  }
-
-  function playerPhotoFromId(playerId){
-    if (!playerId) return "";
-    return `./player-photos/${encodeURIComponent(playerId)}.jpg`;
-  }
-
-  function getPhotoSrc(player){
-    const url = safe(player.PhotoURL);
-    if (url) return url;
-
-    const pid = getPlayerId(player);
-    const local = playerPhotoFromId(pid);
-    if (local) return local;
-
-    return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
-  }
-
-function renderPlayerModal(player, teamDisplayName, teamRows){
-  const name = formatPlayerName(player.PlayerName || player.Name || "Player");
-  const num = safe(player.Number);
-  const pos = safe(player.Position);
-  const bats = safe(player.Bats);
-  const throws = safe(player.Throws);
-  const fav = safe(player.FavoriteTeam);
-  const fun = safe(player.FunFact);
-  const photo = getPhotoSrc(player);
-
-  const lines = [];
-  const line = (label, value) => `
-    <div class="profileLine">
-      <span class="profileKey">${label}</span>
-      <span class="profileVal">${value}</span>
-    </div>
-  `;
-
-  if (num) lines.push(line("Number", `#${num}`));
-  if (pos) lines.push(line("Position", pos));
-  if (bats) lines.push(line("Bats", bats));
-  if (throws) lines.push(line("Throws", throws));
-  if (fav) lines.push(line("Favorite MLB Team", fav));
-  if (fun) lines.push(line("Fun Fact", fun));
-
-  const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
-  const teamMeta = getTeamMetaByName(teamDisplayName, teamRows);
-  const teamStyle = teamMeta.color
-    ? `style="color:${teamMeta.color}; font-weight:900;"`
-    : "";
-
-  openModal(`
-    <div class="profileHeader">
-      <div class="profilePhoto">
-        <img src="${photo}" alt="${name}"
-             onerror="this.onerror=null; this.src='${fallback}';">
-      </div>
-      <div style="min-width:260px;">
-        <h3 id="modalTitle" class="profileName">${name}</h3>
-        <div class="muted" ${teamStyle}>${teamDisplayName}${num ? ` • #${num}` : ""}</div>
-        <div class="profileLines" style="margin-top:12px;">
-          ${lines.length ? lines.join("") : `<div class="muted small">No additional details yet.</div>`}
-        </div>
-      </div>
-    </div>
-  `);
-}
-  function buildRosterGrid(players, teamDisplayName){
-    const grid = document.getElementById("rosterGrid");
-    const msg = document.getElementById("rosterMsg");
-    grid.innerHTML = "";
-
-    if (!players.length){
-      msg.textContent = "No roster entries found for this team yet.";
-      return;
+    function getPhotoSrc(player){
+      const url = safe(player.PhotoURL);
+      if (url) return url;
+      const pid = getPlayerId(player);
+      const local = playerPhotoFromId(pid);
+      if (local) return local;
+      return window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
     }
-    msg.textContent = "";
 
-    players.sort((a,b) => {
-      const na = Number(safe(a.Number));
-      const nb = Number(safe(b.Number));
-      const aHas = Number.isFinite(na);
-      const bHas = Number.isFinite(nb);
-      if (aHas && bHas && na !== nb) return na - nb;
-      if (aHas && !bHas) return -1;
-      if (!aHas && bHas) return 1;
-      return safe(a.PlayerName || a.Name).localeCompare(safe(b.PlayerName || b.Name));
-    });
+    function renderPlayerModal(player, teamDisplayName, teamRows){
+      const name = formatPlayerName(player.PlayerName || player.Name || "Player");
+      const num = safe(player.Number);
+      const pos = safe(player.Position);
+      const bats = safe(player.Bats);
+      const throws = safe(player.Throws);
+      const fav = safe(player.FavoriteTeam);
+      const fun = safe(player.FunFact);
+      const photo = getPhotoSrc(player);
 
-    const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
-
-    for (const p of players){
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "playerCardBtn";
-
-     const name = formatPlayerName(p.PlayerName || p.Name || "Player");
-      const num = safe(p.Number);
-      const pos = safe(p.Position);
-      const photo = getPhotoSrc(p);
-
-      btn.innerHTML = `
-        <div class="playerCardRow">
-          <div class="playerThumb">
-            <img src="${photo}" alt="${name}"
-                 onerror="this.onerror=null; this.src='${fallback}';">
-          </div>
-          <div class="playerText" style="min-width:0;">
-            <div class="playerNameLine" style="font-weight:900;">
-              ${name}${num ? ` <span class="muted">#${num}</span>` : ""}
-            </div>
-            <div class="muted small">${pos || ""}</div>
-          </div>
-          <div class="playerChevron" style="margin-left:auto; font-weight:900; color:var(--muted);">›</div>
+      const lines = [];
+      const line = (label, value) => `
+        <div class="profileLine">
+          <span class="profileKey">${label}</span>
+          <span class="profileVal">${value}</span>
         </div>
       `;
 
-  btn.addEventListener("click", () => renderPlayerModal(p, teamDisplayName, window.__TEAM_ROWS__ || []));
-      grid.appendChild(btn);
+      if (num) lines.push(line("Number", `#${num}`));
+      if (pos) lines.push(line("Position", pos));
+      if (bats) lines.push(line("Bats", bats));
+      if (throws) lines.push(line("Throws", throws));
+      if (fav) lines.push(line("Favorite MLB Team", fav));
+      if (fun) lines.push(line("Fun Fact", fun));
+
+      const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
+      const teamMeta = getTeamMetaByName(teamDisplayName, teamRows);
+      const teamStyle = teamMeta.color
+        ? `style="color:${teamMeta.color}; font-weight:900;"`
+        : "";
+
+      openModal(`
+        <div class="profileHeader">
+          <div class="profilePhoto">
+            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${fallback}';">
+          </div>
+          <div style="min-width:260px;">
+            <h3 id="modalTitle" class="profileName">${name}</h3>
+            <div class="muted" ${teamStyle}>${teamDisplayName}${num ? ` • #${num}` : ""}</div>
+            <div class="profileLines" style="margin-top:12px;">
+              ${lines.length ? lines.join("") : `<div class="muted small">No additional details yet.</div>`}
+            </div>
+          </div>
+        </div>
+      `);
     }
-  }
 
-  // -----------------------------
-  // Calendar integration (ICS)
-  // -----------------------------
-  function formatICSDate(dateStr, timeStr){
-    const date = new Date(`${dateStr} ${timeStr}`);
-    const pad = n => String(n).padStart(2,"0");
-    return (
-      date.getUTCFullYear() +
-      pad(date.getUTCMonth()+1) +
-      pad(date.getUTCDate()) + "T" +
-      pad(date.getUTCHours()) +
-      pad(date.getUTCMinutes()) +
-      "00Z"
-    );
-  }
+    function buildRosterGrid(players, teamDisplayName){
+      const grid = document.getElementById("rosterGrid");
+      const msg = document.getElementById("rosterMsg");
 
-  function generateTeamICS(teamName, games){
-    const now = new Date();
-    const stamp = now.toISOString().replace(/[-:]/g,"").split(".")[0] + "Z";
+      grid.innerHTML = "";
 
-    const ics = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//WBL 3rd Grade 2026//Team Schedule//EN"
-    ];
+      if (!players.length){
+        msg.textContent = "No roster entries found for this team yet.";
+        return;
+      }
 
-    games.forEach(g => {
-      if (!g.Date || !g.Time) return;
+      msg.textContent = "";
 
-      const start = formatICSDate(g.Date, g.Time);
+      players.sort((a,b) => {
+        const na = Number(safe(a.Number));
+        const nb = Number(safe(b.Number));
+        const aHas = Number.isFinite(na);
+        const bHas = Number.isFinite(nb);
 
-      const startLocal = new Date(`${g.Date} ${g.Time}`);
-      const endLocal = new Date(startLocal.getTime() + 90*60000);
-      const pad = n => String(n).padStart(2,"0");
-      const end =
-        endLocal.getUTCFullYear() +
-        pad(endLocal.getUTCMonth()+1) +
-        pad(endLocal.getUTCDate()) + "T" +
-        pad(endLocal.getUTCHours()) +
-        pad(endLocal.getUTCMinutes()) +
-        "00Z";
+        if (aHas && bHas && na !== nb) return na - nb;
+        if (aHas && !bHas) return -1;
+        if (!aHas && bHas) return 1;
+        return safe(a.PlayerName || a.Name).localeCompare(safe(b.PlayerName || b.Name));
+      });
 
-      const opponent = (g.TeamA === teamName) ? g.TeamB : g.TeamA;
+      const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
 
-      ics.push(
-        "BEGIN:VEVENT",
-        `UID:${teamName}-${g.Date}-${g.Time}@wbl2026`,
-        `DTSTAMP:${stamp}`,
-        `DTSTART:${start}`,
-        `DTEND:${end}`,
-        `SUMMARY:${teamName} vs ${opponent}`,
-        `LOCATION:${g.Field || ""}`,
-        "END:VEVENT"
-      );
-    });
-
-    ics.push("END:VCALENDAR");
-    return ics.join("\r\n");
-  }
-function formatRsvpDate(dateStr) {
-  if (!safe(dateStr)) return "";
-  const d = new Date(dateStr);
-  if (isNaN(d)) return safe(dateStr);
-  return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
-}
-
-function formatRsvpTime(timeStr) {
-  if (!safe(timeStr)) return "";
-  const d = new Date(timeStr);
-  if (!isNaN(d) && d.getFullYear() < 1905) {
-    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  }
-  return safe(timeStr);
-}
-
-async function fetchRsvpBoard(teamSlug, token) {
-  const base = window.SHEET?.RSVP_API_URL;
-  if (!base) throw new Error("Missing RSVP_API_URL in data.js");
-
-  const url = new URL(base);
-  url.searchParams.set("action", "getRsvpBoard");
-  url.searchParams.set("teamSlug", teamSlug);
-  if (token) url.searchParams.set("token", token);
-  url.searchParams.set("t", Date.now());
-
-  const res = await fetch(url.toString(), { cache: "no-store" });
-  if (!res.ok) throw new Error(`RSVP request failed (${res.status})`);
-  return await res.json();
-}
-
-async function submitRsvpChoice(teamSlug, token, gameId, playerId, response, note = "") {
-  const base = window.SHEET?.RSVP_API_URL;
-  if (!base) throw new Error("Missing RSVP_API_URL in data.js");
-
-  const url = new URL(base);
-  url.searchParams.set("action", "submitRsvp");
-  url.searchParams.set("teamSlug", teamSlug);
-  url.searchParams.set("token", token);
-  url.searchParams.set("gameId", gameId);
-  url.searchParams.set("playerId", playerId);
-  url.searchParams.set("response", response);
-  url.searchParams.set("note", note);
-
-  const res = await fetch(url.toString(), { cache: "no-store" });
-  if (!res.ok) throw new Error(`RSVP submit failed (${res.status})`);
-  return await res.json();
-}
-function renderRsvpBoard(data, teamDisplayName) {
-  const section = document.getElementById("rsvpSection");
-  const gameMeta = document.getElementById("rsvpGameMeta");
-  const summary = document.getElementById("rsvpSummary");
-  const list = document.getElementById("rsvpList");
-  const msg = document.getElementById("rsvpMsg");
-
-  if (!section || !gameMeta || !summary || !list || !msg) return;
-
-  section.style.display = "";
-  list.innerHTML = "";
-  msg.textContent = "";
-
-  if (!data || data.status !== "OK") {
-    msg.textContent = "Unable to load RSVP info.";
-    return;
-  }
-
-  if (!data.game) {
-    gameMeta.innerHTML = `<div class="muted small">No upcoming game found yet.</div>`;
-    summary.textContent = "";
-    return;
-  }
-
-  const teamRows = window.__TEAM_ROWS__ || [];
-  const teamSlug = safe(getParam("team"));
-  const familyToken = safe(getParam("t"));
-
-  const ourMeta = getTeamMetaByName(teamDisplayName, teamRows);
-  const opponentName = safe(data.game.teamA) === safe(teamDisplayName)
-    ? safe(data.game.teamB)
-    : safe(data.game.teamA);
-  const oppMeta = getTeamMetaByName(opponentName, teamRows);
-
-  const defaultLogo = window.DEFAULT_TEAM_LOGO || "./logo.png";
-  const ourLogo = safe(ourMeta.logo) || defaultLogo;
-  const oppLogo = safe(oppMeta.logo) || defaultLogo;
-  const ourColor = safe(ourMeta.color);
-  const oppColor = safe(oppMeta.color);
-
-  gameMeta.innerHTML = `
-    <div class="rsvpHeaderOfficial">
-      <div class="rsvpTeamSide">
-        <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo"
-          onerror="this.onerror=null; this.src='${defaultLogo}';">
-        <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
-          ${teamDisplayName}
-        </div>
-      </div>
-
-      <div class="rsvpCenterMeta">
-        <div class="rsvpAt">@</div>
-        <div class="rsvpMetaLine muted small">${formatRsvpDate(data.game.date)}</div>
-        <div class="rsvpMetaLine muted small">${formatRsvpTime(data.game.time)}${safe(data.game.field) ? ` • ${safe(data.game.field)}` : ""}</div>
-      </div>
-
-      <div class="rsvpTeamSide rightSide">
-        <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo"
-          onerror="this.onerror=null; this.src='${defaultLogo}';">
-        <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
-          ${opponentName}
-        </div>
-      </div>
-    </div>
-  `;
-
-  const c = data.counts || {};
-  summary.textContent = `Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}`;
-
-  const players = Array.isArray(data.players) ? data.players : [];
-  if (!players.length) {
-    msg.textContent = "No roster players found for this team yet.";
-    return;
-  }
-
-  const grid = document.createElement("div");
-  grid.className = "rsvpGrid";
-
-  players.forEach(p => {
-    const cell = document.createElement("div");
-    cell.className = "rsvpPlayerCell";
-
-    const left = document.createElement("div");
-    left.className = "rsvpPlayerLeft";
-    left.innerHTML = `<strong>${safe(p.name) || safe(p.playerId)}</strong>${safe(p.number) ? ` <span class="muted small">#${safe(p.number)}</span>` : ""}`;
-
-    const right = document.createElement("div");
-    right.className = "rsvpPlayerRight";
-
-    const response = safe(p.response).toUpperCase();
-    const note = safe(p.note);
-
-    if (p.editable && familyToken) {
-      const controls = document.createElement("div");
-      controls.className = "rsvpBtns";
-
-      const noteWrap = document.createElement("div");
-      noteWrap.className = "rsvpNoteWrap";
-      noteWrap.style.display = safe(p.response) === "maybe" ? "flex" : "none";
-
-      const noteInput = document.createElement("input");
-      noteInput.type = "text";
-      noteInput.className = "rsvpNoteInput";
-      noteInput.maxLength = 80;
-      noteInput.placeholder = "Optional note";
-      noteInput.value = note || "";
-
-      const saveBtn = document.createElement("button");
-      saveBtn.type = "button";
-      saveBtn.className = "rsvpMiniBtn";
-      saveBtn.textContent = "Save";
-
-      const cancelBtn = document.createElement("button");
-      cancelBtn.type = "button";
-      cancelBtn.className = "rsvpMiniBtn";
-      cancelBtn.textContent = "Cancel";
-
-      noteWrap.appendChild(noteInput);
-      noteWrap.appendChild(saveBtn);
-      noteWrap.appendChild(cancelBtn);
-
-      ["yes", "no", "maybe"].forEach(choice => {
+      for (const p of players){
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "rsvpBtn";
-        if (safe(p.response) === choice) btn.classList.add("active");
-        btn.textContent = choice.toUpperCase();
+        btn.className = "playerCardBtn";
 
-        btn.addEventListener("click", async () => {
-          const buttons = Array.from(controls.querySelectorAll("button"));
-          const previousResponse = safe(p.response);
+        const name = formatPlayerName(p.PlayerName || p.Name || "Player");
+        const num = safe(p.Number);
+        const pos = safe(p.Position);
+        const photo = getPhotoSrc(p);
 
-          if (choice === "maybe") {
-            buttons.forEach(b => {
-              b.classList.remove("active");
-            });
-            btn.classList.add("active");
-            noteWrap.style.display = "flex";
-            noteInput.focus();
-            return;
-          }
+        btn.innerHTML = `
+          <div class="playerCardRow">
+            <div class="playerThumb">
+              <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${fallback}';">
+            </div>
+            <div class="playerText" style="min-width:0;">
+              <div class="playerNameLine" style="font-weight:900;">
+                ${name}${num ? ` <span class="muted">#${num}</span>` : ""}
+              </div>
+              <div class="muted small">${pos || ""}</div>
+            </div>
+            <div class="playerChevron" style="margin-left:auto; font-weight:900; color:var(--muted);">›</div>
+          </div>
+        `;
 
-          try {
-            buttons.forEach(b => {
-              b.disabled = true;
-              b.classList.remove("active");
-            });
+        btn.addEventListener("click", () => renderPlayerModal(p, teamDisplayName, window.__TEAM_ROWS__ || []));
+        grid.appendChild(btn);
+      }
+    }
 
-            btn.classList.add("active");
-            noteWrap.style.display = "none";
+    // -----------------------------
+    // Calendar integration (ICS)
+    // -----------------------------
+    function formatICSDate(dateStr, timeStr){
+      const date = new Date(`${dateStr} ${timeStr}`);
+      const pad = n => String(n).padStart(2, "0");
+      return (
+        date.getUTCFullYear() +
+        pad(date.getUTCMonth()+1) +
+        pad(date.getUTCDate()) + "T" +
+        pad(date.getUTCHours()) +
+        pad(date.getUTCMinutes()) +
+        "00Z"
+      );
+    }
 
-            const result = await submitRsvpChoice(
-              teamSlug,
-              familyToken,
-              data.game.gameId,
-              p.playerId,
-              choice,
-              ""
-            );
+    function generateTeamICS(teamName, games){
+      const now = new Date();
+      const stamp = now.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+      const ics = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//WBL 3rd Grade 2026//Team Schedule//EN"
+      ];
 
-            if (!result || result.status !== "OK") {
-              throw new Error(result?.message || "Unable to save RSVP");
-            }
+      games.forEach(g => {
+        if (!g.Date || !g.Time) return;
 
-            const freshData = await fetchRsvpBoard(teamSlug, familyToken);
-            renderRsvpBoard(freshData, teamDisplayName);
-          } catch (err) {
-            console.error(err);
+        const start = formatICSDate(g.Date, g.Time);
+        const startLocal = new Date(`${g.Date} ${g.Time}`);
+        const endLocal = new Date(startLocal.getTime() + 90 * 60000);
+        const pad = n => String(n).padStart(2, "0");
 
-            buttons.forEach(b => {
-              b.classList.remove("active");
-              b.disabled = false;
-              if (b.textContent.toLowerCase() === previousResponse) {
-                b.classList.add("active");
+        const end =
+          endLocal.getUTCFullYear() +
+          pad(endLocal.getUTCMonth()+1) +
+          pad(endLocal.getUTCDate()) + "T" +
+          pad(endLocal.getUTCHours()) +
+          pad(endLocal.getUTCMinutes()) +
+          "00Z";
+
+        const opponent = (g.TeamA === teamName) ? g.TeamB : g.TeamA;
+
+        ics.push(
+          "BEGIN:VEVENT",
+          `UID:${teamName}-${g.Date}-${g.Time}@wbl2026`,
+          `DTSTAMP:${stamp}`,
+          `DTSTART:${start}`,
+          `DTEND:${end}`,
+          `SUMMARY:${teamName} vs ${opponent}`,
+          `LOCATION:${g.Field || ""}`,
+          "END:VEVENT"
+        );
+      });
+
+      ics.push("END:VCALENDAR");
+      return ics.join("\r\n");
+    }
+
+    function downloadICS(filename, content){
+      const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // -----------------------------
+    // RSVP helpers
+    // -----------------------------
+    function formatRsvpDate(dateStr) {
+      if (!safe(dateStr)) return "";
+      const d = new Date(dateStr);
+      if (isNaN(d)) return safe(dateStr);
+      return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+    }
+
+    function formatRsvpTime(timeStr) {
+      if (!safe(timeStr)) return "";
+      const d = new Date(timeStr);
+      if (!isNaN(d) && d.getFullYear() < 1905) {
+        return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+      }
+      return safe(timeStr);
+    }
+
+    async function fetchRsvpBoard(teamSlug, token) {
+      const base = window.SHEET?.RSVP_API_URL;
+      if (!base) throw new Error("Missing RSVP_API_URL in data.js");
+
+      const url = new URL(base);
+      url.searchParams.set("action", "getRsvpBoard");
+      url.searchParams.set("teamSlug", teamSlug);
+      if (token) url.searchParams.set("token", token);
+      url.searchParams.set("t", Date.now());
+
+      const res = await fetch(url.toString(), { cache: "no-store" });
+      if (!res.ok) throw new Error(`RSVP request failed (${res.status})`);
+      return await res.json();
+    }
+
+    async function submitRsvpChoice(teamSlug, token, gameId, playerId, response, note = "") {
+      const base = window.SHEET?.RSVP_API_URL;
+      if (!base) throw new Error("Missing RSVP_API_URL in data.js");
+
+      const url = new URL(base);
+      url.searchParams.set("action", "submitRsvp");
+      url.searchParams.set("teamSlug", teamSlug);
+      url.searchParams.set("token", token);
+      url.searchParams.set("gameId", gameId);
+      url.searchParams.set("playerId", playerId);
+      url.searchParams.set("response", response);
+      url.searchParams.set("note", note);
+
+      const res = await fetch(url.toString(), { cache: "no-store" });
+      if (!res.ok) throw new Error(`RSVP submit failed (${res.status})`);
+      return await res.json();
+    }
+
+    function renderRsvpBoard(data, teamDisplayName) {
+      const section = document.getElementById("rsvpSection");
+      const gameMeta = document.getElementById("rsvpGameMeta");
+      const summary = document.getElementById("rsvpSummary");
+      const list = document.getElementById("rsvpList");
+      const msg = document.getElementById("rsvpMsg");
+
+      if (!section || !gameMeta || !summary || !list || !msg) return;
+
+      section.style.display = "";
+      list.innerHTML = "";
+      msg.textContent = "";
+
+      if (!data || data.status !== "OK") {
+        msg.textContent = "Unable to load RSVP info.";
+        return;
+      }
+
+      if (!data.game) {
+        gameMeta.innerHTML = `<div class="muted small">No upcoming game found yet.</div>`;
+        summary.textContent = "";
+        return;
+      }
+
+      const teamRows = window.__TEAM_ROWS__ || [];
+      const teamSlug = safe(getParam("team"));
+      const familyToken = safe(getParam("t"));
+
+      const ourMeta = getTeamMetaByName(teamDisplayName, teamRows);
+      const opponentName = safe(data.game.teamA) === safe(teamDisplayName)
+        ? safe(data.game.teamB)
+        : safe(data.game.teamA);
+      const oppMeta = getTeamMetaByName(opponentName, teamRows);
+
+      const defaultLogo = window.DEFAULT_TEAM_LOGO || "./logo.png";
+      const ourLogo = safe(ourMeta.logo) || defaultLogo;
+      const oppLogo = safe(oppMeta.logo) || defaultLogo;
+      const ourColor = safe(ourMeta.color);
+      const oppColor = safe(oppMeta.color);
+
+      gameMeta.innerHTML = `
+        <div class="rsvpHeaderOfficial">
+          <div class="rsvpTeamSide">
+            <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo"
+              onerror="this.onerror=null; this.src='${defaultLogo}';">
+            <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
+              ${teamDisplayName}
+            </div>
+          </div>
+
+          <div class="rsvpCenterMeta">
+            <div class="rsvpAt">@</div>
+            <div class="rsvpMetaLine muted small">${formatRsvpDate(data.game.date)}</div>
+            <div class="rsvpMetaLine muted small">${formatRsvpTime(data.game.time)}${safe(data.game.field) ? ` • ${safe(data.game.field)}` : ""}</div>
+          </div>
+
+          <div class="rsvpTeamSide rightSide">
+            <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo"
+              onerror="this.onerror=null; this.src='${defaultLogo}';">
+            <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
+              ${opponentName}
+            </div>
+          </div>
+        </div>
+      `;
+
+      const c = data.counts || {};
+      summary.textContent = `Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}`;
+
+      const players = Array.isArray(data.players) ? data.players : [];
+      if (!players.length) {
+        msg.textContent = "No roster players found for this team yet.";
+        return;
+      }
+
+      const grid = document.createElement("div");
+      grid.className = "rsvpGrid";
+
+      players.forEach(p => {
+        const cell = document.createElement("div");
+        cell.className = "rsvpPlayerCell";
+
+        const left = document.createElement("div");
+        left.className = "rsvpPlayerLeft";
+        left.innerHTML = `<strong>${safe(p.name) || safe(p.playerId)}</strong>${safe(p.number) ? ` <span class="muted small">#${safe(p.number)}</span>` : ""}`;
+
+        const right = document.createElement("div");
+        right.className = "rsvpPlayerRight";
+
+        const response = safe(p.response).toUpperCase();
+        const note = safe(p.note);
+
+        if (p.editable && familyToken) {
+          const controls = document.createElement("div");
+          controls.className = "rsvpBtns";
+
+          const noteWrap = document.createElement("div");
+          noteWrap.className = "rsvpNoteWrap";
+          noteWrap.style.display = safe(p.response) === "maybe" ? "flex" : "none";
+
+          const noteInput = document.createElement("input");
+          noteInput.type = "text";
+          noteInput.className = "rsvpNoteInput";
+          noteInput.maxLength = 80;
+          noteInput.placeholder = "Optional note";
+          noteInput.value = note || "";
+
+          const saveBtn = document.createElement("button");
+          saveBtn.type = "button";
+          saveBtn.className = "rsvpMiniBtn";
+          saveBtn.textContent = "Save";
+
+          const cancelBtn = document.createElement("button");
+          cancelBtn.type = "button";
+          cancelBtn.className = "rsvpMiniBtn";
+          cancelBtn.textContent = "Cancel";
+
+          noteWrap.appendChild(noteInput);
+          noteWrap.appendChild(saveBtn);
+          noteWrap.appendChild(cancelBtn);
+
+          ["yes", "no", "maybe"].forEach(choice => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "rsvpBtn";
+            if (safe(p.response) === choice) btn.classList.add("active");
+            btn.textContent = choice.toUpperCase();
+
+            btn.addEventListener("click", async () => {
+              const buttons = Array.from(controls.querySelectorAll("button"));
+              const previousResponse = safe(p.response);
+
+              if (choice === "maybe") {
+                buttons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                noteWrap.style.display = "flex";
+                noteInput.focus();
+                return;
+              }
+
+              try {
+                buttons.forEach(b => {
+                  b.disabled = true;
+                  b.classList.remove("active");
+                });
+
+                btn.classList.add("active");
+                noteWrap.style.display = "none";
+
+                const result = await submitRsvpChoice(
+                  teamSlug,
+                  familyToken,
+                  data.game.gameId,
+                  p.playerId,
+                  choice,
+                  ""
+                );
+
+                if (!result || result.status !== "OK") {
+                  throw new Error(result?.message || "Unable to save RSVP");
+                }
+
+                const freshData = await fetchRsvpBoard(teamSlug, familyToken);
+                renderRsvpBoard(freshData, teamDisplayName);
+              } catch (err) {
+                console.error(err);
+
+                buttons.forEach(b => {
+                  b.classList.remove("active");
+                  b.disabled = false;
+                  if (b.textContent.toLowerCase() === previousResponse) {
+                    b.classList.add("active");
+                  }
+                });
+
+                if (previousResponse === "maybe") {
+                  noteWrap.style.display = "flex";
+                }
+
+                alert("Unable to save RSVP right now.");
               }
             });
 
-            if (previousResponse === "maybe") {
-              noteWrap.style.display = "flex";
+            controls.appendChild(btn);
+          });
+
+          saveBtn.addEventListener("click", async () => {
+            const buttons = Array.from(controls.querySelectorAll("button"));
+            const trimmedNote = noteInput.value.trim();
+
+            let noteTextEl = right.querySelector(".rsvpNoteText");
+            if (!noteTextEl) {
+              noteTextEl = document.createElement("div");
+              noteTextEl.className = "rsvpNoteText muted";
+              right.appendChild(noteTextEl);
             }
 
-            alert("Unable to save RSVP right now.");
-          }
-        });
+            try {
+              buttons.forEach(b => b.disabled = true);
+              saveBtn.disabled = true;
+              cancelBtn.disabled = true;
+              noteInput.disabled = true;
 
-        controls.appendChild(btn);
+              const maybeBtn = buttons.find(b => b.textContent.toLowerCase() === "maybe");
+              if (maybeBtn) {
+                buttons.forEach(b => b.classList.remove("active"));
+                maybeBtn.classList.add("active");
+              }
+
+              noteWrap.style.display = "none";
+              noteTextEl.textContent = trimmedNote;
+
+              const result = await submitRsvpChoice(
+                teamSlug,
+                familyToken,
+                data.game.gameId,
+                p.playerId,
+                "maybe",
+                trimmedNote
+              );
+
+              if (!result || result.status !== "OK") {
+                throw new Error(result?.message || "Unable to save maybe note");
+              }
+
+              const freshData = await fetchRsvpBoard(teamSlug, familyToken);
+              renderRsvpBoard(freshData, teamDisplayName);
+            } catch (err) {
+              console.error(err);
+              noteWrap.style.display = "flex";
+              noteInput.disabled = false;
+              saveBtn.disabled = false;
+              cancelBtn.disabled = false;
+              buttons.forEach(b => b.disabled = false);
+
+              if (noteTextEl) {
+                noteTextEl.textContent = "";
+              }
+
+              alert("Unable to save maybe note right now.");
+            }
+          });
+
+          cancelBtn.addEventListener("click", () => {
+            noteInput.value = note || "";
+            noteWrap.style.display = "none";
+
+            controls.querySelectorAll("button").forEach(b => {
+              b.classList.remove("active");
+              if (b.textContent.toLowerCase() === safe(p.response)) {
+                b.classList.add("active");
+              }
+            });
+          });
+
+          right.appendChild(controls);
+          right.appendChild(noteWrap);
+
+          if (note && safe(p.response) === "maybe") {
+            const noteText = document.createElement("div");
+            noteText.className = "rsvpNoteText muted";
+            noteText.textContent = note;
+            right.appendChild(noteText);
+          }
+        } else {
+          const status = document.createElement("div");
+          status.className = "rsvpStatus muted";
+          status.textContent = response || "NO RESPONSE";
+          right.appendChild(status);
+
+          if (note && safe(p.response) === "maybe") {
+            const noteText = document.createElement("div");
+            noteText.className = "rsvpNoteText muted";
+            noteText.textContent = note;
+            right.appendChild(noteText);
+          }
+        }
+
+        cell.appendChild(left);
+        cell.appendChild(right);
+        grid.appendChild(cell);
       });
 
-saveBtn.addEventListener("click", async () => {
-  const buttons = Array.from(controls.querySelectorAll("button"));
-  const trimmedNote = noteInput.value.trim();
-
-  let noteTextEl = right.querySelector(".rsvpNoteText");
-  if (!noteTextEl) {
-    noteTextEl = document.createElement("div");
-    noteTextEl.className = "rsvpNoteText muted";
-    right.appendChild(noteTextEl);
-  }
-
-  try {
-    buttons.forEach(b => b.disabled = true);
-    saveBtn.disabled = true;
-    cancelBtn.disabled = true;
-    noteInput.disabled = true;
-
-    const maybeBtn = buttons.find(b => b.textContent.toLowerCase() === "maybe");
-    if (maybeBtn) {
-      buttons.forEach(b => b.classList.remove("active"));
-      maybeBtn.classList.add("active");
+      list.appendChild(grid);
     }
 
-    noteWrap.style.display = "none";
-    noteTextEl.textContent = trimmedNote;
+    // -----------------------------
+    // Init
+    // -----------------------------
+    (async function init(){
+      const slug = safe(getParam("team"));
+      if (!slug){
+        location.replace("./teams.html");
+        return;
+      }
 
-    const result = await submitRsvpChoice(
-      teamSlug,
-      familyToken,
-      data.game.gameId,
-      p.playerId,
-      "maybe",
-      trimmedNote
-    );
+      try {
+        const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+        const teamRows = parseCsv(teamsCsv);
+        window.__TEAM_ROWS__ = teamRows;
 
-    if (!result || result.status !== "OK") {
-      throw new Error(result?.message || "Unable to save maybe note");
-    }
+        const teamRow = teamRows.find(t => safe(t.TeamSlug) === slug);
+        if (!teamRow){
+          location.replace("./teams.html");
+          return;
+        }
 
-    const freshData = await fetchRsvpBoard(teamSlug, familyToken);
-    renderRsvpBoard(freshData, teamDisplayName);
-  } catch (err) {
-    console.error(err);
+        setHeaderFromTeamRow(teamRow);
 
-    noteWrap.style.display = "flex";
-    noteInput.disabled = false;
-    saveBtn.disabled = false;
-    cancelBtn.disabled = false;
-    buttons.forEach(b => b.disabled = false);
+        const teamDisplayName = safe(teamRow.TeamName);
+        const familyToken = safe(getParam("t"));
 
-    if (noteTextEl) noteTextEl.textContent = "";
+        const rosterPromise = fetchCsv(window.SHEET?.ROSTER_CSV_URL);
+        const gamesPromise = fetchCsv(window.SHEET?.GAMES_CSV_URL);
+        const rsvpPromise = fetchRsvpBoard(slug, familyToken).catch(e => {
+          console.error("RSVP load failed:", e);
+          return null;
+        });
 
-    alert("Unable to save maybe note right now.");
-  }
-});
-</script>
-  
-<script src="./nav.js"></script>
+        const [rosterCsv, gamesCsv, rsvpData] = await Promise.all([
+          rosterPromise,
+          gamesPromise,
+          rsvpPromise
+        ]);
+
+        const rosterRows = parseCsv(rosterCsv);
+        const players = rosterRows.filter(p => safe(p.TeamSlug) === slug);
+        buildRosterGrid(players, teamDisplayName);
+
+        const gameRows = parseCsv(gamesCsv);
+        const teamGames = gameRows.filter(g =>
+          safe(g.TeamA) === teamDisplayName ||
+          safe(g.TeamB) === teamDisplayName
+        );
+
+        if (rsvpData) {
+          renderRsvpBoard(rsvpData, teamDisplayName);
+        } else {
+          const msg = document.getElementById("rsvpMsg");
+          const section = document.getElementById("rsvpSection");
+          if (section) section.style.display = "";
+          if (msg) msg.textContent = "RSVP section unavailable right now.";
+        }
+
+        const calBtn = document.getElementById("addCalendarBtn");
+        if (calBtn){
+          calBtn.addEventListener("click", () => {
+            if (!teamGames.length){
+              alert("No games found for this team yet.");
+              return;
+            }
+            const ics = generateTeamICS(teamDisplayName, teamGames);
+            downloadICS(`${slug}-schedule.ics`, ics);
+          });
+        }
+      } catch (err){
+        console.error(err);
+        const msg = document.getElementById("rosterMsg");
+        if (msg) msg.textContent = "Unable to load team page right now.";
+      }
+    })();
+  </script>
+
+  <script src="./nav.js"></script>
 </body>
 </html>
