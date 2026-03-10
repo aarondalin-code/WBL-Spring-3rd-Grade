@@ -913,9 +913,12 @@ gameMeta.innerHTML = `
 `;
 
       const c = data.counts || {};
-   summary.innerHTML = `
+  summary.innerHTML = `
   <div class="muted small">
-    Yes: ${c.yes || 0} • No: ${c.no || 0} • Maybe: ${c.maybe || 0} • No Response: ${c.no_response || 0}
+    <span style="color:#15803d; font-weight:600;">Yes: ${c.yes || 0}</span> •
+    <span style="color:#b91c1c; font-weight:600;">No: ${c.no || 0}</span> •
+    <span style="color:#a16207; font-weight:600;">Maybe: ${c.maybe || 0}</span> •
+    <span>No Response: ${c.no_response || 0}</span>
   </div>
 `;
 
