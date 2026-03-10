@@ -3439,3 +3439,9 @@ Paste at VERY BOTTOM of styles.css
     transform:translateX(-100%);
   }
 }
+.homeTickerUpdated{
+  font-size:.82em;
+  font-weight:700;
+  opacity:.78;
+  margin-left:6px;
+}
