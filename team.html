@@ -271,6 +271,55 @@ body.teamPage .rsvpBtn:disabled{
   cursor:default;
 }
 
+body.teamPage .rsvpPlayerCell{
+  align-items:flex-start;
+}
+
+body.teamPage .rsvpPlayerRight{
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+}
+
+body.teamPage .rsvpNoteWrap{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  max-width:100%;
+}
+
+body.teamPage .rsvpNoteInput{
+  width:160px;
+  max-width:100%;
+  border:1px solid rgba(15,23,42,.12);
+  border-radius:8px;
+  padding:6px 8px;
+  font-size:12px;
+  line-height:1.2;
+}
+
+body.teamPage .rsvpMiniBtn{
+  appearance:none;
+  border:1px solid rgba(15,23,42,.12);
+  background:#fff;
+  color:#0f172a;
+  border-radius:8px;
+  padding:6px 8px;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+body.teamPage .rsvpNoteText{
+  font-size:11px;
+  line-height:1.25;
+  text-align:right;
+  max-width:180px;
+}
+
+
+    
     
 @media (max-width: 900px){
   body.teamPage .rsvpGrid{
@@ -909,10 +958,36 @@ function renderRsvpBoard(data, teamDisplayName) {
     right.className = "rsvpPlayerRight";
 
     const response = safe(p.response).toUpperCase();
+    const note = safe(p.note);
 
     if (p.editable && familyToken) {
       const controls = document.createElement("div");
       controls.className = "rsvpBtns";
+
+      const noteWrap = document.createElement("div");
+      noteWrap.className = "rsvpNoteWrap";
+      noteWrap.style.display = safe(p.response) === "maybe" ? "flex" : "none";
+
+      const noteInput = document.createElement("input");
+      noteInput.type = "text";
+      noteInput.className = "rsvpNoteInput";
+      noteInput.maxLength = 80;
+      noteInput.placeholder = "Optional note";
+      noteInput.value = note || "";
+
+      const saveBtn = document.createElement("button");
+      saveBtn.type = "button";
+      saveBtn.className = "rsvpMiniBtn";
+      saveBtn.textContent = "Save";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.type = "button";
+      cancelBtn.className = "rsvpMiniBtn";
+      cancelBtn.textContent = "Cancel";
+
+      noteWrap.appendChild(noteInput);
+      noteWrap.appendChild(saveBtn);
+      noteWrap.appendChild(cancelBtn);
 
       ["yes", "no", "maybe"].forEach(choice => {
         const btn = document.createElement("button");
@@ -921,57 +996,139 @@ function renderRsvpBoard(data, teamDisplayName) {
         if (safe(p.response) === choice) btn.classList.add("active");
         btn.textContent = choice.toUpperCase();
 
- btn.addEventListener("click", async () => {
-  const buttons = Array.from(controls.querySelectorAll("button"));
-  const previousResponse = safe(p.response);
+        btn.addEventListener("click", async () => {
+          const buttons = Array.from(controls.querySelectorAll("button"));
+          const previousResponse = safe(p.response);
 
-  try {
-    buttons.forEach(b => {
-      b.disabled = true;
-      b.classList.remove("active");
-    });
+          if (choice === "maybe") {
+            buttons.forEach(b => {
+              b.classList.remove("active");
+            });
+            btn.classList.add("active");
+            noteWrap.style.display = "flex";
+            noteInput.focus();
+            return;
+          }
 
-    btn.classList.add("active");
+          try {
+            buttons.forEach(b => {
+              b.disabled = true;
+              b.classList.remove("active");
+            });
 
-    const result = await submitRsvpChoice(
-      teamSlug,
-      familyToken,
-      data.game.gameId,
-      p.playerId,
-      choice,
-      ""
-    );
+            btn.classList.add("active");
+            noteWrap.style.display = "none";
 
-    if (!result || result.status !== "OK") {
-      throw new Error(result?.message || "Unable to save RSVP");
-    }
+            const result = await submitRsvpChoice(
+              teamSlug,
+              familyToken,
+              data.game.gameId,
+              p.playerId,
+              choice,
+              ""
+            );
 
-    const freshData = await fetchRsvpBoard(teamSlug, familyToken);
-    renderRsvpBoard(freshData, teamDisplayName);
-  } catch (err) {
-    console.error(err);
+            if (!result || result.status !== "OK") {
+              throw new Error(result?.message || "Unable to save RSVP");
+            }
 
-    buttons.forEach(b => {
-      b.classList.remove("active");
-      b.disabled = false;
-      if (b.textContent.toLowerCase() === previousResponse) {
-        b.classList.add("active");
-      }
-    });
+            const freshData = await fetchRsvpBoard(teamSlug, familyToken);
+            renderRsvpBoard(freshData, teamDisplayName);
+          } catch (err) {
+            console.error(err);
 
-    alert("Unable to save RSVP right now.");
-  }
-});
+            buttons.forEach(b => {
+              b.classList.remove("active");
+              b.disabled = false;
+              if (b.textContent.toLowerCase() === previousResponse) {
+                b.classList.add("active");
+              }
+            });
+
+            if (previousResponse === "maybe") {
+              noteWrap.style.display = "flex";
+            }
+
+            alert("Unable to save RSVP right now.");
+          }
+        });
 
         controls.appendChild(btn);
       });
 
+      saveBtn.addEventListener("click", async () => {
+        const buttons = Array.from(controls.querySelectorAll("button"));
+        const trimmedNote = noteInput.value.trim();
+
+        try {
+          buttons.forEach(b => b.disabled = true);
+          saveBtn.disabled = true;
+          cancelBtn.disabled = true;
+          noteInput.disabled = true;
+
+          const maybeBtn = buttons.find(b => b.textContent.toLowerCase() === "maybe");
+          if (maybeBtn) {
+            buttons.forEach(b => b.classList.remove("active"));
+            maybeBtn.classList.add("active");
+          }
+
+          const result = await submitRsvpChoice(
+            teamSlug,
+            familyToken,
+            data.game.gameId,
+            p.playerId,
+            "maybe",
+            trimmedNote
+          );
+
+          if (!result || result.status !== "OK") {
+            throw new Error(result?.message || "Unable to save maybe note");
+          }
+
+          const freshData = await fetchRsvpBoard(teamSlug, familyToken);
+          renderRsvpBoard(freshData, teamDisplayName);
+        } catch (err) {
+          console.error(err);
+          buttons.forEach(b => b.disabled = false);
+          saveBtn.disabled = false;
+          cancelBtn.disabled = false;
+          noteInput.disabled = false;
+          alert("Unable to save maybe note right now.");
+        }
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        noteInput.value = note || "";
+        noteWrap.style.display = "none";
+        controls.querySelectorAll("button").forEach(b => {
+          b.classList.remove("active");
+          if (b.textContent.toLowerCase() === safe(p.response)) {
+            b.classList.add("active");
+          }
+        });
+      });
+
       right.appendChild(controls);
+      right.appendChild(noteWrap);
+
+      if (note && safe(p.response) === "maybe") {
+        const noteText = document.createElement("div");
+        noteText.className = "rsvpNoteText muted";
+        noteText.textContent = note;
+        right.appendChild(noteText);
+      }
     } else {
       const status = document.createElement("div");
       status.className = "rsvpStatus muted";
       status.textContent = response || "NO RESPONSE";
       right.appendChild(status);
+
+      if (note && safe(p.response) === "maybe") {
+        const noteText = document.createElement("div");
+        noteText.className = "rsvpNoteText muted";
+        noteText.textContent = note;
+        right.appendChild(noteText);
+      }
     }
 
     cell.appendChild(left);
@@ -980,7 +1137,7 @@ function renderRsvpBoard(data, teamDisplayName) {
   });
 
   list.appendChild(grid);
-}  
+}
 
 (async function init(){
   const slug = safe(getParam("team"));
