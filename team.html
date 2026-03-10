@@ -195,7 +195,7 @@ body.teamPage #addCalendarBtn{
 
         <!-- Row 1 left: logo + team text (stable) -->
         <div class="teamHeaderTopLeft">
-          <img id="teamLogo" class="teamHeaderLogo" src="./logo.png" alt="Team Logo">
+          <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
           <div class="teamTextCol">
             <div class="muted small">Team</div>
             <h2 id="teamName" style="margin:0;">Team</h2>
@@ -366,23 +366,28 @@ if (teamNameEl){
   const color = safe(teamRow.TeamColor);
   if (color) teamNameEl.style.color = color;
 }
-    const logoEl = document.getElementById("teamLogo");
-    const subEl = document.getElementById("teamSubtitle");
+const logoEl = document.getElementById("teamLogo");
+const subEl = document.getElementById("teamSubtitle");
+const coachNameEl = document.getElementById("coachName");
+const coachEmailEl = document.getElementById("coachEmail");
+const coachPhoneEl = document.getElementById("coachPhone");
 
-    const coachNameEl = document.getElementById("coachName");
-    const coachEmailEl = document.getElementById("coachEmail");
-    const coachPhoneEl = document.getElementById("coachPhone");
+const name = safe(teamRow.TeamName) || "Team";
+const logo = safe(teamRow.TeamLogo);
 
-    const name = safe(teamRow.TeamName) || "Team";
-    const logo = safe(teamRow.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png");
+teamNameEl.textContent = name;
+document.title = `${name} • WBL 3rd Grade 2026`;
 
-    teamNameEl.textContent = name;
-    document.title = `${name} • WBL 3rd Grade 2026`;
+if (logo) {
+  logoEl.style.display = "";
+  logoEl.src = logo;
+  logoEl.onerror = () => { logoEl.style.display = "none"; };
+} else {
+  logoEl.removeAttribute("src");
+  logoEl.style.display = "none";
+}
 
-    logoEl.src = logo;
-    logoEl.onerror = () => { logoEl.src = window.DEFAULT_TEAM_LOGO || "./logo.png"; };
-
-    subEl.textContent = "";
+subEl.textContent = "";
 
     const coachName = safe(teamRow.CoachName);
     const coachEmail = safe(teamRow.CoachEmail);
