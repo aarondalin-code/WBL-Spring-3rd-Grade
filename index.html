@@ -391,6 +391,26 @@ function weatherLabelFromCode(code){
   return map[Number(code)] || "Forecast";
 }
 
+function weatherIconFromCode(code){
+  code = Number(code);
+
+  if (code === 0) return "☀️";
+  if (code === 1 || code === 2) return "🌤️";
+  if (code === 3) return "☁️";
+  if (code === 45 || code === 48) return "🌫️";
+  if ([51,53,55,61,63,65,66,67,80,81,82].includes(code)) return "🌧️";
+  if ([71,73,75,77,85,86].includes(code)) return "❄️";
+  if ([95,96,99].includes(code)) return "⛈️";
+
+  return "🌤️";
+}
+
+
+
+
+
+
+    
 function nextGameDateTime(){
   const now = new Date();
   const gameDay = getDisplaySaturday(now);
@@ -480,13 +500,15 @@ async function loadGameDayTicker(){
     const todayWind = weatherData.hourly.windspeed_10m[todayIdx];
     const todayCode = weatherData.hourly.weathercode[todayIdx];
     const todayLabel = weatherLabelFromCode(todayCode);
-
+    const todayIcon = weatherIconFromCode(todayCode);
+   
     const gameTemp = weatherData.hourly.temperature_2m[gameIdx];
     const gameRain = weatherData.hourly.precipitation_probability[gameIdx];
     const gameWind = weatherData.hourly.windspeed_10m[gameIdx];
     const gameCode = weatherData.hourly.weathercode[gameIdx];
     const gameLabel = weatherLabelFromCode(gameCode);
-
+    const gameIcon = weatherIconFromCode(gameCode);
+    
     const gameDateText = target.toLocaleDateString(undefined, {
       weekday: "short",
       month: "short",
@@ -505,11 +527,11 @@ async function loadGameDayTicker(){
     if (alertType === "watch") card.classList.add("is-watch");
     if (alertType === "alert") card.classList.add("is-alert");
 
-    const todayText =
-      `☀️ Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}% • Wind ${todayWind} mph`;
+  const todayText =
+  `${todayIcon} Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}% • Wind ${todayWind} mph`;
 
-    const gameText =
-      `⚾ Next Game Day: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}% • Wind ${gameWind} mph`;
+const gameText =
+  `${gameIcon} Next Game Day: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}% • Wind ${gameWind} mph`;
 
     const noteText = note && (note.prefix || note.text)
       ? `${note.prefix ? note.prefix + ": " : ""}${note.text || ""}`
