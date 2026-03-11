@@ -541,116 +541,87 @@
     // -----------------------------
     // Render: Team header + coach
     // -----------------------------
-    function setHeaderFromTeamRow(teamRow){
-      const teamNameEl = document.getElementById("teamName");
-      const logoEl = document.getElementById("teamLogo");
-      const subEl = document.getElementById("teamSubtitle");
-      const coachNameEl = document.getElementById("coachName");
-      const coachEmailEl = document.getElementById("coachEmail");
-      const coachPhoneEl = document.getElementById("coachPhone");
-const rosterTitleEl = document.getElementById("rosterTitle");
-   const pageTitleEl = document.getElementById("pageTitle");   
-      const headerBlockEl = document.getElementById("teamHeaderBlock");
+function setHeaderFromTeamRow(teamRow){
+  const teamNameEl = document.getElementById("teamName");
+  const logoEl = document.getElementById("teamLogo");
+  const subEl = document.getElementById("teamSubtitle");
+  const coachNameEl = document.getElementById("coachName");
+  const coachEmailEl = document.getElementById("coachEmail");
+  const coachPhoneEl = document.getElementById("coachPhone");
+  const rosterTitleEl = document.getElementById("rosterTitle");
+  const pageTitleEl = document.getElementById("pageTitle");
+  const teamHeaderCardEl = document.getElementById("teamHeaderCard");
+  const rosterCardEl = document.getElementById("rosterCard");
+  const rsvpCardEl = document.getElementById("rsvpSection");
 
-const pageTitleEl = document.getElementById("pageTitle");
-const rosterTitleEl = document.getElementById("rosterTitle");
-const teamHeaderCardEl = document.getElementById("teamHeaderCard");
-const rosterCardEl = document.getElementById("rosterCard");
-const rsvpCardEl = document.getElementById("rsvpSection");
-      
-    const name = safe(teamRow.TeamName) || "Team";
-const logo = safe(teamRow.TeamLogo);
-const color = safe(teamRow.TeamColor);
+  const name = safe(teamRow.TeamName) || "Team";
+  const logo = safe(teamRow.TeamLogo);
+  const color = safe(teamRow.TeamColor);
 
-if (pageTitleEl){
-  pageTitleEl.textContent = name;
-  if (color) pageTitleEl.style.color = color;
-}
-
-if (rosterTitleEl){
-  rosterTitleEl.innerHTML = color
-    ? `<span style="color:${color}; font-weight:900;">${name}</span> Roster`
-    : `${name} Roster`;
-}
-
-[teamHeaderCardEl, rosterCardEl, rsvpCardEl].forEach(card => {
-  if (!card) return;
-  if (color) {
-    card.style.borderColor = color;
-    card.style.borderWidth = "2px";
-  } else {
-    card.style.borderColor = "";
-    card.style.borderWidth = "";
+  if (pageTitleEl){
+    pageTitleEl.textContent = name;
+    if (color) pageTitleEl.style.color = color;
+    else pageTitleEl.style.color = "";
   }
-});
 
-
-
-
-
-      
-
-    if (pageTitleEl){
-  pageTitleEl.textContent = name;
-  if (color) pageTitleEl.style.color = color;
-}  
-
-if (teamNameEl){
-  teamNameEl.textContent = name;
-  if (color) teamNameEl.style.color = color;
-}
-
-if (rosterTitleEl){
-  rosterTitleEl.innerHTML = color
-    ? `<span style="color:${color}; font-weight:900;">${name}</span> <span style="font-weight:700;">Roster</span>`
-    : `${name} Roster`;
-}
-
-if (headerBlockEl){
-  if (color){
-    headerBlockEl.style.borderTop = `6px solid ${color}`;
-  } else {
-    headerBlockEl.style.borderTop = "";
+  if (teamNameEl){
+    teamNameEl.textContent = name;
+    if (color) teamNameEl.style.color = color;
+    else teamNameEl.style.color = "";
   }
-}
 
+  if (rosterTitleEl){
+    rosterTitleEl.innerHTML = color
+      ? `<span style="color:${color}; font-weight:900;">${name}</span> <span style="font-weight:700;">Roster</span>`
+      : `${name} Roster`;
+  }
 
-      
-      document.title = `${name} • WBL 3rd Grade 2026`;
-
-      if (logo) {
-        logoEl.style.display = "";
-        logoEl.src = logo;
-        logoEl.onerror = () => { logoEl.style.display = "none"; };
-      } else {
-        logoEl.removeAttribute("src");
-        logoEl.style.display = "none";
-      }
-
-      subEl.textContent = "";
-
-      const coachName = safe(teamRow.CoachName);
-      const coachEmail = safe(teamRow.CoachEmail);
-      const coachPhone = safe(teamRow.CoachPhone);
-
-      coachNameEl.textContent = coachName && coachName.toLowerCase() !== "tbd" ? coachName : "TBD";
-
-      if (coachEmail && coachEmail.toLowerCase() !== "tbd") {
-        coachEmailEl.style.display = "inline-flex";
-        coachEmailEl.textContent = coachEmail;
-        coachEmailEl.href = `mailto:${coachEmail}`;
-      } else {
-        coachEmailEl.style.display = "none";
-      }
-
-      if (coachPhone && coachPhone.toLowerCase() !== "tbd") {
-        coachPhoneEl.style.display = "inline-flex";
-        coachPhoneEl.textContent = coachPhone;
-        coachPhoneEl.href = `tel:${normalizePhoneForTel(coachPhone)}`;
-      } else {
-        coachPhoneEl.style.display = "none";
-      }
+  [teamHeaderCardEl, rosterCardEl, rsvpCardEl].forEach(card => {
+    if (!card) return;
+    if (color) {
+      card.style.borderColor = color;
+      card.style.borderWidth = "2px";
+    } else {
+      card.style.borderColor = "";
+      card.style.borderWidth = "";
     }
+  });
+
+  document.title = `${name} • WBL 3rd Grade 2026`;
+
+  if (logo) {
+    logoEl.style.display = "";
+    logoEl.src = logo;
+    logoEl.onerror = () => { logoEl.style.display = "none"; };
+  } else {
+    logoEl.removeAttribute("src");
+    logoEl.style.display = "none";
+  }
+
+  subEl.textContent = "";
+
+  const coachName = safe(teamRow.CoachName);
+  const coachEmail = safe(teamRow.CoachEmail);
+  const coachPhone = safe(teamRow.CoachPhone);
+
+  coachNameEl.textContent = coachName && coachName.toLowerCase() !== "tbd" ? coachName : "TBD";
+
+  if (coachEmail && coachEmail.toLowerCase() !== "tbd") {
+    coachEmailEl.style.display = "inline-flex";
+    coachEmailEl.textContent = coachEmail;
+    coachEmailEl.href = `mailto:${coachEmail}`;
+  } else {
+    coachEmailEl.style.display = "none";
+  }
+
+  if (coachPhone && coachPhone.toLowerCase() !== "tbd") {
+    coachPhoneEl.style.display = "inline-flex";
+    coachPhoneEl.textContent = coachPhone;
+    coachPhoneEl.href = `tel:${normalizePhoneForTel(coachPhone)}`;
+  } else {
+    coachPhoneEl.style.display = "none";
+  }
+}
 
     // -----------------------------
     // Roster grid
