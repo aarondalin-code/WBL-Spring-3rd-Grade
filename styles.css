@@ -3512,8 +3512,8 @@ Paste at VERY BOTTOM of styles.css
 
 /* ---------------- Home hero button spacing (mobile fix) ---------------- */
 
-@media (max-width:640px){
-
+/* Home hero buttons mobile spacing fix */
+@media (max-width: 640px){
   .homeHeroBtns{
     display:flex;
     flex-wrap:wrap;
@@ -3521,8 +3521,13 @@ Paste at VERY BOTTOM of styles.css
     gap:10px;
   }
 
-  .homeHeroBtns a:last-child{
-    margin-top:6px;
+  .homeHeroBtns a{
+    flex:0 0 auto;
   }
 
+  .homeHeroBtns a:last-child{
+    flex:0 0 100%;
+    max-width:260px;
+    margin-top:6px;
+  }
 }
