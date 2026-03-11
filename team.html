@@ -360,7 +360,7 @@
 
   <main class="wrap">
     <!-- Team header block -->
-    <section class="card" style="margin-top:12px;">
+  <section class="card" id="teamHeaderCard" style="margin-top:12px;">
       <div class="cardBody">
        <div class="teamHeaderBlock" id="teamHeaderBlock">
           <!-- Row 1 left: logo + team text -->
@@ -396,7 +396,7 @@
     </section>
 
     <!-- Roster -->
-    <section class="card" style="margin-top:14px;">
+    <section class="card" id="rosterCard" style="margin-top:14px;">
       <div class="cardBody">
         <div class="rosterTopRow" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
   <h3 id="rosterTitle" style="margin:0;">Roster</h3>
@@ -551,9 +551,44 @@
 const rosterTitleEl = document.getElementById("rosterTitle");
    const pageTitleEl = document.getElementById("pageTitle");   
       const headerBlockEl = document.getElementById("teamHeaderBlock");
+
+const pageTitleEl = document.getElementById("pageTitle");
+const rosterTitleEl = document.getElementById("rosterTitle");
+const teamHeaderCardEl = document.getElementById("teamHeaderCard");
+const rosterCardEl = document.getElementById("rosterCard");
+const rsvpCardEl = document.getElementById("rsvpSection");
+      
     const name = safe(teamRow.TeamName) || "Team";
 const logo = safe(teamRow.TeamLogo);
 const color = safe(teamRow.TeamColor);
+
+if (pageTitleEl){
+  pageTitleEl.textContent = name;
+  if (color) pageTitleEl.style.color = color;
+}
+
+if (rosterTitleEl){
+  rosterTitleEl.innerHTML = color
+    ? `<span style="color:${color}; font-weight:900;">${name}</span> Roster`
+    : `${name} Roster`;
+}
+
+[teamHeaderCardEl, rosterCardEl, rsvpCardEl].forEach(card => {
+  if (!card) return;
+  if (color) {
+    card.style.borderColor = color;
+    card.style.borderWidth = "2px";
+  } else {
+    card.style.borderColor = "";
+    card.style.borderWidth = "";
+  }
+});
+
+
+
+
+
+      
 
     if (pageTitleEl){
   pageTitleEl.textContent = name;
