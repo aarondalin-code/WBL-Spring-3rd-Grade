@@ -3509,3 +3509,20 @@ Paste at VERY BOTTOM of styles.css
   right:0;
   background:linear-gradient(to left,#eef4ff,transparent);
 }
+
+/* ---------------- Home hero button spacing (mobile fix) ---------------- */
+
+@media (max-width:640px){
+
+  .homeHeroBtns{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+  }
+
+  .homeHeroBtns a:last-child{
+    margin-top:6px;
+  }
+
+}
