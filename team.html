@@ -353,7 +353,7 @@
 
     <div class="brandCenter">
       <img src="./logo.png" alt="WBL Logo" class="logoImage">
-      <h1>Team Roster</h1>
+      <h1 id="pageTitle">Team Roster</h1>
       <div class="tagline">WBL 3rd Grade</div>
     </div>
   </header>
@@ -549,10 +549,15 @@
       const coachEmailEl = document.getElementById("coachEmail");
       const coachPhoneEl = document.getElementById("coachPhone");
 const rosterTitleEl = document.getElementById("rosterTitle");
-      
+   const pageTitleEl = document.getElementById("pageTitle");   
     const name = safe(teamRow.TeamName) || "Team";
 const logo = safe(teamRow.TeamLogo);
 const color = safe(teamRow.TeamColor);
+
+    if (pageTitleEl){
+  pageTitleEl.textContent = name;
+  if (color) pageTitleEl.style.color = color;
+}  
 
 if (teamNameEl){
   teamNameEl.textContent = name;
