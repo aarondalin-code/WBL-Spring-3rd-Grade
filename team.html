@@ -418,6 +418,28 @@
     </section>
   </main>
 
+<section class="card" id="teamScheduleSection" style="margin-top:14px;">
+  <div class="cardBody">
+
+    <div class="scheduleTopRow" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+      <h3 id="teamScheduleTitle" style="margin:0;">Schedule</h3>
+
+      <button
+        id="teamScheduleBtn"
+        class="btnSecondary"
+        type="button">
+        Add Schedule to Calendar
+      </button>
+    </div>
+
+    <div id="teamScheduleList" style="margin-top:12px;"></div>
+    <p id="teamScheduleMsg" class="muted small" style="margin-top:12px;"></p>
+
+  </div>
+</section>
+
+
+  
   <!-- Player modal -->
   <div id="modalOverlay" class="modalOverlay" aria-hidden="true">
     <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -1207,6 +1229,17 @@ if (!familyToken) {
         setHeaderFromTeamRow(teamRow);
 
         const teamDisplayName = safe(teamRow.TeamName);
+
+const teamScheduleTitle = document.getElementById("teamScheduleTitle");
+
+if (teamScheduleTitle){
+  const color = safe(teamRow.TeamColor);
+
+  teamScheduleTitle.innerHTML = color
+    ? `<span style="color:${color}; font-weight:900;">${teamDisplayName}</span> <span style="font-weight:700;">Schedule</span>`
+    : `${teamDisplayName} Schedule`;
+}
+   
         const familyToken = safe(getParam("t"));
 
         const rosterPromise = fetchCsv(window.SHEET?.ROSTER_CSV_URL);
@@ -1241,7 +1274,7 @@ if (!familyToken) {
           if (msg) msg.textContent = "RSVP section unavailable right now.";
         }
 
-        const calBtn = document.getElementById("addCalendarBtn");
+        const calBtn = document.getElementById("teamScheduleBtn");
         if (calBtn){
           calBtn.addEventListener("click", () => {
             if (!teamGames.length){
