@@ -3386,11 +3386,14 @@ Paste at VERY BOTTOM of styles.css
 }
 
 .homeTickerTrack{
-  display:inline-block;
-  padding-left:16px;
-  font-weight:900;
-  color:#12306b;
-  will-change:transform;
+display:inline-flex;
+align-items:center;
+width:max-content;
+padding-left:16px;
+font-weight:900;
+color:#12306b;
+will-change:transform;
+gap:0;
 }
 
 .homeTickerCard.is-watch .homeTickerTrack{
@@ -3402,11 +3405,12 @@ Paste at VERY BOTTOM of styles.css
 }
 
 .homeTickerText{
-  display:inline-flex;
-  align-items:center;
-  gap:14px;
-  padding-right:36px;
-  font-size:.96rem;
+display:inline-flex;
+align-items:center;
+gap:14px;
+padding-right:36px;
+font-size:.96rem;
+flex:0 0 auto;
 }
 .homeTickerSep{
   opacity:.35;
