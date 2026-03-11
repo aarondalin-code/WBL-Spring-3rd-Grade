@@ -362,7 +362,7 @@
     <!-- Team header block -->
     <section class="card" style="margin-top:12px;">
       <div class="cardBody">
-        <div class="teamHeaderBlock">
+       <div class="teamHeaderBlock" id="teamHeaderBlock">
           <!-- Row 1 left: logo + team text -->
           <div class="teamHeaderTopLeft">
             <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
@@ -550,6 +550,7 @@
       const coachPhoneEl = document.getElementById("coachPhone");
 const rosterTitleEl = document.getElementById("rosterTitle");
    const pageTitleEl = document.getElementById("pageTitle");   
+      const headerBlockEl = document.getElementById("teamHeaderBlock");
     const name = safe(teamRow.TeamName) || "Team";
 const logo = safe(teamRow.TeamLogo);
 const color = safe(teamRow.TeamColor);
@@ -570,6 +571,16 @@ if (rosterTitleEl){
     : `${name} Roster`;
 }
 
+if (headerBlockEl){
+  if (color){
+    headerBlockEl.style.borderTop = `6px solid ${color}`;
+  } else {
+    headerBlockEl.style.borderTop = "";
+  }
+}
+
+
+      
       document.title = `${name} • WBL 3rd Grade 2026`;
 
       if (logo) {
