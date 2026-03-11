@@ -128,7 +128,7 @@
     <div class="homeTickerInner">
     <div class="homeTickerTrack homeTickerLoading" id="gameDayTickerTrack">
   <span class="homeTickerLoadingText">
-    ⚾ WBL Update: Games Saturdays at 10:00 AM & 12:15 PM • Fields T3, T4, T5
+    WBL Update: Games Saturdays at 10:00 AM & 12:15 PM • Fields T3, T4, T5
   </span>
 </div>
     </div>
@@ -593,7 +593,7 @@ track.classList.remove("homeTickerLoading");
     window.addEventListener("resize", () => applyTickerMode(inner, track), { passive:true });
   } catch (err) {
     console.error(err);
-    track.innerHTML = `<span class="homeTickerText">⚾ Game day weather and league update are unavailable right now.</span>`;
+    track.innerHTML = `<span class="homeTickerText"> Game day weather and league update are unavailable right now.</span>`;
     inner.classList.remove("is-scrolling");
     inner.classList.add("is-static");
     card.classList.remove("is-watch", "is-alert");
