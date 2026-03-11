@@ -929,6 +929,84 @@ function setHeaderFromTeamRow(teamRow){
       return await res.json();
     }
 
+function formatScheduleDate(dateStr) {
+  if (!safe(dateStr)) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d)) return safe(dateStr);
+  return d.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function formatScheduleTime(timeStr) {
+  if (!safe(timeStr)) return "";
+  const d = new Date(timeStr);
+  if (!isNaN(d) && d.getFullYear() < 1905) {
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+  return safe(timeStr);
+}
+
+function renderTeamSchedule(teamDisplayName, teamGames) {
+  const listEl = document.getElementById("teamScheduleList");
+  const msgEl = document.getElementById("teamScheduleMsg");
+
+  if (!listEl || !msgEl) return;
+
+  listEl.innerHTML = "";
+  msgEl.textContent = "";
+
+  const sortedGames = [...(teamGames || [])].sort((a, b) => {
+    const aTime = new Date(`${safe(a.Date)} ${safe(a.Time)}`).getTime() || 0;
+    const bTime = new Date(`${safe(b.Date)} ${safe(b.Time)}`).getTime() || 0;
+    return aTime - bTime;
+  });
+
+  if (!sortedGames.length) {
+    msgEl.textContent = "No games found for this team yet.";
+    return;
+  }
+
+  listEl.innerHTML = `
+    <div class="teamScheduleList">
+      ${sortedGames.map(g => {
+        const isTeamA = safe(g.TeamA) === teamDisplayName;
+        const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+        const statusRaw = safe(g.Status) || "Scheduled";
+
+        let statusText = statusRaw;
+        if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "") {
+          const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
+          const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
+          statusText = `Final • ${ourScore}-${oppScore}`;
+        }
+
+        return `
+          <div class="teamScheduleRow">
+            <div class="teamScheduleWhen">
+              <div>${formatScheduleDate(g.Date)}</div>
+              <div class="muted small">${formatScheduleTime(g.Time)}</div>
+            </div>
+
+            <div class="teamScheduleMain">
+              <div class="teamScheduleOpp">vs ${opponent || "TBD"}</div>
+              <div class="teamScheduleMeta muted small">
+                ${safe(g.Field) || "Field TBD"}
+              </div>
+            </div>
+
+            <div class="teamScheduleStatus muted small">${statusText}</div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+
+    
     async function submitRsvpChoice(teamSlug, token, gameId, playerId, response, note = "") {
       const base = window.SHEET?.RSVP_API_URL;
       if (!base) throw new Error("Missing RSVP_API_URL in data.js");
@@ -1319,6 +1397,8 @@ if (teamScheduleTitle){
           safe(g.TeamB) === teamDisplayName
         );
 
+renderTeamSchedule(teamDisplayName, teamGames);
+        
         if (rsvpData) {
           renderRsvpBoard(rsvpData, teamDisplayName);
         } else {
