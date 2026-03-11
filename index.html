@@ -407,11 +407,6 @@ function weatherIconFromCode(code){
   return "🌤️";
 }
 
-
-
-
-
-
     
 function nextGameDateTime(){
   const now = new Date();
@@ -492,7 +487,7 @@ async function loadGameDayTicker(){
    `https://api.open-meteo.com/v1/forecast` +
   `?latitude=${lat}` +
   `&longitude=${lon}` +
-  `&hourly=temperature_2m,precipitation_probability,weathercode` +
+  `&hourly=temperature_2m,precipitation_probability,weather_code` +
   `&temperature_unit=fahrenheit` +
   `&timezone=America%2FNew_York` +
   `&forecast_days=${forecastDays}`;
@@ -501,6 +496,7 @@ async function loadGameDayTicker(){
     if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
 
     const weatherData = await weatherRes.json();
+    console.log(weatherData.hourly);
     if (!weatherData?.hourly?.time?.length) throw new Error("Weather data missing");
 
     const todayIdx = findClosestHourIndex(weatherData.hourly.time, now);
@@ -509,14 +505,14 @@ async function loadGameDayTicker(){
     const todayTemp = weatherData.hourly.temperature_2m[todayIdx];
     const todayRain = weatherData.hourly.precipitation_probability[todayIdx];
     
-    const todayCode = weatherData.hourly.weathercode[todayIdx];
+    const todayCode = weatherData.hourly.weather_code[todayIdx];
     const todayLabel = weatherLabelFromCode(todayCode);
     const todayIcon = weatherIconFromCode(todayCode);
 
     const gameTemp = weatherData.hourly.temperature_2m[gameIdx];
     const gameRain = weatherData.hourly.precipitation_probability[gameIdx];
   
-    const gameCode = weatherData.hourly.weathercode[gameIdx];
+    const gameCode = weatherData.hourly.weather_code[gameIdx];
     const gameLabel = weatherLabelFromCode(gameCode);
     const gameIcon = weatherIconFromCode(gameCode);
 
