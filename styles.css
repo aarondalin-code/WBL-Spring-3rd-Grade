@@ -3430,7 +3430,7 @@ flex:0 0 auto;
 }
 
 .homeTickerInner.is-scrolling .homeTickerTrack{
-  animation:homeTickerScroll 48s linear infinite;
+  animation:homeTickerScroll 36s linear infinite;
 }
 
 .homeTickerInner:hover .homeTickerTrack{
@@ -3439,11 +3439,12 @@ flex:0 0 auto;
 
 @keyframes homeTickerScroll{
   0%{
-    transform:translateX(100%);
+    transform:translateX(35%);
   }
   100%{
     transform:translateX(-100%);
   }
+}
 }
 .homeTickerUpdated{
   font-size:.78em;
