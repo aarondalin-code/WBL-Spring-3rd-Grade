@@ -464,6 +464,14 @@ function applyTickerMode(innerEl, trackEl){
   });
 }
 
+    function getForecastDaysNeeded(now, target){
+  const startOfNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfTarget = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+  const diffMs = startOfTarget.getTime() - startOfNow.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  return Math.max(1, diffDays + 1);
+}
+    
 async function loadGameDayTicker(){
   const card = document.getElementById("gameDayTickerCard");
   const inner = card?.querySelector(".homeTickerInner");
@@ -478,15 +486,16 @@ async function loadGameDayTicker(){
     const lat = 40.6584;
     const lon = -74.3474;
 
+    const forecastDays = getForecastDaysNeeded(now, target);
+    
     const weatherUrl =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=${lat}` +
-      `&longitude=${lon}` +
-      `&hourly=temperature_2m,precipitation_probability,windspeed_10m,weathercode` +
-      `&temperature_unit=fahrenheit` +
-      `&wind_speed_unit=mph` +
-      `&timezone=America%2FNew_York` +
-      `&forecast_days=7`;
+   `https://api.open-meteo.com/v1/forecast` +
+  `?latitude=${lat}` +
+  `&longitude=${lon}` +
+  `&hourly=temperature_2m,precipitation_probability,weathercode` +
+  `&temperature_unit=fahrenheit` +
+  `&timezone=America%2FNew_York` +
+  `&forecast_days=${forecastDays}`;
 
     const weatherRes = await fetch(weatherUrl, { cache:"no-store" });
     if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
@@ -499,14 +508,14 @@ async function loadGameDayTicker(){
 
     const todayTemp = weatherData.hourly.temperature_2m[todayIdx];
     const todayRain = weatherData.hourly.precipitation_probability[todayIdx];
-    const todayWind = weatherData.hourly.windspeed_10m[todayIdx];
+    
     const todayCode = weatherData.hourly.weathercode[todayIdx];
     const todayLabel = weatherLabelFromCode(todayCode);
     const todayIcon = weatherIconFromCode(todayCode);
 
     const gameTemp = weatherData.hourly.temperature_2m[gameIdx];
     const gameRain = weatherData.hourly.precipitation_probability[gameIdx];
-    const gameWind = weatherData.hourly.windspeed_10m[gameIdx];
+  
     const gameCode = weatherData.hourly.weathercode[gameIdx];
     const gameLabel = weatherLabelFromCode(gameCode);
     const gameIcon = weatherIconFromCode(gameCode);
