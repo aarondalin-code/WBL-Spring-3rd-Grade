@@ -586,7 +586,8 @@ if (alertType === "alert") {
         ${parts.join('<span class="homeTickerSep">|</span>')}
       </span>
     `;
-
+track.classList.remove("homeTickerLoading");
+    
     applyTickerMode(inner, track);
     window.addEventListener("resize", () => applyTickerMode(inner, track), { passive:true });
   } catch (err) {
