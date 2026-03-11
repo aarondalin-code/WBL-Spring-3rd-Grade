@@ -475,7 +475,7 @@ body.teamPage .teamScheduleStatus{
 <section class="card" id="teamScheduleSection" style="margin-top:14px;">
   <div class="cardBody">
 
-    <div class="scheduleTopRow" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+    <div class="scheduleTopRow" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
       <h3 id="teamScheduleTitle" style="margin:0;">Schedule</h3>
 
       <button
@@ -652,7 +652,7 @@ function setHeaderFromTeamRow(teamRow){
       : `${name} Roster`;
   }
 
-  [teamHeaderCardEl, rosterCardEl, rsvpCardEl].forEach(card => {
+  [teamHeaderCardEl, rosterCardEl, rsvpCardEl, document.getElementById("teamScheduleSection")].forEach(card => {
     if (!card) return;
     if (color) {
       card.style.borderColor = color;
@@ -991,7 +991,7 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
             </div>
 
             <div class="teamScheduleMain">
-              <div class="teamScheduleOpp">vs ${opponent || "TBD"}</div>
+              <div class="teamScheduleOpp">vs <strong>${opponent || "TBD"}</strong></div>
               <div class="teamScheduleMeta muted small">
                 ${safe(g.Field) || "Field TBD"}
               </div>
