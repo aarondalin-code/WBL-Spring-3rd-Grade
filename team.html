@@ -448,31 +448,30 @@ body.teamPage .teamRecordPct{
       <div class="cardBody">
        <div class="teamHeaderBlock" id="teamHeaderBlock">
           <!-- Row 1 left: logo + team text -->
-          <div class="teamHeaderTopLeft">
-            <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
-<div class="teamTextCol">
-  <div class="teamLabel">Team</div>
-  <h2 id="teamName"></h2>
+
+<div class="teamHeaderTopLeft">
+  <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
+  <div class="teamTextCol">
+    <div class="teamLabel">Team</div>
+    <h2 id="teamName"></h2>
+  </div>
 </div>
 
-<div id="teamRecord"></div>            
-          
+<div id="teamRecord"></div>
 
-          <!-- Right: coach card spans both rows -->
-          <div class="teamHeaderRight">
-            <div class="coachCard">
-              <div class="coachTitleCenter">
-                <div class="coachLabel">Head Coach</div>
-                <div class="coachName" id="coachName">TBD</div>
-              </div>
-              <div class="coachLinks">
-                <a id="coachEmail" class="coachLink" href="#" style="display:none;"></a>
-                <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<!-- Right: coach card spans both rows -->
+<div class="teamHeaderRight">
+  <div class="coachCard">
+    <div class="coachTitleCenter">
+      <div class="coachLabel">Head Coach</div>
+      <div class="coachName" id="coachName">TBD</div>
+    </div>
+    <div class="coachLinks">
+      <a id="coachEmail" class="coachLink" href="#" style="display:none;"></a>
+      <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
+    </div>
+  </div>
+</div>    
     </section>
 
     <!-- Roster -->
@@ -645,7 +644,6 @@ body.teamPage .teamRecordPct{
 function setHeaderFromTeamRow(teamRow){
   const teamNameEl = document.getElementById("teamName");
   const logoEl = document.getElementById("teamLogo");
-  const subEl = document.getElementById("teamSubtitle");
   const coachNameEl = document.getElementById("coachName");
   const coachEmailEl = document.getElementById("coachEmail");
   const coachPhoneEl = document.getElementById("coachPhone");
@@ -699,7 +697,6 @@ function setHeaderFromTeamRow(teamRow){
     logoEl.style.display = "none";
   }
 
-  subEl.textContent = "";
 
   const coachName = safe(teamRow.CoachName);
   const coachEmail = safe(teamRow.CoachEmail);
