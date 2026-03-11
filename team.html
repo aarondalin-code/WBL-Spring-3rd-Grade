@@ -478,7 +478,7 @@ body.teamPage .teamScheduleStatus{
       <h3 id="teamScheduleTitle" style="margin:0;">Schedule</h3>
 
       <button
-        id="teamScheduleBtn"
+        id="addCalendarBtn"
         class="btnSecondary"
         type="button">
         Add Schedule to Calendar
@@ -1407,7 +1407,7 @@ renderTeamSchedule(teamDisplayName, teamGames);
           if (msg) msg.textContent = "RSVP section unavailable right now.";
         }
 
-        const calBtn = document.getElementById("teamScheduleBtn");
+        const calBtn = document.getElementById("addCalendarBtn");
         if (calBtn){
           calBtn.addEventListener("click", () => {
             if (!teamGames.length){
