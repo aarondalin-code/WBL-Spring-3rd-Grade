@@ -449,6 +449,7 @@ async function loadWeatherTickerMessage(){
     alertType: norm(active.AlertType) || "normal",
     prefix: safe(active.MessagePrefix),
     text: safe(active.MessageText),
+     extra: safe(active.ExtraMessage),
     updated: safe(active.LastUpdated)
   };
 }
