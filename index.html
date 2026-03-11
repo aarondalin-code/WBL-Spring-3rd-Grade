@@ -487,7 +487,7 @@ async function loadGameDayTicker(){
    `https://api.open-meteo.com/v1/forecast` +
   `?latitude=${lat}` +
   `&longitude=${lon}` +
-  `&hourly=temperature_2m,precipitation_probability,weather_code` +
+  `&hourly=temperature_2m,precipitation_probability,weathercode` +
   `&temperature_unit=fahrenheit` +
   `&timezone=America%2FNew_York` +
   `&forecast_days=${forecastDays}`;
@@ -505,14 +505,14 @@ async function loadGameDayTicker(){
     const todayTemp = weatherData.hourly.temperature_2m[todayIdx];
     const todayRain = weatherData.hourly.precipitation_probability[todayIdx];
     
-    const todayCode = weatherData.hourly.weather_code[todayIdx];
+    const todayCode = weatherData.hourly.weathercode[todayIdx];
     const todayLabel = weatherLabelFromCode(todayCode);
     const todayIcon = weatherIconFromCode(todayCode);
 
     const gameTemp = weatherData.hourly.temperature_2m[gameIdx];
     const gameRain = weatherData.hourly.precipitation_probability[gameIdx];
   
-    const gameCode = weatherData.hourly.weather_code[gameIdx];
+    const gameCode = weatherData.hourly.weathercode[gameIdx];
     const gameLabel = weatherLabelFromCode(gameCode);
     const gameIcon = weatherIconFromCode(gameCode);
 
