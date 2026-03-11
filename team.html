@@ -1059,12 +1059,12 @@ const opponentHtml =
     : `vs <strong>${opponent || "TBD"}</strong>`;
 
 let statusText = statusRaw;
-
 if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "") {
   const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
   const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
   statusText = `Final • ${ourScore}-${oppScore}`;
 }
+
 
 
         
