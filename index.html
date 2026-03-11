@@ -543,12 +543,12 @@ async function loadGameDayTicker(){
       now.getMonth() === target.getMonth() &&
       now.getDate() === target.getDate();
 
-    const todayText =
-      `${todayIcon} Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}% • Wind ${todayWind} mph`;
+  const todayText =
+  `${todayIcon} Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}%`;
 
-    const gameText =
-      `${gameIcon} ${isSameCalendarDay ? "Game Day Weather" : "Next Game Day"}: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}% • Wind ${gameWind} mph`;
-
+const gameText =
+  `${gameIcon} ${isSameCalendarDay ? "Game Day Weather" : "Next Game Day"}: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}%`;
+    
     const noteText = note && (note.prefix || note.text)
       ? `${note.prefix ? note.prefix + ": " : ""}${note.text || ""}`
       : "WBL Update: No league message posted.";
