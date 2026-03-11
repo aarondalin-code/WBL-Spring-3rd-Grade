@@ -126,11 +126,9 @@
 <section class="docSection">
   <div class="homeTickerCard" id="gameDayTickerCard">
     <div class="homeTickerInner">
-      <div class="homeTickerTrack homeTickerLoading" id="gameDayTickerTrack">
-  <span class="homeTickerLoadingText">
-    ⚾ WBL Update: Games Saturdays at 10:00 AM & 12:15 PM • Fields T3, T4, T5
-  </span>
-</div>
+      <div class="homeTickerTrack" id="gameDayTickerTrack">
+        <span class="muted small">Loading game day weather and league update…</span>
+      </div>
     </div>
   </div>
 </section>
@@ -407,6 +405,11 @@ function weatherIconFromCode(code){
   return "🌤️";
 }
 
+
+
+
+
+
     
 function nextGameDateTime(){
   const now = new Date();
@@ -459,14 +462,6 @@ function applyTickerMode(innerEl, trackEl){
   });
 }
 
-    function getForecastDaysNeeded(now, target){
-  const startOfNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfTarget = new Date(target.getFullYear(), target.getMonth(), target.getDate());
-  const diffMs = startOfTarget.getTime() - startOfNow.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  return Math.max(1, diffDays + 1);
-}
-    
 async function loadGameDayTicker(){
   const card = document.getElementById("gameDayTickerCard");
   const inner = card?.querySelector(".homeTickerInner");
@@ -481,16 +476,15 @@ async function loadGameDayTicker(){
     const lat = 40.6584;
     const lon = -74.3474;
 
-    const forecastDays = getForecastDaysNeeded(now, target);
-    
     const weatherUrl =
-   `https://api.open-meteo.com/v1/forecast` +
-  `?latitude=${lat}` +
-  `&longitude=${lon}` +
-  `&hourly=temperature_2m,precipitation_probability,weathercode` +
-  `&temperature_unit=fahrenheit` +
-  `&timezone=America%2FNew_York` +
-  `&forecast_days=${forecastDays}`;
+      `https://api.open-meteo.com/v1/forecast` +
+      `?latitude=${lat}` +
+      `&longitude=${lon}` +
+      `&hourly=temperature_2m,precipitation_probability,windspeed_10m,weathercode` +
+      `&temperature_unit=fahrenheit` +
+      `&wind_speed_unit=mph` +
+      `&timezone=America%2FNew_York` +
+      `&forecast_days=7`;
 
     const weatherRes = await fetch(weatherUrl, { cache:"no-store" });
     if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
@@ -503,14 +497,14 @@ async function loadGameDayTicker(){
 
     const todayTemp = weatherData.hourly.temperature_2m[todayIdx];
     const todayRain = weatherData.hourly.precipitation_probability[todayIdx];
-    
+    const todayWind = weatherData.hourly.windspeed_10m[todayIdx];
     const todayCode = weatherData.hourly.weathercode[todayIdx];
     const todayLabel = weatherLabelFromCode(todayCode);
     const todayIcon = weatherIconFromCode(todayCode);
 
     const gameTemp = weatherData.hourly.temperature_2m[gameIdx];
     const gameRain = weatherData.hourly.precipitation_probability[gameIdx];
-  
+    const gameWind = weatherData.hourly.windspeed_10m[gameIdx];
     const gameCode = weatherData.hourly.weathercode[gameIdx];
     const gameLabel = weatherLabelFromCode(gameCode);
     const gameIcon = weatherIconFromCode(gameCode);
@@ -538,12 +532,12 @@ async function loadGameDayTicker(){
       now.getMonth() === target.getMonth() &&
       now.getDate() === target.getDate();
 
-  const todayText =
-  `${todayIcon} Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}%`;
+    const todayText =
+      `${todayIcon} Today: ${todayTemp}°F • ${todayLabel} • Rain ${todayRain}% • Wind ${todayWind} mph`;
 
-const gameText =
-  `${gameIcon} ${isSameCalendarDay ? "Game Day Weather" : "Next Game Day"}: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}%`;
-    
+    const gameText =
+      `${gameIcon} ${isSameCalendarDay ? "Game Day Weather" : "Next Game Day"}: ${gameDateText} • ${gameTimeText} • ${gameTemp}°F • ${gameLabel} • Rain ${gameRain}% • Wind ${gameWind} mph`;
+
     const noteText = note && (note.prefix || note.text)
       ? `${note.prefix ? note.prefix + ": " : ""}${note.text || ""}`
       : "WBL Update: No league message posted.";
@@ -590,8 +584,7 @@ if (alertType === "alert") {
         ${parts.join('<span class="homeTickerSep">|</span>')}
       </span>
     `;
-track.classList.remove("homeTickerLoading");
-    
+
     applyTickerMode(inner, track);
     window.addEventListener("resize", () => applyTickerMode(inner, track), { passive:true });
   } catch (err) {
@@ -1119,7 +1112,7 @@ function renderScheduleCard(g){
     async function initHome(){
       updateCountdown();
       setInterval(updateCountdown, 1000);
-       
+        loadGameDayTicker().catch(()=>{});
       
       // Load poll config first
       try{
@@ -1366,11 +1359,12 @@ const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
         potwMsg.textContent = "Players of the Week unavailable right now.";
       }
     }
-loadGameDayTicker().catch(()=>{});
-initHome().catch(err => console.error(err));
+
+    initHome().catch(err => console.error(err));
   </script>
 
   <script src="./nav.js"></script>
 </body>
 </html>
+
 
