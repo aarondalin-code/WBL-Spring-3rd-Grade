@@ -127,9 +127,39 @@ body.teamPage .teamScheduleStatus{
 
 
     
-    /* =========================================================
-       BUTTON LOOK (calendar action)
-       ========================================================= */
+body.teamPage #teamRecord{
+  margin-top:10px;
+}
+
+body.teamPage .teamRecordWrap{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+
+  padding:6px 12px;
+
+  border-radius:999px;
+  border:1px solid rgba(30,63,168,.18);
+  background:rgba(30,63,168,.06);
+
+  font-weight:800;
+  font-size:13px;
+}
+
+body.teamPage .teamRecordLabel{
+  opacity:.7;
+}
+
+body.teamPage .teamRecordValue{
+  font-size:14px;
+  letter-spacing:.3px;
+}
+
+body.teamPage .teamRecordPct{
+  opacity:.8;
+}
+
+    
     body.teamPage button#addCalendarBtn{
       all:unset;
       display:inline-flex;
@@ -420,14 +450,12 @@ body.teamPage .teamScheduleStatus{
           <!-- Row 1 left: logo + team text -->
           <div class="teamHeaderTopLeft">
             <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
-            <div class="teamTextCol">
-              <div class="muted small">Team</div>
-              <h2 id="teamName" style="margin:0;">Team</h2>
-              <div id="teamSubtitle" class="muted" style="margin-top:4px;"></div>
-            </div>
-          </div>
+<div class="teamTextCol">
+  <div class="teamLabel">Team</div>
+  <h2 id="teamName"></h2>
+</div>
 
-          <!-- Row 2 left: calendar button under logo -->
+<div id="teamRecord"></div>            
           
 
           <!-- Right: coach card spans both rows -->
@@ -923,14 +951,18 @@ function computeTeamRecord(teamDisplayName, teamGames){
 }
 
 function renderTeamRecord(teamDisplayName, teamGames){
-  const subEl = document.getElementById("teamSubtitle");
-  if (!subEl) return;
+
+  const el = document.getElementById("teamRecord");
+  if (!el) return;
 
   const rec = computeTeamRecord(teamDisplayName, teamGames);
 
-  subEl.innerHTML = `
-    <span style="font-weight:800;">Record:</span> ${rec.w}-${rec.l}-${rec.t}
-    <span class="muted">• Win % ${rec.pct}</span>
+  el.innerHTML = `
+    <div class="teamRecordWrap">
+      <div class="teamRecordLabel">Record</div>
+      <div class="teamRecordValue">${rec.w}-${rec.l}-${rec.t}</div>
+      <div class="teamRecordPct">Win % ${rec.pct}</div>
+    </div>
   `;
 }
 
