@@ -496,7 +496,6 @@ async function loadGameDayTicker(){
     if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
 
     const weatherData = await weatherRes.json();
-    console.log(weatherData.hourly);
     if (!weatherData?.hourly?.time?.length) throw new Error("Weather data missing");
 
     const todayIdx = findClosestHourIndex(weatherData.hourly.time, now);
