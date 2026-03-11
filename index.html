@@ -548,7 +548,9 @@ async function loadGameDayTicker(){
     const updatedText = note?.updated
       ? `<span class="homeTickerUpdated">(last updated: ${note.updated})</span>`
       : "";
-
+    
+const extraText = note?.extra || "";
+   
     let parts = [];
 
 if (alertType === "alert") {
@@ -581,12 +583,19 @@ if (alertType === "alert") {
 
   parts.push(`<span>${noteText}</span>${updatedText}`);
 }
+    
+if (extraText) {
+  parts.push(`<span>${extraText}</span>`);
+}
 
-    track.innerHTML = `
-      <span class="homeTickerText">
-        ${parts.join('<span class="homeTickerSep">|</span>')}
-      </span>
-    `;
+const tickerHtml = parts.join('<span class="homeTickerSep">|</span>');
+
+track.innerHTML = `
+  <span class="homeTickerText">${tickerHtml}</span>
+  <span class="homeTickerText">${tickerHtml}</span>
+`;
+
+    
 track.classList.remove("homeTickerLoading");
 
     
