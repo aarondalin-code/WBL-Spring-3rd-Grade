@@ -126,9 +126,11 @@
 <section class="docSection">
   <div class="homeTickerCard" id="gameDayTickerCard">
     <div class="homeTickerInner">
-      <div class="homeTickerTrack" id="gameDayTickerTrack">
-        <span class="muted small">Loading game day weather and league update…</span>
-      </div>
+    <div class="homeTickerTrack homeTickerLoading" id="gameDayTickerTrack">
+  <span class="homeTickerLoadingText">
+    ⚾ WBL Update: Games Saturdays at 10:00 AM & 12:15 PM • Fields T3, T4, T5
+  </span>
+</div>
     </div>
   </div>
 </section>
@@ -584,7 +586,9 @@ if (alertType === "alert") {
         ${parts.join('<span class="homeTickerSep">|</span>')}
       </span>
     `;
+track.classList.remove("homeTickerLoading");
 
+    
     applyTickerMode(inner, track);
     window.addEventListener("resize", () => applyTickerMode(inner, track), { passive:true });
   } catch (err) {
@@ -1112,7 +1116,7 @@ function renderScheduleCard(g){
     async function initHome(){
       updateCountdown();
       setInterval(updateCountdown, 1000);
-        loadGameDayTicker().catch(()=>{});
+       
       
       // Load poll config first
       try{
@@ -1360,7 +1364,8 @@ const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
       }
     }
 
-    initHome().catch(err => console.error(err));
+  loadGameDayTicker().catch(()=>{});
+initHome().catch(err => console.error(err));
   </script>
 
   <script src="./nav.js"></script>
