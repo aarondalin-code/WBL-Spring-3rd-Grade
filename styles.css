@@ -3510,6 +3510,19 @@ Paste at VERY BOTTOM of styles.css
   background:linear-gradient(to left,#eef4ff,transparent);
 }
 
+.homeTickerLoading{
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.homeTickerLoadingText{
+font-weight:700;
+font-size:14px;
+text-align:center;
+white-space:nowrap;
+}
+
 /* ---------------- Home hero button spacing (mobile fix) ---------------- */
 
 /* Home hero buttons mobile spacing fix */
