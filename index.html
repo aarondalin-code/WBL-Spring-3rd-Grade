@@ -476,15 +476,15 @@ async function loadGameDayTicker(){
     const lat = 40.6584;
     const lon = -74.3474;
 
-    const weatherUrl =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=${lat}` +
-      `&longitude=${lon}` +
-      `&hourly=temperature_2m,precipitation_probability,windspeed_10m,weathercode` +
-      `&temperature_unit=fahrenheit` +
-      `&wind_speed_unit=mph` +
-      `&timezone=America%2FNew_York` +
-      `&forecast_days=7;
+   const weatherUrl =
+  `https://api.open-meteo.com/v1/forecast` +
+  `?latitude=${lat}` +
+  `&longitude=${lon}` +
+  `&hourly=temperature_2m,precipitation_probability,windspeed_10m,weathercode` +
+  `&temperature_unit=fahrenheit` +
+  `&wind_speed_unit=mph` +
+  `&timezone=America%2FNew_York` +
+  `&forecast_days=7`;
 
     const weatherRes = await fetch(weatherUrl, { cache:"no-store" });
     if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
