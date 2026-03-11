@@ -428,9 +428,7 @@ body.teamPage .teamScheduleStatus{
           </div>
 
           <!-- Row 2 left: calendar button under logo -->
-          <button id="addCalendarBtn" type="button" aria-label="Add team schedule to calendar">
-            Add Schedule
-          </button>
+          
 
           <!-- Right: coach card spans both rows -->
           <div class="teamHeaderRight">
@@ -894,6 +892,50 @@ function setHeaderFromTeamRow(teamRow){
       URL.revokeObjectURL(url);
     }
 
+function toNumSafe(v){
+  const n = Number(safe(v));
+  return Number.isFinite(n) ? n : null;
+}
+
+function computeTeamRecord(teamDisplayName, teamGames){
+  let w = 0, l = 0, t = 0;
+
+  (teamGames || []).forEach(g => {
+    if (safe(g.Status).toLowerCase() !== "final") return;
+
+    const scoreA = toNumSafe(g.ScoreA);
+    const scoreB = toNumSafe(g.ScoreB);
+    if (scoreA === null || scoreB === null) return;
+
+    const isTeamA = safe(g.TeamA) === teamDisplayName;
+    const ourScore = isTeamA ? scoreA : scoreB;
+    const oppScore = isTeamA ? scoreB : scoreA;
+
+    if (ourScore > oppScore) w++;
+    else if (ourScore < oppScore) l++;
+    else t++;
+  });
+
+  const gp = w + l + t;
+  const pct = gp ? ((w + 0.5 * t) / gp).toFixed(3).replace(/^0/, "") : ".000";
+
+  return { w, l, t, pct };
+}
+
+function renderTeamRecord(teamDisplayName, teamGames){
+  const subEl = document.getElementById("teamSubtitle");
+  if (!subEl) return;
+
+  const rec = computeTeamRecord(teamDisplayName, teamGames);
+
+  subEl.innerHTML = `
+    <span style="font-weight:800;">Record:</span> ${rec.w}-${rec.l}-${rec.t}
+    <span class="muted">• Win % ${rec.pct}</span>
+  `;
+}
+
+
+    
     // -----------------------------
     // RSVP helpers
     // -----------------------------
@@ -975,6 +1017,12 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
         const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
         const statusRaw = safe(g.Status) || "Scheduled";
 
+        const oppMeta = teamMetaByName.get(norm(opponent)) || {};
+const oppColor = safe(oppMeta.TeamColor || oppMeta.color);
+const opponentHtml = oppColor
+  ? `vs <span style="color:${oppColor}; font-weight:900;">${opponent || "TBD"}</span>`
+  : `vs <strong>${opponent || "TBD"}</strong>`;
+
         let statusText = statusRaw;
         if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "") {
           const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
@@ -990,7 +1038,7 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
             </div>
 
             <div class="teamScheduleMain">
-              <div class="teamScheduleOpp">vs <strong>${opponent || "TBD"}</strong></div>
+              <div class="teamScheduleOpp">${opponentHtml}</div>              
               <div class="teamScheduleMeta muted small">
                 ${safe(g.Field) || "Field TBD"}
               </div>
@@ -1395,7 +1443,7 @@ if (teamScheduleTitle){
           safe(g.TeamA) === teamDisplayName ||
           safe(g.TeamB) === teamDisplayName
         );
-
+renderTeamRecord(teamDisplayName, teamGames);
 renderTeamSchedule(teamDisplayName, teamGames);
         
         if (rsvpData) {
