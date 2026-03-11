@@ -486,7 +486,7 @@ async function loadGameDayTicker(){
   `&temperature_unit=fahrenheit` +
   `&wind_speed_unit=mph` +
   `&timezone=America%2FNew_York` +
-  `&forecast_days=4`;
+  `&forecast_days=3`;
 
     const weatherRes = await fetch(weatherUrl, { cache:"no-store" });
     if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
