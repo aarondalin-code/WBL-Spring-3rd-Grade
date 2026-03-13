@@ -29,60 +29,9 @@
     return s === "final" || s.startsWith("final");
   }
 
-  async function fetchCsv(url) {
-    if (!url) throw new Error("Missing CSV URL in data.js");
-    const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(url + bust, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
-    return await res.text();
-  }
+  const { fetchCsvCached, parseCsv } = window.CSVUtils;
+  const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
 
-  // Robust CSV parser (quoted commas safe) + BOM strip on headers
-  function parseCsv(text) {
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      const next = text[i + 1];
-
-      if (ch === '"') {
-        if (inQuotes && next === '"') { cur += '"'; i++; }
-        else inQuotes = !inQuotes;
-        continue;
-      }
-
-      if (!inQuotes && ch === ",") { row.push(cur); cur = ""; continue; }
-
-      if (!inQuotes && (ch === "\n" || ch === "\r")) {
-        if (ch === "\r" && next === "\n") i++;
-        row.push(cur); cur = "";
-        if (row.some(v => safe(v) !== "")) rows.push(row);
-        row = [];
-        continue;
-      }
-
-      cur += ch;
-    }
-    row.push(cur);
-    if (row.some(v => safe(v) !== "")) rows.push(row);
-
-    const headers = (rows.shift() || []).map((h) => {
-      let key = safe(h).replace(/\s+/g, "");
-      key = key.replace(/^\uFEFF/, "");
-      return key;
-    });
-
-    return rows
-      .filter(r => r.some(x => safe(x) !== ""))
-      .map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => obj[h] = safe(r[idx]));
-        return obj;
-      });
-  }
 
   // --------- NEW: Completed-week gating (6 completed dates) ----------
   function parseDateLoose(s){
@@ -440,7 +389,7 @@
     updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
 
     // Teams
-    const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+    const teamsCsv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const teamRows = parseCsv(teamsCsv);
     const teamNames = teamRows.map(r => safe(r.TeamName)).filter(Boolean);
 
@@ -451,7 +400,7 @@
     }
 
     // Regular season -> seeds
-    const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
+    const gamesCsv = await fetchCsvCached(window.SHEET?.GAMES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const gameRows = parseCsv(gamesCsv);
     const { ordered, bySeed } = computeSeedsFromGames(teamNames, gameRows);
 
@@ -468,7 +417,7 @@
     }
 
     // Playoffs games
-    const playoffsCsv = await fetchCsv(window.SHEET?.PLAYOFFS_CSV_URL);
+    const playoffsCsv = await fetchCsvCached(window.SHEET?.PLAYOFFS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const playoffRows = parseCsv(playoffsCsv);
 
     const playoffsById = new Map();
