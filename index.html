@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Westfield Baseball League - 3rd Grade </title>
   <link rel="stylesheet" href="./styles.css?v=wbl-home-v7" />
+  <link rel="preconnect" href="https://docs.google.com" crossorigin>
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVXQ5JN459"></script>
 <script>
@@ -63,8 +67,8 @@
 </style>
 </head>
 
-<body class="watermarkPage hasHamburger">
-  <header class="siteHeader">
+<body class="watermarkPage hasHamburger homeIndex">
+  <header class="siteHeader homeHeader">
     <div class="navWrap">
       <button class="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
         <span></span><span></span><span></span>
@@ -87,8 +91,8 @@
     </div>
 
     <div class="brandCenter">
-      <img src="./logo.png" alt="WBL Logo" class="logoImage" />
-      <h1>Westfield Baseball League - 3rd Grade</h1>
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" decoding="async" fetchpriority="high" />
+      <h1><span>Westfield Baseball League</span><span class="titleLevel">3rd Grade</span></h1>
       <div class="tagline">Spring League Central</div>
     </div>
   </header>
@@ -97,8 +101,8 @@
 
     <!-- Welcome + Countdown -->
     <section class="docSection">
-      <div class="card">
-        <div class="cardBody">
+      <div class="card homeHeroCard">
+        <div class="cardBody homeHeroCardBody">
           <div class="homeWelcome">
             <div class="muted" id="welcomeLine">
               Games Saturdays at <strong>10:00 AM</strong> and <strong>12:15 PM</strong> on fields <strong>T3, T4, T5</strong>.
@@ -277,19 +281,12 @@
   </div>
 
   <script src="./data.js"></script>
+<script src="./csv-utils.js"></script>
   <script>
     /* -------------------- Utils -------------------- */
     function safe(v){ return String(v ?? "").trim(); }
     function norm(v){ return safe(v).toLowerCase(); }
 function formatPlayerName(name){
-  const parts = safe(name).split(/\s+/).filter(Boolean);
-  if (!parts.length) return "";
-  const first = parts[0];
-  const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
-  return first + lastInitial;
-}
-
-    function formatPlayerName(name){
   const parts = safe(name).split(/\s+/).filter(Boolean);
   if (!parts.length) return "";
   const first = parts[0];
@@ -314,50 +311,37 @@ function formatPlayerName(name){
       return null;
     }
 
-    async function fetchCsv(url){
-      if (!url) throw new Error("Missing CSV URL in data.js");
-      const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-      const res = await fetch(url + bust, { cache:"no-store" });
-      if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
-      return await res.text();
-    }
+    const { fetchCsvCached, parseCsv } = window.CSVUtils;
+    const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
+    const WEATHER_TICKER_CACHE_KEY = "wblWeatherTicker:v1";
+    const WEATHER_TICKER_TTL_MS = 10 * 60 * 1000;
 
-    function parseCsv(text){
-      const rows = [];
-      let row = [], cur = "", inQuotes = false;
+function readSessionJson(key){
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch(_) {
+    return null;
+  }
+}
 
-      for (let i=0; i<text.length; i++){
-        const ch = text[i], next = text[i+1];
+function writeSessionJson(key, value){
+  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch(_) {}
+}
 
-        if (ch === '"'){
-          if (inQuotes && next === '"'){ cur += '"'; i++; }
-          else inQuotes = !inQuotes;
-          continue;
-        }
+async function fetchWeatherDataCached(url){
+  const now = Date.now();
+  const cached = readSessionJson(WEATHER_TICKER_CACHE_KEY);
+  if (cached && Number.isFinite(cached.ts) && cached.data && (now - cached.ts) < WEATHER_TICKER_TTL_MS) {
+    return cached.data;
+  }
 
-        if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
-
-        if (!inQuotes && (ch === "\n" || ch === "\r")){
-          if (ch === "\r" && next === "\n") i++;
-          row.push(cur); cur="";
-          if (row.some(v => safe(v) !== "")) rows.push(row);
-          row = [];
-          continue;
-        }
-
-        cur += ch;
-      }
-
-      row.push(cur);
-      if (row.some(v => safe(v) !== "")) rows.push(row);
-
-      const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
-      return rows.map(r => {
-        const o = {};
-        headers.forEach((h, idx) => o[h] = safe(r[idx]));
-        return o;
-      }).filter(o => Object.values(o).some(v => safe(v) !== ""));
-    }
+  const res = await fetch(url, { cache:"default" });
+  if (!res.ok) throw new Error(`Weather fetch failed (${res.status})`);
+  const data = await res.json();
+  writeSessionJson(WEATHER_TICKER_CACHE_KEY, { ts: now, data });
+  return data;
+}
 
 function weatherLabelFromCode(code){
   const map = {
@@ -437,7 +421,7 @@ async function loadWeatherTickerMessage(){
   const url = window.SHEET?.WEATHER_TICKER_CSV_URL;
   if (!url) return null;
 
-  const csv = await fetchCsv(url);
+  const csv = await fetchCsvCached(url, { ttlMs: SHEET_CACHE_TTL_MS });
   const rows = parseCsv(csv);
   const active = rows.find(r => ["true","yes","1"].includes(norm(r.Active))) || null;
 
@@ -487,10 +471,11 @@ async function loadGameDayTicker(){
   `&timezone=America%2FNew_York` +
   `&forecast_days=3`;
 
-    const weatherRes = await fetch(weatherUrl, { cache:"no-store" });
-    if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
+    const [weatherData, note] = await Promise.all([
+      fetchWeatherDataCached(weatherUrl),
+      loadWeatherTickerMessage().catch(() => null)
+    ]);
 
-    const weatherData = await weatherRes.json();
     if (!weatherData?.hourly?.time?.length) throw new Error("Weather data missing");
 
     const todayIdx = findClosestHourIndex(weatherData.hourly.time, now);
@@ -521,7 +506,6 @@ async function loadGameDayTicker(){
       minute: "2-digit"
     });
 
-    const note = await loadWeatherTickerMessage().catch(() => null);
     const alertType = note?.alertType || "normal";
 
     card.classList.remove("is-watch", "is-alert");
@@ -848,7 +832,7 @@ function renderScheduleCard(g){
     }
 
     /* -------------------- POLL: JSONP (no CORS issues) -------------------- */
-    let POLL = { weekKey:"", question:"", options:[], mode:"realtime" };
+    let POLL = { weekKey:"week", question:"Loading poll…", options:["Please wait"], mode:"realtime" };
 
     function pollVoteKey(){ return `wbl_poll_vote_${POLL.weekKey || "week"}`; }
     function loadMyVote(){ return safe(localStorage.getItem(pollVoteKey())); }
@@ -929,7 +913,7 @@ function renderScheduleCard(g){
       const url = window.SHEET?.POLL_CSV_URL;
       if (!url) return false;
 
-      const csv = await fetchCsv(url);
+      const csv = await fetchCsvCached(url, { ttlMs: SHEET_CACHE_TTL_MS });
       const rows = parseCsv(csv);
       if (!rows.length) return false;
 
@@ -1062,7 +1046,7 @@ function renderScheduleCard(g){
       }
 
       try{
-        const csv = await fetchCsv(url);
+        const csv = await fetchCsvCached(url, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv);
 
         const items = rows.map(r => ({
@@ -1126,65 +1110,80 @@ function renderScheduleCard(g){
       setInterval(updateCountdown, 1000);
        
       
-      // Load poll config first
-      try{
-        const ok = await loadPollFromSheet();
-        if (!ok){
-          POLL.weekKey = "week";
-          POLL.question = "Poll unavailable (check poll sheet headers).";
-          POLL.options = ["OK"];
-        }
-      } catch(e){
-        console.warn(e);
-        POLL.weekKey = "week";
-        POLL.question = "Poll unavailable (check poll CSV URL).";
-        POLL.options = ["OK"];
-      }
+      // Render poll UI immediately with defaults, then hydrate config asynchronously.
       renderPollUI();
       wirePollButtons();
 
-      // Preload results if possible
-      if (window.SHEET?.POLL_API_URL && POLL.weekKey && POLL.options.length){
-        const counts = await pollFetchResults().catch(()=>null);
-        if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
-      }
+      const hydratePoll = async () => {
+        try{
+          const ok = await loadPollFromSheet();
+          if (!ok){
+            POLL.weekKey = "week";
+            POLL.question = "Poll unavailable (check poll sheet headers).";
+            POLL.options = ["OK"];
+          }
+        } catch(e){
+          console.warn(e);
+          POLL.weekKey = "week";
+          POLL.question = "Poll unavailable (check poll CSV URL).";
+          POLL.options = ["OK"];
+        }
+
+        renderPollUI();
+        wirePollButtons();
+
+        // Preload results if possible (non-blocking)
+        if (window.SHEET?.POLL_API_URL && POLL.weekKey && POLL.options.length){
+          pollFetchResults()
+            .then((counts) => {
+              if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
+            })
+            .catch(()=>{});
+        }
+      };
+
+      hydratePoll().catch(()=>{});
 
       // News
       loadKeyDatesNews().catch(()=>{});
 
-      // Teams
-      try{
-        const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
-        const teamRows = parseCsv(teamsCsv);
-        for (const r of teamRows){
-          const name = safe(r.TeamName);
-          if (!name) continue;
-          teamMeta.set(norm(name), {
-            slug: safe(r.TeamSlug),
-            logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
-            color: safe(r.TeamColor) || ""
-          });
+      // Load teams/roster in parallel without blocking game cards.
+      const teamsPromise = (async () => {
+        try{
+          const teamsCsv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+          const teamRows = parseCsv(teamsCsv);
+          for (const r of teamRows){
+            const name = safe(r.TeamName);
+            if (!name) continue;
+            teamMeta.set(norm(name), {
+              slug: safe(r.TeamSlug),
+              logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
+              color: safe(r.TeamColor) || ""
+            });
+          }
+        } catch(e){
+          console.warn("Teams feed unavailable.", e);
         }
-      } catch(e){
-        console.warn("Teams feed unavailable.", e);
-      }
+      })();
 
       // Roster map (for POTW names)
       const rosterMap = new Map();
-      try{
-        const rosterCsv = await fetchCsv(window.SHEET?.ROSTER_CSV_URL);
-        const roster = parseCsv(rosterCsv);
-        for (const r of roster){
-          const pid = safe(r.PlayerID);
-          if (!pid) continue;
-          rosterMap.set(pid, { name: safe(r.PlayerName || r.Name), photo: safe(r.PhotoURL) });
+      const rosterPromise = (async () => {
+        try{
+          const rosterCsv = await fetchCsvCached(window.SHEET?.ROSTER_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+          const roster = parseCsv(rosterCsv);
+          for (const r of roster){
+            const pid = safe(r.PlayerID);
+            if (!pid) continue;
+            rosterMap.set(pid, { name: safe(r.PlayerName || r.Name), photo: safe(r.PhotoURL) });
+          }
+        } catch(e){
+          console.warn("Roster feed unavailable.", e);
         }
-      } catch(e){
-        console.warn("Roster feed unavailable.", e);
-      }
+      })();
 
-      // Games
-      const gamesCsv = await fetchCsv(window.SHEET?.GAMES_CSV_URL);
+      // Games (prioritized so Opening Day / Last Week render faster)
+      const gamesCsv = await fetchCsvCached(window.SHEET?.GAMES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
       const games = parseCsv(gamesCsv);
 
       const now = new Date();
@@ -1211,6 +1210,7 @@ function renderScheduleCard(g){
 
       const thisWeek = [];
       const lastWeekFinals = [];
+      const allFinals = [];
 
       for (const g of games){
         const d = parseDateLoose(g.Date);
@@ -1218,6 +1218,7 @@ function renderScheduleCard(g){
         d.setHours(0,0,0,0);
 
         if (d.getTime() === thisSat.getTime()) thisWeek.push(g);
+        if (isFinal(g.Status)) allFinals.push({ game: g, date: new Date(d) });
         if (d.getTime() === lastSat.getTime() && isFinal(g.Status)) lastWeekFinals.push(g);
       }
 
@@ -1225,9 +1226,21 @@ function renderScheduleCard(g){
         thisWeek.length ? thisWeek.map(renderScheduleCard).join("") :
         `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
 
+      let finalsToShow = lastWeekFinals;
+      let finalsLabel = `No final games from ${fmtShort(lastSat)} yet.`;
+
+      if (!finalsToShow.length && allFinals.length){
+        allFinals.sort((a,b) => b.date.getTime() - a.date.getTime());
+        const latest = allFinals[0].date;
+        finalsToShow = allFinals.filter(x => x.date.getTime() === latest.getTime()).map(x => x.game);
+        finalsLabel = `Showing latest final games (${fmtShort(latest)}) while season is in testing/preseason mode.`;
+      }
+
       document.getElementById("lastWeekFinals").innerHTML =
-        lastWeekFinals.length ? lastWeekFinals.map(renderScheduleCard).join("") :
-        `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
+        finalsToShow.length ? finalsToShow.map(renderScheduleCard).join("") :
+        `<div class="muted small">${finalsLabel}</div>`;
+
+      await teamsPromise;
 
       // Standings snapshot
       const teamsSet = new Set();
@@ -1295,13 +1308,15 @@ function renderScheduleCard(g){
       document.getElementById("standingsMiniMsg").textContent =
         finalsCount ? `Based on ${finalsCount} final game(s).` : `No final games yet — standings will appear once games are marked Final.`;
 
+      await rosterPromise;
+
       // Players of the Week — show PLAYER NAME (join POTW -> Roster by PlayerID)
       const potwGrid = document.getElementById("potwGrid");
       const potwMsg = document.getElementById("potwMsg");
       potwGrid.innerHTML = "";
 
       try{
-        const potwCsv = await fetchCsv(window.SHEET?.PLAYERS_OF_WEEK_CSV_URL);
+        const potwCsv = await fetchCsvCached(window.SHEET?.PLAYERS_OF_WEEK_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const potw = parseCsv(potwCsv);
 
         const mapped = potw.map(r => {
@@ -1347,13 +1362,13 @@ function renderScheduleCard(g){
           btn.type = "button";
           btn.className = "potwCardBtn";
 
-         const displayName = formatPlayerName(p.PlayerName) || "Player of the Week";
-const meta = getMeta(p.Team);
-const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
+          const displayName = formatPlayerName(p.PlayerName) || "Player of the Week";
+          const meta = getMeta(p.Team);
+          const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
+          if (meta.color) btn.style.setProperty("--teamColor", meta.color);
 
-          
           btn.innerHTML = `
-            <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}"
+            <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}" loading="lazy" decoding="async"
                  onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
             <div class="potwText">
               <div class="potwName">${displayName}</div>
@@ -1372,7 +1387,13 @@ const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
       }
     }
 
-  loadGameDayTicker().catch(()=>{});
+  function scheduleGameDayTickerLoad(){
+    const start = () => loadGameDayTicker().catch(()=>{});
+    // Start on the very next paint tick for the snappiest visible ticker startup.
+    requestAnimationFrame(start);
+  }
+
+  scheduleGameDayTickerLoad();
 initHome().catch(err => console.error(err));
   </script>
 
