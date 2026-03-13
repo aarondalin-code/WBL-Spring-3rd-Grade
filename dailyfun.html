@@ -958,6 +958,7 @@ color:#6b7280;
   </main>
 
   <script src="./data.js"></script>
+<script src="./csv-utils.js"></script>
   <script>
 
 let teamColorMap = {};    
@@ -965,7 +966,9 @@ let teamColorMap = {};
       window.SHEET?.BASEBALL_HISTORY_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=214692870&single=true&output=csv";
 
-   const TEAMS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=0&single=true&output=csv";
+   const TEAMS_CSV_URL =
+      window.SHEET?.TEAMS_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=0&single=true&output=csv";
     
     const QUOTES_CSV_URL =
       window.SHEET?.BASEBALL_QUOTES_CSV_URL ||
@@ -1002,59 +1005,9 @@ const TRIVIA_WEEKLY_CSV_URL =
     const TRIVIA_API_URL =
       window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
 
-    async function fetchCsv(url){
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch CSV");
-      return await res.text();
-    }
+    const { fetchCsvCached, parseCsv } = window.CSVUtils;
+    const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
 
-    function parseCsv(text){
-      const rows = [];
-      let row = [];
-      let cell = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < text.length; i++) {
-        const c = text[i];
-        const next = text[i + 1];
-
-        if (c === '"') {
-          if (inQuotes && next === '"') {
-            cell += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (c === "," && !inQuotes) {
-          row.push(cell);
-          cell = "";
-        } else if ((c === "\n" || c === "\r") && !inQuotes) {
-          if (c === "\r" && next === "\n") i++;
-          row.push(cell);
-          if (row.some(v => v !== "")) rows.push(row);
-          row = [];
-          cell = "";
-        } else {
-          cell += c;
-        }
-      }
-
-      if (cell.length || row.length) {
-        row.push(cell);
-        rows.push(row);
-      }
-
-      if (!rows.length) return [];
-
-      const headers = rows[0].map(h => String(h).trim());
-      return rows.slice(1).map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => {
-          obj[h] = (r[idx] || "").trim();
-        });
-        return obj;
-      });
-    }
 
 function normalizeTeamName(value){
   return String(value || "")
@@ -1066,7 +1019,7 @@ function normalizeTeamName(value){
 async function loadTeamColors(){
   if (Object.keys(teamColorMap).length) return teamColorMap;
 
-  const csv = await fetchCsv(TEAMS_CSV_URL);
+  const csv = await fetchCsvCached(TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
   const rows = parseCsv(csv);
 
   rows.forEach(row => {
@@ -1150,7 +1103,7 @@ function findHistoryItemsForKey(rows, key){
 
 async function getHistoryRows(){
   if (baseballHistoryCache) return baseballHistoryCache;
-  const csv = await fetchCsv(HISTORY_CSV_URL);
+  const csv = await fetchCsvCached(HISTORY_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
   baseballHistoryCache = parseCsv(csv);
   return baseballHistoryCache;
 }
@@ -1230,7 +1183,7 @@ async function loadHistory(){
       const el = document.getElementById("quoteCard");
 
       try {
-        const csv = await fetchCsv(QUOTES_CSV_URL);
+        const csv = await fetchCsvCached(QUOTES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv).filter(r =>
           String(r.Active || "").toUpperCase() !== "FALSE" &&
           String(r.Quote || "").trim()
@@ -1263,7 +1216,7 @@ async function loadHistory(){
           return;
         }
 
-        const csv = await fetchCsv(FACTS_CSV_URL);
+        const csv = await fetchCsvCached(FACTS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv).filter(r =>
           String(r.Active || "").toUpperCase() !== "FALSE" &&
           String(r.Fact || "").trim()
@@ -1292,7 +1245,7 @@ async function loadHistory(){
       const archiveEl = document.getElementById("qaArchive");
 
       try {
-        const csv = await fetchCsv(QUESTIONS_CSV_URL);
+        const csv = await fetchCsvCached(QUESTIONS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv).filter(r =>
           String(r.Status || "").toLowerCase() === "approved" &&
           String(r.DisplayOnSite || "").toUpperCase() === "TRUE"
@@ -1354,7 +1307,7 @@ async function loadMovieOfTheWeek(){
       return;
     }
 
-    const csv = await fetchCsv(MOVIES_CSV_URL);
+    const csv = await fetchCsvCached(MOVIES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv).filter(r =>
       String(r.Active || "").toUpperCase() !== "FALSE" &&
       String(r.Title || "").trim()
@@ -1406,7 +1359,7 @@ async function loadBirthdaySpotlight(){
       return;
     }
 
-    const csv = await fetchCsv(BIRTHDAYS_CSV_URL);
+    const csv = await fetchCsvCached(BIRTHDAYS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv).filter(r =>
       String(r.Active || "").toUpperCase() !== "FALSE" &&
       String(r.MonthDay || "").trim() === getMonthDayKey()
@@ -1475,7 +1428,7 @@ async function loadTriviaWeeklyChampion(){
       return;
     }
 
-    const csv = await fetchCsv(TRIVIA_WEEKLY_CSV_URL);
+    const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv);
 
     if (!rows.length || String(rows[0].PlayerName || "").trim() === "No entries yet") {
@@ -1552,7 +1505,7 @@ el.innerHTML = `
           return;
         }
 
-        const csv = await fetchCsv(TRIVIA_CSV_URL);
+        const csv = await fetchCsvCached(TRIVIA_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv);
         const key = getMonthDayKey();
 
@@ -1716,7 +1669,7 @@ el.innerHTML = `
       return;
     }
 
-    const csv = await fetchCsv(TRIVIA_LEADERBOARD_CSV_URL);
+    const csv = await fetchCsvCached(TRIVIA_LEADERBOARD_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv);
 
     if (!rows.length) {
