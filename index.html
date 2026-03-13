@@ -1381,11 +1381,8 @@ const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
 
   function scheduleGameDayTickerLoad(){
     const start = () => loadGameDayTicker().catch(()=>{});
-    if (typeof requestIdleCallback === "function") {
-      requestIdleCallback(start, { timeout: 1500 });
-    } else {
-      setTimeout(start, 300);
-    }
+    // Start on the very next paint tick for the snappiest visible ticker startup.
+    requestAnimationFrame(start);
   }
 
   scheduleGameDayTickerLoad();
