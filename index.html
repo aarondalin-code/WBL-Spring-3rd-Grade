@@ -1362,11 +1362,11 @@ function renderScheduleCard(g){
           btn.type = "button";
           btn.className = "potwCardBtn";
 
-         const displayName = formatPlayerName(p.PlayerName) || "Player of the Week";
-const meta = getMeta(p.Team);
-const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
+          const displayName = formatPlayerName(p.PlayerName) || "Player of the Week";
+          const meta = getMeta(p.Team);
+          const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
+          if (meta.color) btn.style.setProperty("--teamColor", meta.color);
 
-          
           btn.innerHTML = `
             <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}" loading="lazy" decoding="async"
                  onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">

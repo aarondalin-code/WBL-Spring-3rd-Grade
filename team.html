@@ -574,8 +574,13 @@ body.teamPage .teamRecordPct{
     const modalContent = document.getElementById("modalContent");
     const closeBtn = document.getElementById("modalCloseBtn");
 
-    function openModal(html){
+    function openModal(html, teamColor = ""){
       modalContent.innerHTML = html;
+      const modalCard = overlay.querySelector(".modalCard");
+      if (modalCard){
+        if (teamColor) modalCard.style.setProperty("--teamColor", teamColor);
+        else modalCard.style.removeProperty("--teamColor");
+      }
       overlay.classList.add("open");
       document.body.classList.add("noScroll");
       overlay.setAttribute("aria-hidden", "false");
@@ -585,6 +590,8 @@ body.teamPage .teamRecordPct{
       overlay.classList.remove("open");
       document.body.classList.remove("noScroll");
       overlay.setAttribute("aria-hidden", "true");
+      const modalCard = overlay.querySelector(".modalCard");
+      if (modalCard) modalCard.style.removeProperty("--teamColor");
       modalContent.innerHTML = "";
     }
 
@@ -740,12 +747,13 @@ function setHeaderFromTeamRow(teamRow){
             </div>
           </div>
         </div>
-      `);
+      `, teamMeta.color || "");
     }
 
     function buildRosterGrid(players, teamDisplayName){
       const grid = document.getElementById("rosterGrid");
       const msg = document.getElementById("rosterMsg");
+      const teamMeta = getTeamMetaByName(teamDisplayName, window.__TEAM_ROWS__ || []);
 
       grid.innerHTML = "";
 
@@ -774,6 +782,7 @@ function setHeaderFromTeamRow(teamRow){
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "playerCardBtn";
+        if (teamMeta.color) btn.style.setProperty("--teamColor", teamMeta.color);
 
         const name = formatPlayerName(p.PlayerName || p.Name || "Player");
         const num = safe(p.Number);

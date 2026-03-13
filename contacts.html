@@ -96,6 +96,7 @@
         coachName: safe(r.CoachName),
         coachEmail: safe(r.CoachEmail),
         coachPhone: safe(r.CoachPhone),
+        color: safe(r.TeamColor),
       }))
       .filter(t => t.name && t.slug);
 
@@ -117,6 +118,7 @@
       const a = document.createElement("a");
       a.className = "teamTile";
       a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
+      if (t.color) a.style.setProperty("--teamColor", t.color);
 
       a.innerHTML = `
         <span class="teamAccent" aria-hidden="true"></span>
