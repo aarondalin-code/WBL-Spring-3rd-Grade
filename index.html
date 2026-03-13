@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Westfield Baseball League - 3rd Grade </title>
   <link rel="stylesheet" href="./styles.css?v=wbl-home-v7" />
+  <link rel="preconnect" href="https://docs.google.com" crossorigin>
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVXQ5JN459"></script>
 <script>
@@ -309,7 +313,35 @@ function formatPlayerName(name){
 
     const { fetchCsvCached, parseCsv } = window.CSVUtils;
     const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
+    const WEATHER_TICKER_CACHE_KEY = "wblWeatherTicker:v1";
+    const WEATHER_TICKER_TTL_MS = 10 * 60 * 1000;
 
+function readSessionJson(key){
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch(_) {
+    return null;
+  }
+}
+
+function writeSessionJson(key, value){
+  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch(_) {}
+}
+
+async function fetchWeatherDataCached(url){
+  const now = Date.now();
+  const cached = readSessionJson(WEATHER_TICKER_CACHE_KEY);
+  if (cached && Number.isFinite(cached.ts) && cached.data && (now - cached.ts) < WEATHER_TICKER_TTL_MS) {
+    return cached.data;
+  }
+
+  const res = await fetch(url, { cache:"default" });
+  if (!res.ok) throw new Error(`Weather fetch failed (${res.status})`);
+  const data = await res.json();
+  writeSessionJson(WEATHER_TICKER_CACHE_KEY, { ts: now, data });
+  return data;
+}
 
 function weatherLabelFromCode(code){
   const map = {
@@ -439,10 +471,11 @@ async function loadGameDayTicker(){
   `&timezone=America%2FNew_York` +
   `&forecast_days=3`;
 
-    const weatherRes = await fetch(weatherUrl, { cache:"no-store" });
-    if (!weatherRes.ok) throw new Error(`Weather fetch failed (${weatherRes.status})`);
+    const [weatherData, note] = await Promise.all([
+      fetchWeatherDataCached(weatherUrl),
+      loadWeatherTickerMessage().catch(() => null)
+    ]);
 
-    const weatherData = await weatherRes.json();
     if (!weatherData?.hourly?.time?.length) throw new Error("Weather data missing");
 
     const todayIdx = findClosestHourIndex(weatherData.hourly.time, now);
@@ -473,7 +506,6 @@ async function loadGameDayTicker(){
       minute: "2-digit"
     });
 
-    const note = await loadWeatherTickerMessage().catch(() => null);
     const alertType = note?.alertType || "normal";
 
     card.classList.remove("is-watch", "is-alert");
@@ -1347,7 +1379,16 @@ const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
       }
     }
 
-  loadGameDayTicker().catch(()=>{});
+  function scheduleGameDayTickerLoad(){
+    const start = () => loadGameDayTicker().catch(()=>{});
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(start, { timeout: 1500 });
+    } else {
+      setTimeout(start, 300);
+    }
+  }
+
+  scheduleGameDayTickerLoad();
 initHome().catch(err => console.error(err));
   </script>
 
