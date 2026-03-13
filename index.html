@@ -289,14 +289,6 @@ function formatPlayerName(name){
   const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
   return first + lastInitial;
 }
-
-    function formatPlayerName(name){
-  const parts = safe(name).split(/\s+/).filter(Boolean);
-  if (!parts.length) return "";
-  const first = parts[0];
-  const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
-  return first + lastInitial;
-}
     function isFinal(status){ return norm(status) === "final"; }
 
     function parseDateLoose(s){

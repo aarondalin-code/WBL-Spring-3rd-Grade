@@ -966,7 +966,9 @@ let teamColorMap = {};
       window.SHEET?.BASEBALL_HISTORY_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=214692870&single=true&output=csv";
 
-   const TEAMS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=0&single=true&output=csv";
+   const TEAMS_CSV_URL =
+      window.SHEET?.TEAMS_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=0&single=true&output=csv";
     
     const QUOTES_CSV_URL =
       window.SHEET?.BASEBALL_QUOTES_CSV_URL ||
