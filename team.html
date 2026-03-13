@@ -22,9 +22,18 @@
        Row 1: logo + team text | coach title/name
        Row 2: button under logo | coach pills (email/phone)
        ========================================================= */
+    body.teamPage #teamHeaderCard .cardBody{
+      position:relative;
+      overflow:hidden;
+      border:1px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 28%, #e5e7eb 72%);
+      background:
+        radial-gradient(900px 220px at 15% -35%, color-mix(in srgb, var(--teamColor, #1e3fa8) 18%, transparent), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.95), rgba(248,250,252,.92));
+    }
+
     body.teamPage .teamHeaderBlock{
       display:grid !important;
-      grid-template-columns:auto 1fr 300px !important;
+      grid-template-columns:minmax(230px, auto) minmax(220px, 1fr) 300px !important;
       grid-template-rows:auto auto !important;
       column-gap:14px !important;
       row-gap:10px !important;
@@ -32,7 +41,7 @@
     }
 
     body.teamPage .teamHeaderTopLeft{
-      grid-column:1 / span 2 !important;
+      grid-column:1 !important;
       grid-row:1 !important;
       display:flex !important;
       align-items:center !important;
@@ -42,6 +51,60 @@
 
     body.teamPage .teamHeaderTopLeft .teamTextCol{
       min-width:0 !important;
+    }
+
+
+    body.teamPage .teamHeaderCenter{
+      grid-column:2 !important;
+      grid-row:1 / span 2 !important;
+      align-self:stretch !important;
+      display:flex;
+      align-items:stretch;
+      min-width:0;
+    }
+
+    body.teamPage .nextGameCard{
+      width:100%;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
+      background:rgba(255,255,255,.9);
+      border-radius:14px;
+      padding:12px;
+      display:grid;
+      gap:6px;
+      box-shadow:0 10px 26px rgba(15,23,42,.08);
+    }
+
+    body.teamPage .nextGameLabel{
+      font-size:.7rem;
+      font-weight:900;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      color:#64748b;
+    }
+
+    body.teamPage .nextGameOpponent{
+      font-size:1rem;
+      font-weight:900;
+      color:#0f172a;
+      line-height:1.2;
+    }
+
+    body.teamPage .nextGameMeta{
+      font-size:.82rem;
+      color:#475569;
+      font-weight:700;
+    }
+
+    body.teamPage .nextGameStatus{
+      justify-self:start;
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:.72rem;
+      font-weight:900;
+      background:color-mix(in srgb, var(--teamColor, #1e3fa8) 16%, #ffffff 84%);
+      color:color-mix(in srgb, var(--teamColor, #1e3fa8) 82%, #111827 18%);
     }
 
     body.teamPage #addCalendarBtn{
@@ -200,24 +263,29 @@ body.teamPage .teamRecordPct{
 
     @media (max-width: 760px){
       body.teamPage .teamHeaderBlock{
-        grid-template-columns:auto 1fr !important;
-        grid-template-rows:auto auto auto !important;
+        grid-template-columns:1fr !important;
+        grid-template-rows:auto auto auto auto !important;
       }
 
       body.teamPage .teamHeaderTopLeft{
-        grid-column:1 / span 2 !important;
+        grid-column:1 !important;
         grid-row:1 !important;
+      }
+
+      body.teamPage .teamHeaderCenter{
+        grid-column:1 !important;
+        grid-row:2 !important;
       }
 
       body.teamPage #addCalendarBtn{
         grid-column:1 !important;
-        grid-row:2 !important;
+        grid-row:3 !important;
         align-self:start !important;
       }
 
       body.teamPage .teamHeaderRight{
-        grid-column:1 / span 2 !important;
-        grid-row:3 !important;
+        grid-column:1 !important;
+        grid-row:4 !important;
       }
     }
 
@@ -463,6 +531,15 @@ body.teamPage .teamRecordPct{
 
 <div id="teamRecord"></div>
 
+<div class="teamHeaderCenter">
+  <div id="teamHeaderNextGame" class="nextGameCard">
+    <div class="nextGameLabel">Next Game</div>
+    <div class="nextGameOpponent">Loading…</div>
+    <div class="nextGameMeta">Schedule details coming soon.</div>
+    <div class="nextGameStatus">Upcoming</div>
+  </div>
+</div>
+
 <!-- Right: coach card spans both rows -->
 <div class="teamHeaderRight">
   <div class="coachCard">
@@ -613,6 +690,7 @@ function setHeaderFromTeamRow(teamRow){
   const teamHeaderCardEl = document.getElementById("teamHeaderCard");
   const rosterCardEl = document.getElementById("rosterCard");
   const rsvpCardEl = document.getElementById("rsvpSection");
+  const nextGameEl = document.getElementById("teamHeaderNextGame");
 
   const name = safe(teamRow.TeamName) || "Team";
   const logo = safe(teamRow.TeamLogo);
@@ -997,6 +1075,65 @@ function formatScheduleTime(timeStr) {
     return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   }
   return safe(timeStr);
+}
+
+
+function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor) {
+  const el = document.getElementById("teamHeaderNextGame");
+  if (!el) return;
+  if (teamColor) el.style.setProperty("--teamColor", teamColor);
+  else el.style.removeProperty("--teamColor");
+
+  const now = new Date();
+  const parseGameDateTime = (g) => {
+    const dateRaw = safe(g.Date);
+    if (!dateRaw) return null;
+    const dateOnly = new Date(dateRaw);
+    if (isNaN(dateOnly)) return null;
+
+    const timeRaw = safe(g.Time);
+    if (!timeRaw) {
+      dateOnly.setHours(23, 59, 59, 999);
+      return dateOnly;
+    }
+
+    const withTime = new Date(`${dateRaw} ${timeRaw}`);
+    if (!isNaN(withTime)) return withTime;
+
+    dateOnly.setHours(23, 59, 59, 999);
+    return dateOnly;
+  };
+
+  const sorted = (teamGames || [])
+    .map(g => ({ game: g, dt: parseGameDateTime(g) }))
+    .filter(x => x.dt)
+    .sort((a,b) => a.dt - b.dt);
+
+  const upcoming = sorted.find(x => x.dt.getTime() >= now.getTime());
+  const next = upcoming || sorted[sorted.length - 1];
+
+  if (!next) {
+    el.innerHTML = `
+      <div class="nextGameLabel">Next Game</div>
+      <div class="nextGameOpponent">Schedule Not Posted</div>
+      <div class="nextGameMeta">Check back soon for game details.</div>
+      <div class="nextGameStatus">TBD</div>
+    `;
+    return;
+  }
+
+  const g = next.game;
+  const isTeamA = safe(g.TeamA) === teamDisplayName;
+  const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+  const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
+  const statusRaw = safe(g.Status) || "Scheduled";
+
+  el.innerHTML = `
+    <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
+    <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
+    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
+    <div class="nextGameStatus">${statusRaw}</div>
+  `;
 }
 
 function renderTeamSchedule(teamDisplayName, teamGames) {
@@ -1463,6 +1600,7 @@ if (teamScheduleTitle){
           safe(g.TeamB) === teamDisplayName
         );
 renderTeamRecord(teamDisplayName, teamGames);
+renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor));
 renderTeamSchedule(teamDisplayName, teamGames);
         
         if (rsvpData) {
