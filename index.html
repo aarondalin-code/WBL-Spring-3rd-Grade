@@ -1163,6 +1163,7 @@ function renderScheduleCard(g){
 
       const thisWeek = [];
       const lastWeekFinals = [];
+      const allFinals = [];
 
       for (const g of games){
         const d = parseDateLoose(g.Date);
@@ -1170,6 +1171,7 @@ function renderScheduleCard(g){
         d.setHours(0,0,0,0);
 
         if (d.getTime() === thisSat.getTime()) thisWeek.push(g);
+        if (isFinal(g.Status)) allFinals.push({ game: g, date: new Date(d) });
         if (d.getTime() === lastSat.getTime() && isFinal(g.Status)) lastWeekFinals.push(g);
       }
 
@@ -1177,9 +1179,19 @@ function renderScheduleCard(g){
         thisWeek.length ? thisWeek.map(renderScheduleCard).join("") :
         `<div class="muted small">No games found for ${fmtShort(thisSat)} yet.</div>`;
 
+      let finalsToShow = lastWeekFinals;
+      let finalsLabel = `No final games from ${fmtShort(lastSat)} yet.`;
+
+      if (!finalsToShow.length && allFinals.length){
+        allFinals.sort((a,b) => b.date.getTime() - a.date.getTime());
+        const latest = allFinals[0].date;
+        finalsToShow = allFinals.filter(x => x.date.getTime() === latest.getTime()).map(x => x.game);
+        finalsLabel = `Showing latest final games (${fmtShort(latest)}) while season is in testing/preseason mode.`;
+      }
+
       document.getElementById("lastWeekFinals").innerHTML =
-        lastWeekFinals.length ? lastWeekFinals.map(renderScheduleCard).join("") :
-        `<div class="muted small">No final games from ${fmtShort(lastSat)} yet.</div>`;
+        finalsToShow.length ? finalsToShow.map(renderScheduleCard).join("") :
+        `<div class="muted small">${finalsLabel}</div>`;
 
       // Standings snapshot
       const teamsSet = new Set();

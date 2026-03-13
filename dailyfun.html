@@ -1005,7 +1005,7 @@ const TRIVIA_WEEKLY_CSV_URL =
     const TRIVIA_API_URL =
       window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
 
-    const { fetchCsvCached, parseCsv } = window.CSVUtils;
+    const { fetchCsv, fetchCsvCached, parseCsv } = window.CSVUtils;
     const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
 
 
@@ -1418,42 +1418,53 @@ async function loadBirthdaySpotlight(){
   }
 }
     
+function toAccuracyPercent(val){
+  const raw = String(val ?? "").trim().replace("%", "");
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return null;
+  return n <= 1 ? n * 100 : n;
+}
+
+function toNumSafe(val){
+  const n = Number(String(val ?? "").trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
 
   try {
-      await loadTeamColors();
+    await loadTeamColors();
     if (!TRIVIA_WEEKLY_CSV_URL) {
       el.textContent = "Weekly champion feed is not connected yet.";
       return;
     }
 
-    const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-    const rows = parseCsv(csv);
+    // real-time read for weekly champion card
+    const csv = await fetchCsv(TRIVIA_WEEKLY_CSV_URL);
+    const rows = parseCsv(csv)
+      .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
+      .map(r => ({
+        ...r,
+        __acc: toAccuracyPercent(r.Accuracy),
+        __correct: toNumSafe(r.Correct),
+        __attempted: toNumSafe(r.Attempted)
+      }))
+      .sort((a,b) => {
+        const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
+        const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
+        if (accB !== accA) return accB - accA;
+        if (b.__correct !== a.__correct) return b.__correct - a.__correct;
+        if (a.__attempted !== b.__attempted) return a.__attempted - b.__attempted;
+        return String(a.PlayerName || "").localeCompare(String(b.PlayerName || ""));
+      });
 
-    if (!rows.length || String(rows[0].PlayerName || "").trim() === "No entries yet") {
+    if (!rows.length) {
       el.textContent = "No weekly trivia data yet.";
       return;
     }
 
-    const first = rows[0];
-    const topCorrect = String(first.Correct || "").trim();
-    const topAttempted = String(first.Attempted || "").trim();
-    const topAccuracy = String(first.Accuracy || "").trim();
-
-    const tiedRows = rows.filter(row =>
-      String(row.Correct || "").trim() === topCorrect &&
-      String(row.Attempted || "").trim() === topAttempted &&
-      String(row.Accuracy || "").trim() === topAccuracy                                 
-    );
-const displayRows = tiedRows.slice(0, 5);
-const extraCount = tiedRows.length - displayRows.length;
-    
-    let accuracyText = topAccuracy;
-    if (accuracyText && !accuracyText.endsWith("%")) {
-      const num = parseFloat(accuracyText);
-      if (!isNaN(num)) accuracyText = `${Math.round(num * 100)}%`;
-    }
+    const displayRows = rows.slice(0, 5);
 
     const now = new Date();
     const start = new Date(now);
@@ -1467,26 +1478,27 @@ const extraCount = tiedRows.length - displayRows.length;
       " – " +
       end.toLocaleDateString(undefined, options);
 
-el.innerHTML = `
+    el.innerHTML = `
   <div class="weeklyChampionWrap">
-    <div class="weeklyChampionBadge">Weekly Champ</div>
-    ${displayRows.map(row => `
+    <div class="weeklyChampionBadge">Weekly Top 5</div>
+    ${displayRows.map((row, idx) => {
+      const accText = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
+      const teamName = String(row.Team || "").trim();
+      const teamColor = teamColorMap[normalizeTeamName(teamName)] || '#2563eb';
+      return `
       <div class="weeklyChampionHero">
-        <div class="weeklyChampionAvatar">
-          ${String(row.PlayerName || "").trim().charAt(0).toUpperCase()}
-        </div>
+        <div class="weeklyChampionAvatar">${idx + 1}</div>
         <div class="weeklyChampionMain">
           <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-          ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[normalizeTeamName(row.Team)] || '#2563eb'}">${row.Team}</div>` : ""}
+          ${teamName ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
         </div>
-      </div>
-    `).join("")}
-    <div class="weeklyChampionChips">
-      <div class="weeklyChampionChip"><strong>${topCorrect}</strong><span>Correct</span></div>
-      <div class="weeklyChampionChip"><strong>${topAttempted}</strong><span>Attempts</span></div>
-      <div class="weeklyChampionChip"><strong>${accuracyText}</strong><span>Accuracy</span></div>
-    </div>
-    ${extraCount > 0 ? `<div class="weeklyChampionMore">+ ${extraCount} more player${extraCount === 1 ? "" : "s"}</div>` : ""}
+        <div class="weeklyChampionChips">
+          <div class="weeklyChampionChip"><strong>${accText}</strong><span>Accuracy</span></div>
+          <div class="weeklyChampionChip"><strong>${row.__correct}</strong><span>Correct</span></div>
+          <div class="weeklyChampionChip"><strong>${row.__attempted}</strong><span>Attempts</span></div>
+        </div>
+      </div>`;
+    }).join("")}
     <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
   </div>
 `;
@@ -1495,7 +1507,7 @@ el.innerHTML = `
     console.error(err);
   }
 }
-    
+
     async function loadTrivia(){
       const el = document.getElementById("triviaCard");
 
@@ -1651,6 +1663,7 @@ el.innerHTML = `
         }
 
         loadTriviaLeaderboard();
+        loadTriviaWeeklyChampion();
       } catch (err) {
         msg.className = "triviaMsg bad";
         msg.textContent = "Sorry, there was a problem submitting your answer.";
@@ -1677,14 +1690,23 @@ el.innerHTML = `
       return;
     }
 
-    const topRows = rows.slice(0, 5);
+    const topRows = rows
+      .map(r => ({ ...r, __acc: toAccuracyPercent(r.Accuracy), __correct: toNumSafe(r.Correct), __attempted: toNumSafe(r.Attempted) }))
+      .sort((a,b) => {
+        const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
+        const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
+        if (accB !== accA) return accB - accA;
+        if (b.__correct !== a.__correct) return b.__correct - a.__correct;
+        if (a.__attempted !== b.__attempted) return a.__attempted - b.__attempted;
+        return String(a.PlayerName || "").localeCompare(String(b.PlayerName || ""));
+      })
+      .slice(0, 5);
 
     el.innerHTML = `
       <div class="leaderboardList">
         ${topRows.map((row, idx) => {
           const rank = idx + 1;
-          const accuracyRaw = parseFloat(row.Accuracy || 0);
-          const accuracyPct = isNaN(accuracyRaw) ? "" : `${Math.round(accuracyRaw)}%`;
+          const accuracyPct = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
           const teamName = String(row.Team || "").trim();
           const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
 
