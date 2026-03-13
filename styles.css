@@ -3541,3 +3541,141 @@ white-space:nowrap;
     margin-top:6px;
   }
 }
+
+* =========================================
+   HOME INDEX: header reformat + cleaner scrolling
+========================================= */
+html{
+  scroll-behavior: smooth;
+}
+
+body.homeIndex{
+  overflow-x: hidden;
+}
+
+body.homeIndex .homeHeader{
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+body.homeIndex .homeHeader .brandCenter{
+  margin-top: 10px;
+  padding-top: 2px;
+}
+
+body.homeIndex .homeHeader h1{
+  margin: 2px 0 4px;
+  font-size: clamp(1.35rem, 3.4vw, 2rem);
+  line-height: 1.12;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+body.homeIndex .homeHeader h1 .titleLevel{
+  font-size: .68em;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #1e3fa8;
+}
+
+body.homeIndex .homeHeader .tagline{
+  display: block;
+  margin-top: 2px;
+}
+
+body.homeIndex .homeHeader .tagline::before{
+  margin-right: 8px;
+}
+
+/* cleaner page scroll appearance */
+body.homeIndex ::-webkit-scrollbar{
+  width: 10px;
+  height: 10px;
+}
+
+body.homeIndex ::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, #9bb2eb, #5479d8);
+  border-radius: 999px;
+  border: 2px solid #eef3ff;
+}
+
+body.homeIndex ::-webkit-scrollbar-track{
+  background: #eef3ff;
+}
+
+@media (max-width: 820px){
+  body.homeIndex .homeHeader .brandCenter{
+    margin-top: 6px;
+  }
+
+  body.homeIndex .homeHeader .tagline::before{
+    display: none;
+  }
+}
+
+/* =========================================
+   HOME INDEX: slimmer welcome/countdown hero box
+========================================= */
+body.homeIndex .homeHeroCard{
+  border: 1px solid rgba(30,63,168,.16);
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(30,63,168,.08);
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(244,248,255,.96));
+}
+
+body.homeIndex .homeHeroCardBody{
+  padding: 12px 14px;
+}
+
+body.homeIndex .homeWelcome{
+  gap: 8px;
+}
+
+body.homeIndex #welcomeLine{
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+body.homeIndex .homeCountdown{
+  width: min(480px, 100%);
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(30,63,168,.10);
+}
+
+body.homeIndex .homeCountdownLabel{
+  font-size: 11px;
+}
+
+body.homeIndex .homeCountdownTimer{
+  margin-top: 3px;
+  font-size: clamp(18px, 2.5vw, 28px);
+}
+
+body.homeIndex .homeHeroBtns{
+  gap: 8px;
+  margin-top: 2px;
+}
+
+body.homeIndex .homeHeroBtns .btnPrimary{
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+@media (max-width: 640px){
+  body.homeIndex .homeHeroCardBody{
+    padding: 10px 10px;
+  }
+
+  body.homeIndex .homeCountdown{
+    padding: 7px 10px;
+  }
+
+  body.homeIndex .homeHeroBtns{
+    gap: 7px;
+  }
+}
+
