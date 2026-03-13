@@ -3542,7 +3542,7 @@ white-space:nowrap;
   }
 }
 
-* =========================================
+/* =========================================
    HOME INDEX: header reformat + cleaner scrolling
 ========================================= */
 html{
@@ -3678,4 +3678,3 @@ body.homeIndex .homeHeroBtns .btnPrimary{
     gap: 7px;
   }
 }
-
