@@ -22,9 +22,18 @@
        Row 1: logo + team text | coach title/name
        Row 2: button under logo | coach pills (email/phone)
        ========================================================= */
+    body.teamPage #teamHeaderCard .cardBody{
+      position:relative;
+      overflow:hidden;
+      border:1px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 28%, #e5e7eb 72%);
+      background:
+        radial-gradient(900px 220px at 15% -35%, color-mix(in srgb, var(--teamColor, #1e3fa8) 18%, transparent), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.95), rgba(248,250,252,.92));
+    }
+
     body.teamPage .teamHeaderBlock{
       display:grid !important;
-      grid-template-columns:auto 1fr 300px !important;
+      grid-template-columns:minmax(230px, auto) minmax(220px, 1fr) 300px !important;
       grid-template-rows:auto auto !important;
       column-gap:14px !important;
       row-gap:10px !important;
@@ -32,7 +41,7 @@
     }
 
     body.teamPage .teamHeaderTopLeft{
-      grid-column:1 / span 2 !important;
+      grid-column:1 !important;
       grid-row:1 !important;
       display:flex !important;
       align-items:center !important;
@@ -42,6 +51,82 @@
 
     body.teamPage .teamHeaderTopLeft .teamTextCol{
       min-width:0 !important;
+    }
+
+
+    body.teamPage .teamHeaderCenter{
+      grid-column:2 !important;
+      grid-row:1 / span 2 !important;
+      align-self:stretch !important;
+      display:flex;
+      align-items:stretch;
+      min-width:0;
+    }
+
+    body.teamPage .nextGameCard{
+      position:relative;
+      isolation:isolate;
+      width:100%;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
+      border-radius:14px;
+      padding:12px;
+      display:grid;
+      gap:6px;
+      box-shadow:0 10px 26px rgba(15,23,42,.08);
+      overflow:hidden;
+    }
+
+    body.teamPage .nextGameCard::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: var(--teamLogo);
+      background-repeat:no-repeat;
+      background-position:right -12px bottom -16px;
+      background-size:120px 120px;
+      opacity:.11;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.teamPage .nextGameCard > *{
+      position:relative;
+      z-index:1;
+    }
+
+    body.teamPage .nextGameLabel{
+      font-size:.7rem;
+      font-weight:900;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      color:#64748b;
+    }
+
+    body.teamPage .nextGameOpponent{
+      font-size:1rem;
+      font-weight:900;
+      color:#0f172a;
+      line-height:1.2;
+    }
+
+    body.teamPage .nextGameMeta{
+      font-size:.82rem;
+      color:#475569;
+      font-weight:700;
+    }
+
+    body.teamPage .nextGameStatus{
+      justify-self:start;
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:.72rem;
+      font-weight:900;
+      background:color-mix(in srgb, var(--teamColor, #1e3fa8) 16%, #ffffff 84%);
+      color:color-mix(in srgb, var(--teamColor, #1e3fa8) 82%, #111827 18%);
     }
 
     body.teamPage #addCalendarBtn{
@@ -62,6 +147,8 @@
       height:100% !important;
       display:grid !important;
       grid-template-rows:auto 1fr auto !important;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 62%, #e5e7eb 38%) !important;
+      background:linear-gradient(180deg, rgba(255,255,255,.94), color-mix(in srgb, var(--teamColor, #1e3fa8) 8%, #ffffff 92%)) !important;
     }
 
     body.teamPage .coachTitleCenter{
@@ -143,8 +230,8 @@ body.teamPage .teamRecordWrap{
   padding:6px 12px;
 
   border-radius:999px;
-  border:1px solid rgba(30,63,168,.18);
-  background:rgba(30,63,168,.06);
+  border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 62%, #e5e7eb 38%);
+  background:color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%);
 
   font-weight:800;
   font-size:13px;
@@ -200,24 +287,29 @@ body.teamPage .teamRecordPct{
 
     @media (max-width: 760px){
       body.teamPage .teamHeaderBlock{
-        grid-template-columns:auto 1fr !important;
-        grid-template-rows:auto auto auto !important;
+        grid-template-columns:1fr !important;
+        grid-template-rows:auto auto auto auto !important;
       }
 
       body.teamPage .teamHeaderTopLeft{
-        grid-column:1 / span 2 !important;
+        grid-column:1 !important;
         grid-row:1 !important;
+      }
+
+      body.teamPage .teamHeaderCenter{
+        grid-column:1 !important;
+        grid-row:2 !important;
       }
 
       body.teamPage #addCalendarBtn{
         grid-column:1 !important;
-        grid-row:2 !important;
+        grid-row:3 !important;
         align-self:start !important;
       }
 
       body.teamPage .teamHeaderRight{
-        grid-column:1 / span 2 !important;
-        grid-row:3 !important;
+        grid-column:1 !important;
+        grid-row:4 !important;
       }
     }
 
@@ -440,7 +532,7 @@ body.teamPage .teamRecordPct{
     </div>
 
     <div class="brandCenter">
-      <img src="./logo.png" alt="WBL Logo" class="logoImage">
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" decoding="async" fetchpriority="high">
       <h1 id="pageTitle">Team Roster</h1>
       <div class="tagline">WBL 3rd Grade</div>
     </div>
@@ -454,7 +546,7 @@ body.teamPage .teamRecordPct{
           <!-- Row 1 left: logo + team text -->
 
 <div class="teamHeaderTopLeft">
-  <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
+  <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" loading="lazy" decoding="async" style="display:none;">
   <div class="teamTextCol">
     <div class="teamLabel">Team</div>
     <h2 id="teamName"></h2>
@@ -462,6 +554,15 @@ body.teamPage .teamRecordPct{
 </div>
 
 <div id="teamRecord"></div>
+
+<div class="teamHeaderCenter">
+  <div id="teamHeaderNextGame" class="nextGameCard">
+    <div class="nextGameLabel">Next Game</div>
+    <div class="nextGameOpponent">Loading…</div>
+    <div class="nextGameMeta">Schedule details coming soon.</div>
+    <div class="nextGameStatus">Upcoming</div>
+  </div>
+</div>
 
 <!-- Right: coach card spans both rows -->
 <div class="teamHeaderRight">
@@ -475,7 +576,8 @@ body.teamPage .teamRecordPct{
       <a id="coachPhone" class="coachLink" href="#" style="display:none;"></a>
     </div>
   </div>
-</div>    
+</div>
+      </div>
     </section>
 
     <!-- Roster -->
@@ -531,6 +633,7 @@ body.teamPage .teamRecordPct{
   </div>
 
   <script src="./data.js"></script>
+  <script src="./csv-utils.js"></script>
   <script>
     // -----------------------------
     // Helpers
@@ -561,61 +664,10 @@ body.teamPage .teamRecordPct{
       return safe(phone).replace(/[^\d+]/g, "");
     }
 
-    async function fetchCsv(url) {
-      if (!url) throw new Error("Missing CSV URL in data.js");
-      const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-      const res = await fetch(url + bust, { cache: "no-store" });
-      if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
-      return await res.text();
-    }
+    const { fetchCsvCached, parseCsv } = window.CSVUtils;
+    const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
+    const RSVP_CACHE_TTL_MS = 30 * 1000;
 
-    // Robust CSV parser (quoted commas safe)
-    function parseCsv(text) {
-      const rows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        const next = text[i + 1];
-
-        if (ch === '"') {
-          if (inQuotes && next === '"') { cur += '"'; i++; }
-          else inQuotes = !inQuotes;
-          continue;
-        }
-
-        if (!inQuotes && ch === ",") {
-          row.push(cur);
-          cur = "";
-          continue;
-        }
-
-        if (!inQuotes && (ch === "\n" || ch === "\r")) {
-          if (ch === "\r" && next === "\n") i++;
-          row.push(cur);
-          cur = "";
-          if (row.some(v => safe(v) !== "")) rows.push(row);
-          row = [];
-          continue;
-        }
-
-        cur += ch;
-      }
-
-      row.push(cur);
-      if (row.some(v => safe(v) !== "")) rows.push(row);
-
-      const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g, ""));
-      return rows
-        .filter(r => r.some(x => safe(x) !== ""))
-        .map(r => {
-          const obj = {};
-          headers.forEach((h, idx) => obj[h] = safe(r[idx]));
-          return obj;
-        });
-    }
 
     // -----------------------------
     // Modal
@@ -624,8 +676,13 @@ body.teamPage .teamRecordPct{
     const modalContent = document.getElementById("modalContent");
     const closeBtn = document.getElementById("modalCloseBtn");
 
-    function openModal(html){
+    function openModal(html, teamColor = ""){
       modalContent.innerHTML = html;
+      const modalCard = overlay.querySelector(".modalCard");
+      if (modalCard){
+        if (teamColor) modalCard.style.setProperty("--teamColor", teamColor);
+        else modalCard.style.removeProperty("--teamColor");
+      }
       overlay.classList.add("open");
       document.body.classList.add("noScroll");
       overlay.setAttribute("aria-hidden", "false");
@@ -635,6 +692,8 @@ body.teamPage .teamRecordPct{
       overlay.classList.remove("open");
       document.body.classList.remove("noScroll");
       overlay.setAttribute("aria-hidden", "true");
+      const modalCard = overlay.querySelector(".modalCard");
+      if (modalCard) modalCard.style.removeProperty("--teamColor");
       modalContent.innerHTML = "";
     }
 
@@ -656,6 +715,9 @@ function setHeaderFromTeamRow(teamRow){
   const teamHeaderCardEl = document.getElementById("teamHeaderCard");
   const rosterCardEl = document.getElementById("rosterCard");
   const rsvpCardEl = document.getElementById("rsvpSection");
+  const nextGameEl = document.getElementById("teamHeaderNextGame");
+  const teamRecordEl = document.getElementById("teamRecord");
+  const coachCardEl = document.querySelector(".teamHeaderRight .coachCard");
 
   const name = safe(teamRow.TeamName) || "Team";
   const logo = safe(teamRow.TeamLogo);
@@ -689,6 +751,23 @@ function setHeaderFromTeamRow(teamRow){
       card.style.borderWidth = "";
     }
   });
+
+  if (nextGameEl){
+    if (color) nextGameEl.style.setProperty("--teamColor", color);
+    else nextGameEl.style.removeProperty("--teamColor");
+    if (logo) nextGameEl.style.setProperty("--teamLogo", `url("${logo}")`);
+    else nextGameEl.style.removeProperty("--teamLogo");
+  }
+
+  if (teamRecordEl){
+    if (color) teamRecordEl.style.setProperty("--teamColor", color);
+    else teamRecordEl.style.removeProperty("--teamColor");
+  }
+
+  if (coachCardEl){
+    if (color) coachCardEl.style.setProperty("--teamColor", color);
+    else coachCardEl.style.removeProperty("--teamColor");
+  }
 
   document.title = `${name} • WBL 3rd Grade 2026`;
 
@@ -780,7 +859,7 @@ function setHeaderFromTeamRow(teamRow){
       openModal(`
         <div class="profileHeader">
           <div class="profilePhoto">
-            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${fallback}';">
+            <img src="${photo}" alt="${name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${fallback}';">
           </div>
           <div style="min-width:260px;">
             <h3 id="modalTitle" class="profileName">${name}</h3>
@@ -790,12 +869,13 @@ function setHeaderFromTeamRow(teamRow){
             </div>
           </div>
         </div>
-      `);
+      `, teamMeta.color || "");
     }
 
     function buildRosterGrid(players, teamDisplayName){
       const grid = document.getElementById("rosterGrid");
       const msg = document.getElementById("rosterMsg");
+      const teamMeta = getTeamMetaByName(teamDisplayName, window.__TEAM_ROWS__ || []);
 
       grid.innerHTML = "";
 
@@ -824,6 +904,7 @@ function setHeaderFromTeamRow(teamRow){
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "playerCardBtn";
+        if (teamMeta.color) btn.style.setProperty("--teamColor", teamMeta.color);
 
         const name = formatPlayerName(p.PlayerName || p.Name || "Player");
         const num = safe(p.Number);
@@ -833,7 +914,7 @@ function setHeaderFromTeamRow(teamRow){
         btn.innerHTML = `
           <div class="playerCardRow">
             <div class="playerThumb">
-              <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${fallback}';">
+              <img src="${photo}" alt="${name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${fallback}';">
             </div>
             <div class="playerText" style="min-width:0;">
               <div class="playerNameLine" style="font-weight:900;">
@@ -992,16 +1073,33 @@ function renderTeamRecord(teamDisplayName, teamGames){
       const base = window.SHEET?.RSVP_API_URL;
       if (!base) throw new Error("Missing RSVP_API_URL in data.js");
 
+      const cacheKey = `wblRsvp:${teamSlug}:${token || "guest"}`;
+      try {
+        const raw = sessionStorage.getItem(cacheKey);
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (cached && Number.isFinite(cached.ts) && (Date.now() - cached.ts) < RSVP_CACHE_TTL_MS) {
+            return cached.data;
+          }
+        }
+      } catch (_) {}
+
       const url = new URL(base);
       url.searchParams.set("action", "getRsvpBoard");
       url.searchParams.set("teamSlug", teamSlug);
       if (token) url.searchParams.set("token", token);
-      url.searchParams.set("t", Date.now());
 
-      const res = await fetch(url.toString(), { cache: "no-store" });
+      const res = await fetch(url.toString(), { cache: "default" });
       if (!res.ok) throw new Error(`RSVP request failed (${res.status})`);
-      return await res.json();
+      const data = await res.json();
+
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
+      } catch (_) {}
+
+      return data;
     }
+
 
 function formatScheduleDate(dateStr) {
   if (!safe(dateStr)) return "";
@@ -1021,6 +1119,67 @@ function formatScheduleTime(timeStr) {
     return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   }
   return safe(timeStr);
+}
+
+
+function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLogo = "") {
+  const el = document.getElementById("teamHeaderNextGame");
+  if (!el) return;
+  if (teamColor) el.style.setProperty("--teamColor", teamColor);
+  else el.style.removeProperty("--teamColor");
+  if (teamLogo) el.style.setProperty("--teamLogo", `url("${teamLogo}")`);
+  else el.style.removeProperty("--teamLogo");
+
+  const now = new Date();
+  const parseGameDateTime = (g) => {
+    const dateRaw = safe(g.Date);
+    if (!dateRaw) return null;
+    const dateOnly = new Date(dateRaw);
+    if (isNaN(dateOnly)) return null;
+
+    const timeRaw = safe(g.Time);
+    if (!timeRaw) {
+      dateOnly.setHours(23, 59, 59, 999);
+      return dateOnly;
+    }
+
+    const withTime = new Date(`${dateRaw} ${timeRaw}`);
+    if (!isNaN(withTime)) return withTime;
+
+    dateOnly.setHours(23, 59, 59, 999);
+    return dateOnly;
+  };
+
+  const sorted = (teamGames || [])
+    .map(g => ({ game: g, dt: parseGameDateTime(g) }))
+    .filter(x => x.dt)
+    .sort((a,b) => a.dt - b.dt);
+
+  const upcoming = sorted.find(x => x.dt.getTime() >= now.getTime());
+  const next = upcoming || sorted[sorted.length - 1];
+
+  if (!next) {
+    el.innerHTML = `
+      <div class="nextGameLabel">Next Game</div>
+      <div class="nextGameOpponent">Schedule Not Posted</div>
+      <div class="nextGameMeta">Check back soon for game details.</div>
+      <div class="nextGameStatus">TBD</div>
+    `;
+    return;
+  }
+
+  const g = next.game;
+  const isTeamA = safe(g.TeamA) === teamDisplayName;
+  const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+  const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
+  const statusRaw = safe(g.Status) || "Scheduled";
+
+  el.innerHTML = `
+    <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
+    <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
+    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
+    <div class="nextGameStatus">${statusRaw}</div>
+  `;
 }
 
 function renderTeamSchedule(teamDisplayName, teamGames) {
@@ -1104,7 +1263,14 @@ if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA) !== "" && safe(g.Score
 
       const res = await fetch(url.toString(), { cache: "no-store" });
       if (!res.ok) throw new Error(`RSVP submit failed (${res.status})`);
-      return await res.json();
+      const data = await res.json();
+
+      try {
+        const cacheKey = `wblRsvp:${teamSlug}:${token || "guest"}`;
+        sessionStorage.removeItem(cacheKey);
+      } catch (_) {}
+
+      return data;
     }
 
     function renderRsvpBoard(data, teamDisplayName) {
@@ -1155,7 +1321,7 @@ gameMeta.innerHTML = `
 <div class="rsvpHeaderOfficial">
       
     <div class="rsvpTeamSide">
-      <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo"
+      <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo" loading="lazy" decoding="async"
         onerror="this.onerror=null; this.src='${defaultLogo}';">
       <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
         ${teamDisplayName}
@@ -1169,7 +1335,7 @@ gameMeta.innerHTML = `
     </div>
 
     <div class="rsvpTeamSide rightSide">
-      <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo"
+      <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo" loading="lazy" decoding="async"
         onerror="this.onerror=null; this.src='${defaultLogo}';">
       <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
         ${opponentName}
@@ -1430,7 +1596,17 @@ if (!familyToken) {
       }
 
       try {
-        const teamsCsv = await fetchCsv(window.SHEET?.TEAMS_CSV_URL);
+        const familyToken = safe(getParam("t"));
+
+        const teamsPromise = fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+        const rosterPromise = fetchCsvCached(window.SHEET?.ROSTER_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+        const gamesPromise = fetchCsvCached(window.SHEET?.GAMES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+        const rsvpPromise = fetchRsvpBoard(slug, familyToken).catch(e => {
+          console.error("RSVP load failed:", e);
+          return null;
+        });
+
+        const teamsCsv = await teamsPromise;
         const teamRows = parseCsv(teamsCsv);
         window.__TEAM_ROWS__ = teamRows;
 
@@ -1453,15 +1629,6 @@ if (teamScheduleTitle){
     ? `<span style="color:${color}; font-weight:900;">${teamDisplayName}</span> <span style="font-weight:700;">Schedule</span>`
     : `${teamDisplayName} Schedule`;
 }
-   
-        const familyToken = safe(getParam("t"));
-
-        const rosterPromise = fetchCsv(window.SHEET?.ROSTER_CSV_URL);
-        const gamesPromise = fetchCsv(window.SHEET?.GAMES_CSV_URL);
-        const rsvpPromise = fetchRsvpBoard(slug, familyToken).catch(e => {
-          console.error("RSVP load failed:", e);
-          return null;
-        });
 
         const [rosterCsv, gamesCsv, rsvpData] = await Promise.all([
           rosterPromise,
@@ -1479,6 +1646,7 @@ if (teamScheduleTitle){
           safe(g.TeamB) === teamDisplayName
         );
 renderTeamRecord(teamDisplayName, teamGames);
+renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
 renderTeamSchedule(teamDisplayName, teamGames);
         
         if (rsvpData) {

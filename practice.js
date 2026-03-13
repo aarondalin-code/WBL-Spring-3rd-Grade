@@ -13,50 +13,9 @@ function trackDrill(drillName, drillType, week, videoUrl){
   }
 }
 
-async function fetchCsv(url){
-  if (!url) throw new Error("Missing DRILLS_CSV_URL in data.js");
-  const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-  const res = await fetch(url + bust, { cache:"no-store" });
-  if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`);
-  return await res.text();
-}
+const { fetchCsvCached, parseCsv } = window.CSVUtils;
+const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
 
-function parseCsv(text){
-  const rows = [];
-  let row = [], cur = "", inQuotes = false;
-
-  for (let i=0; i<text.length; i++){
-    const ch = text[i], next = text[i+1];
-
-    if (ch === '"'){
-      if (inQuotes && next === '"'){ cur += '"'; i++; }
-      else inQuotes = !inQuotes;
-      continue;
-    }
-
-    if (!inQuotes && ch === ","){ row.push(cur); cur=""; continue; }
-
-    if (!inQuotes && (ch === "\n" || ch === "\r")){
-      if (ch === "\r" && next === "\n") i++;
-      row.push(cur); cur="";
-      if (row.some(v => safe(v) !== "")) rows.push(row);
-      row = [];
-      continue;
-    }
-
-    cur += ch;
-  }
-
-  row.push(cur);
-  if (row.some(v => safe(v) !== "")) rows.push(row);
-
-  const headers = (rows.shift() || []).map(h => safe(h).replace(/\s+/g,""));
-  return rows.map(r => {
-    const o = {};
-    headers.forEach((h, idx) => o[h] = safe(r[idx]));
-    return o;
-  }).filter(o => Object.values(o).some(v => safe(v) !== ""));
-}
 
 /* -------------------- Thumbnails -------------------- */
 function getYouTubeId(url){
@@ -216,7 +175,7 @@ async function initPractice(){
       return;
     }
 
-    const csv = await fetchCsv(url);
+    const csv = await fetchCsvCached(url, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv);
 
     all = rows.map(r => ({
