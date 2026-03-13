@@ -64,17 +64,24 @@
     }
 
     body.teamPage .nextGameCard{
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
       position:relative;
       isolation:isolate;
       width:100%;
       border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
       background:
         linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
+=======
+      width:100%;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
+      background:rgba(255,255,255,.9);
+>>>>>>> main
       border-radius:14px;
       padding:12px;
       display:grid;
       gap:6px;
       box-shadow:0 10px 26px rgba(15,23,42,.08);
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
       overflow:hidden;
     }
 
@@ -94,6 +101,8 @@
     body.teamPage .nextGameCard > *{
       position:relative;
       z-index:1;
+=======
+>>>>>>> main
     }
 
     body.teamPage .nextGameLabel{
@@ -715,8 +724,11 @@ function setHeaderFromTeamRow(teamRow){
   const rosterCardEl = document.getElementById("rosterCard");
   const rsvpCardEl = document.getElementById("rsvpSection");
   const nextGameEl = document.getElementById("teamHeaderNextGame");
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
   const teamRecordEl = document.getElementById("teamRecord");
   const coachCardEl = document.querySelector(".teamHeaderRight .coachCard");
+=======
+>>>>>>> main
 
   const name = safe(teamRow.TeamName) || "Team";
   const logo = safe(teamRow.TeamLogo);
@@ -1121,13 +1133,20 @@ function formatScheduleTime(timeStr) {
 }
 
 
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
 function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLogo = "") {
+=======
+function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor) {
+>>>>>>> main
   const el = document.getElementById("teamHeaderNextGame");
   if (!el) return;
   if (teamColor) el.style.setProperty("--teamColor", teamColor);
   else el.style.removeProperty("--teamColor");
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
   if (teamLogo) el.style.setProperty("--teamLogo", `url("${teamLogo}")`);
   else el.style.removeProperty("--teamLogo");
+=======
+>>>>>>> main
 
   const now = new Date();
   const parseGameDateTime = (g) => {
@@ -1645,7 +1664,11 @@ if (teamScheduleTitle){
           safe(g.TeamB) === teamDisplayName
         );
 renderTeamRecord(teamDisplayName, teamGames);
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
 renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
+=======
+renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor));
+>>>>>>> main
 renderTeamSchedule(teamDisplayName, teamGames);
         
         if (rsvpData) {
