@@ -1095,47 +1095,54 @@ function renderScheduleCard(g){
       renderPollUI();
       wirePollButtons();
 
-      // Preload results if possible
+      // Preload results if possible (non-blocking)
       if (window.SHEET?.POLL_API_URL && POLL.weekKey && POLL.options.length){
-        const counts = await pollFetchResults().catch(()=>null);
-        if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
+        pollFetchResults()
+          .then((counts) => {
+            if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
+          })
+          .catch(()=>{});
       }
 
       // News
       loadKeyDatesNews().catch(()=>{});
 
-      // Teams
-      try{
-        const teamsCsv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-        const teamRows = parseCsv(teamsCsv);
-        for (const r of teamRows){
-          const name = safe(r.TeamName);
-          if (!name) continue;
-          teamMeta.set(norm(name), {
-            slug: safe(r.TeamSlug),
-            logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
-            color: safe(r.TeamColor) || ""
-          });
+      // Load teams/roster in parallel without blocking game cards.
+      const teamsPromise = (async () => {
+        try{
+          const teamsCsv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+          const teamRows = parseCsv(teamsCsv);
+          for (const r of teamRows){
+            const name = safe(r.TeamName);
+            if (!name) continue;
+            teamMeta.set(norm(name), {
+              slug: safe(r.TeamSlug),
+              logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
+              color: safe(r.TeamColor) || ""
+            });
+          }
+        } catch(e){
+          console.warn("Teams feed unavailable.", e);
         }
-      } catch(e){
-        console.warn("Teams feed unavailable.", e);
-      }
+      })();
 
       // Roster map (for POTW names)
       const rosterMap = new Map();
-      try{
-        const rosterCsv = await fetchCsvCached(window.SHEET?.ROSTER_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-        const roster = parseCsv(rosterCsv);
-        for (const r of roster){
-          const pid = safe(r.PlayerID);
-          if (!pid) continue;
-          rosterMap.set(pid, { name: safe(r.PlayerName || r.Name), photo: safe(r.PhotoURL) });
+      const rosterPromise = (async () => {
+        try{
+          const rosterCsv = await fetchCsvCached(window.SHEET?.ROSTER_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+          const roster = parseCsv(rosterCsv);
+          for (const r of roster){
+            const pid = safe(r.PlayerID);
+            if (!pid) continue;
+            rosterMap.set(pid, { name: safe(r.PlayerName || r.Name), photo: safe(r.PhotoURL) });
+          }
+        } catch(e){
+          console.warn("Roster feed unavailable.", e);
         }
-      } catch(e){
-        console.warn("Roster feed unavailable.", e);
-      }
+      })();
 
-      // Games
+      // Games (prioritized so Opening Day / Last Week render faster)
       const gamesCsv = await fetchCsvCached(window.SHEET?.GAMES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
       const games = parseCsv(gamesCsv);
 
@@ -1192,6 +1199,8 @@ function renderScheduleCard(g){
       document.getElementById("lastWeekFinals").innerHTML =
         finalsToShow.length ? finalsToShow.map(renderScheduleCard).join("") :
         `<div class="muted small">${finalsLabel}</div>`;
+
+      await teamsPromise;
 
       // Standings snapshot
       const teamsSet = new Set();
@@ -1258,6 +1267,8 @@ function renderScheduleCard(g){
 
       document.getElementById("standingsMiniMsg").textContent =
         finalsCount ? `Based on ${finalsCount} final game(s).` : `No final games yet — standings will appear once games are marked Final.`;
+
+      await rosterPromise;
 
       // Players of the Week — show PLAYER NAME (join POTW -> Roster by PlayerID)
       const potwGrid = document.getElementById("potwGrid");
