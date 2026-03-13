@@ -564,6 +564,7 @@ body.teamPage .teamRecordPct{
 
     const { fetchCsvCached, parseCsv } = window.CSVUtils;
     const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
+    const RSVP_CACHE_TTL_MS = 30 * 1000;
 
 
     // -----------------------------
@@ -941,16 +942,33 @@ function renderTeamRecord(teamDisplayName, teamGames){
       const base = window.SHEET?.RSVP_API_URL;
       if (!base) throw new Error("Missing RSVP_API_URL in data.js");
 
+      const cacheKey = `wblRsvp:${teamSlug}:${token || "guest"}`;
+      try {
+        const raw = sessionStorage.getItem(cacheKey);
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (cached && Number.isFinite(cached.ts) && (Date.now() - cached.ts) < RSVP_CACHE_TTL_MS) {
+            return cached.data;
+          }
+        }
+      } catch (_) {}
+
       const url = new URL(base);
       url.searchParams.set("action", "getRsvpBoard");
       url.searchParams.set("teamSlug", teamSlug);
       if (token) url.searchParams.set("token", token);
-      url.searchParams.set("t", Date.now());
 
-      const res = await fetch(url.toString(), { cache: "no-store" });
+      const res = await fetch(url.toString(), { cache: "default" });
       if (!res.ok) throw new Error(`RSVP request failed (${res.status})`);
-      return await res.json();
+      const data = await res.json();
+
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
+      } catch (_) {}
+
+      return data;
     }
+
 
 function formatScheduleDate(dateStr) {
   if (!safe(dateStr)) return "";
@@ -1053,7 +1071,14 @@ if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA) !== "" && safe(g.Score
 
       const res = await fetch(url.toString(), { cache: "no-store" });
       if (!res.ok) throw new Error(`RSVP submit failed (${res.status})`);
-      return await res.json();
+      const data = await res.json();
+
+      try {
+        const cacheKey = `wblRsvp:${teamSlug}:${token || "guest"}`;
+        sessionStorage.removeItem(cacheKey);
+      } catch (_) {}
+
+      return data;
     }
 
     function renderRsvpBoard(data, teamDisplayName) {
@@ -1379,7 +1404,17 @@ if (!familyToken) {
       }
 
       try {
-        const teamsCsv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+        const familyToken = safe(getParam("t"));
+
+        const teamsPromise = fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+        const rosterPromise = fetchCsvCached(window.SHEET?.ROSTER_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+        const gamesPromise = fetchCsvCached(window.SHEET?.GAMES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+        const rsvpPromise = fetchRsvpBoard(slug, familyToken).catch(e => {
+          console.error("RSVP load failed:", e);
+          return null;
+        });
+
+        const teamsCsv = await teamsPromise;
         const teamRows = parseCsv(teamsCsv);
         window.__TEAM_ROWS__ = teamRows;
 
@@ -1402,15 +1437,6 @@ if (teamScheduleTitle){
     ? `<span style="color:${color}; font-weight:900;">${teamDisplayName}</span> <span style="font-weight:700;">Schedule</span>`
     : `${teamDisplayName} Schedule`;
 }
-   
-        const familyToken = safe(getParam("t"));
-
-        const rosterPromise = fetchCsvCached(window.SHEET?.ROSTER_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-        const gamesPromise = fetchCsvCached(window.SHEET?.GAMES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-        const rsvpPromise = fetchRsvpBoard(slug, familyToken).catch(e => {
-          console.error("RSVP load failed:", e);
-          return null;
-        });
 
         const [rosterCsv, gamesCsv, rsvpData] = await Promise.all([
           rosterPromise,
