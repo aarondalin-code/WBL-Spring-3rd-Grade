@@ -624,6 +624,14 @@ border-bottom:2px solid #dbeafe;
   align-items:flex-start;
 }
 
+.dailyFunPage .leaderboardIdentity{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
+  min-width:0;
+}
+
 .dailyFunPage .leaderboardPlayer{
   font-size:1.02rem;
   font-weight:900;
@@ -632,7 +640,7 @@ border-bottom:2px solid #dbeafe;
 }
 
 .dailyFunPage .leaderboardTeam{
-  margin-top:5px;
+  margin-top:2px;
   display:inline-flex;
   align-items:center;
   align-self:flex-start;
@@ -646,6 +654,7 @@ border-bottom:2px solid #dbeafe;
   letter-spacing:.02em;
   text-shadow:0 1px 2px rgba(0,0,0,.25);
 }
+
 
 .dailyFunPage .leaderboardStats{
   text-align:right;
@@ -714,7 +723,8 @@ letter-spacing:.03em;
 text-transform:uppercase;
 }
 .weeklyChampionHero{
-display:flex;
+display:grid;
+grid-template-columns:38px minmax(0,1fr) 300px;
 align-items:center;
 gap:10px;
 padding:8px 10px;
@@ -737,9 +747,6 @@ flex:0 0 38px;
 }
 .weeklyChampionMain{
 min-width:0;
-display:flex;
-flex-direction:column;
-align-items:flex-start;
 }
 .weeklyChampionPlayer{
 font-size:1rem;
@@ -764,13 +771,15 @@ color:#ffffff;
 font-size:.74rem;
 font-weight:800;
 text-align:left;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
+white-space:normal;
+overflow:visible;
+text-overflow:clip;
+overflow-wrap:anywhere;
 }
 .weeklyChampionChips{
 display:grid;
-grid-template-columns:repeat(3,minmax(0,1fr));
+grid-template-columns:repeat(3,92px);
+justify-content:end;
 gap:6px;
 }
 .weeklyChampionChip{
@@ -779,6 +788,10 @@ border:1px solid #e5e7eb;
 border-radius:10px;
 padding:8px 6px;
 text-align:center;
+min-height:54px;
+display:flex;
+flex-direction:column;
+justify-content:center;
 }
 .weeklyChampionChip strong{
 display:block;
@@ -807,6 +820,17 @@ text-align:center;
 font-size:.78rem;
 font-weight:800;
 color:#6b7280;
+}
+
+@media (max-width: 760px){
+  .weeklyChampionHero{
+    grid-template-columns:38px 1fr;
+  }
+  .weeklyChampionChips{
+    grid-column:1 / -1;
+    justify-content:start;
+    grid-template-columns:repeat(3,minmax(84px,1fr));
+  }
 }
     
   </style>
@@ -958,6 +982,7 @@ color:#6b7280;
   </main>
 
   <script src="./data.js"></script>
+<script src="./csv-utils.js"></script>
   <script>
 
 let teamColorMap = {};    
@@ -965,7 +990,9 @@ let teamColorMap = {};
       window.SHEET?.BASEBALL_HISTORY_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=214692870&single=true&output=csv";
 
-   const TEAMS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=0&single=true&output=csv";
+   const TEAMS_CSV_URL =
+      window.SHEET?.TEAMS_CSV_URL ||
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=0&single=true&output=csv";
     
     const QUOTES_CSV_URL =
       window.SHEET?.BASEBALL_QUOTES_CSV_URL ||
@@ -1002,59 +1029,9 @@ const TRIVIA_WEEKLY_CSV_URL =
     const TRIVIA_API_URL =
       window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
 
-    async function fetchCsv(url){
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch CSV");
-      return await res.text();
-    }
+    const { fetchCsv, fetchCsvCached, parseCsv } = window.CSVUtils;
+    const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
 
-    function parseCsv(text){
-      const rows = [];
-      let row = [];
-      let cell = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < text.length; i++) {
-        const c = text[i];
-        const next = text[i + 1];
-
-        if (c === '"') {
-          if (inQuotes && next === '"') {
-            cell += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (c === "," && !inQuotes) {
-          row.push(cell);
-          cell = "";
-        } else if ((c === "\n" || c === "\r") && !inQuotes) {
-          if (c === "\r" && next === "\n") i++;
-          row.push(cell);
-          if (row.some(v => v !== "")) rows.push(row);
-          row = [];
-          cell = "";
-        } else {
-          cell += c;
-        }
-      }
-
-      if (cell.length || row.length) {
-        row.push(cell);
-        rows.push(row);
-      }
-
-      if (!rows.length) return [];
-
-      const headers = rows[0].map(h => String(h).trim());
-      return rows.slice(1).map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => {
-          obj[h] = (r[idx] || "").trim();
-        });
-        return obj;
-      });
-    }
 
 function normalizeTeamName(value){
   return String(value || "")
@@ -1066,7 +1043,7 @@ function normalizeTeamName(value){
 async function loadTeamColors(){
   if (Object.keys(teamColorMap).length) return teamColorMap;
 
-  const csv = await fetchCsv(TEAMS_CSV_URL);
+  const csv = await fetchCsvCached(TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
   const rows = parseCsv(csv);
 
   rows.forEach(row => {
@@ -1150,7 +1127,7 @@ function findHistoryItemsForKey(rows, key){
 
 async function getHistoryRows(){
   if (baseballHistoryCache) return baseballHistoryCache;
-  const csv = await fetchCsv(HISTORY_CSV_URL);
+  const csv = await fetchCsvCached(HISTORY_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
   baseballHistoryCache = parseCsv(csv);
   return baseballHistoryCache;
 }
@@ -1230,7 +1207,7 @@ async function loadHistory(){
       const el = document.getElementById("quoteCard");
 
       try {
-        const csv = await fetchCsv(QUOTES_CSV_URL);
+        const csv = await fetchCsvCached(QUOTES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv).filter(r =>
           String(r.Active || "").toUpperCase() !== "FALSE" &&
           String(r.Quote || "").trim()
@@ -1263,7 +1240,7 @@ async function loadHistory(){
           return;
         }
 
-        const csv = await fetchCsv(FACTS_CSV_URL);
+        const csv = await fetchCsvCached(FACTS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv).filter(r =>
           String(r.Active || "").toUpperCase() !== "FALSE" &&
           String(r.Fact || "").trim()
@@ -1292,7 +1269,7 @@ async function loadHistory(){
       const archiveEl = document.getElementById("qaArchive");
 
       try {
-        const csv = await fetchCsv(QUESTIONS_CSV_URL);
+        const csv = await fetchCsvCached(QUESTIONS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv).filter(r =>
           String(r.Status || "").toLowerCase() === "approved" &&
           String(r.DisplayOnSite || "").toUpperCase() === "TRUE"
@@ -1354,7 +1331,7 @@ async function loadMovieOfTheWeek(){
       return;
     }
 
-    const csv = await fetchCsv(MOVIES_CSV_URL);
+    const csv = await fetchCsvCached(MOVIES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv).filter(r =>
       String(r.Active || "").toUpperCase() !== "FALSE" &&
       String(r.Title || "").trim()
@@ -1406,7 +1383,7 @@ async function loadBirthdaySpotlight(){
       return;
     }
 
-    const csv = await fetchCsv(BIRTHDAYS_CSV_URL);
+    const csv = await fetchCsvCached(BIRTHDAYS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv).filter(r =>
       String(r.Active || "").toUpperCase() !== "FALSE" &&
       String(r.MonthDay || "").trim() === getMonthDayKey()
@@ -1465,42 +1442,53 @@ async function loadBirthdaySpotlight(){
   }
 }
     
+function toAccuracyPercent(val){
+  const raw = String(val ?? "").trim().replace("%", "");
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return null;
+  return n <= 1 ? n * 100 : n;
+}
+
+function toNumSafe(val){
+  const n = Number(String(val ?? "").trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
 
   try {
-      await loadTeamColors();
+    await loadTeamColors();
     if (!TRIVIA_WEEKLY_CSV_URL) {
       el.textContent = "Weekly champion feed is not connected yet.";
       return;
     }
 
+    // real-time read for weekly champion card
     const csv = await fetchCsv(TRIVIA_WEEKLY_CSV_URL);
-    const rows = parseCsv(csv);
+    const rows = parseCsv(csv)
+      .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
+      .map(r => ({
+        ...r,
+        __acc: toAccuracyPercent(r.Accuracy),
+        __correct: toNumSafe(r.Correct),
+        __attempted: toNumSafe(r.Attempted)
+      }))
+      .sort((a,b) => {
+        const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
+        const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
+        if (accB !== accA) return accB - accA;
+        if (b.__correct !== a.__correct) return b.__correct - a.__correct;
+        if (a.__attempted !== b.__attempted) return a.__attempted - b.__attempted;
+        return String(a.PlayerName || "").localeCompare(String(b.PlayerName || ""));
+      });
 
-    if (!rows.length || String(rows[0].PlayerName || "").trim() === "No entries yet") {
+    if (!rows.length) {
       el.textContent = "No weekly trivia data yet.";
       return;
     }
 
-    const first = rows[0];
-    const topCorrect = String(first.Correct || "").trim();
-    const topAttempted = String(first.Attempted || "").trim();
-    const topAccuracy = String(first.Accuracy || "").trim();
-
-    const tiedRows = rows.filter(row =>
-      String(row.Correct || "").trim() === topCorrect &&
-      String(row.Attempted || "").trim() === topAttempted &&
-      String(row.Accuracy || "").trim() === topAccuracy                                 
-    );
-const displayRows = tiedRows.slice(0, 5);
-const extraCount = tiedRows.length - displayRows.length;
-    
-    let accuracyText = topAccuracy;
-    if (accuracyText && !accuracyText.endsWith("%")) {
-      const num = parseFloat(accuracyText);
-      if (!isNaN(num)) accuracyText = `${Math.round(num * 100)}%`;
-    }
+    const displayRows = rows.slice(0, 5);
 
     const now = new Date();
     const start = new Date(now);
@@ -1514,26 +1502,27 @@ const extraCount = tiedRows.length - displayRows.length;
       " – " +
       end.toLocaleDateString(undefined, options);
 
-el.innerHTML = `
+    el.innerHTML = `
   <div class="weeklyChampionWrap">
-    <div class="weeklyChampionBadge">Weekly Champ</div>
-    ${displayRows.map(row => `
+    <div class="weeklyChampionBadge">Weekly Top 5</div>
+    ${displayRows.map((row, idx) => {
+      const accText = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
+      const teamName = String(row.Team || "").trim();
+      const teamColor = teamColorMap[normalizeTeamName(teamName)] || '#2563eb';
+      return `
       <div class="weeklyChampionHero">
-        <div class="weeklyChampionAvatar">
-          ${String(row.PlayerName || "").trim().charAt(0).toUpperCase()}
-        </div>
+        <div class="weeklyChampionAvatar">${idx + 1}</div>
         <div class="weeklyChampionMain">
           <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-          ${row.Team ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColorMap[normalizeTeamName(row.Team)] || '#2563eb'}">${row.Team}</div>` : ""}
+          ${teamName ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
         </div>
-      </div>
-    `).join("")}
-    <div class="weeklyChampionChips">
-      <div class="weeklyChampionChip"><strong>${topCorrect}</strong><span>Correct</span></div>
-      <div class="weeklyChampionChip"><strong>${topAttempted}</strong><span>Attempts</span></div>
-      <div class="weeklyChampionChip"><strong>${accuracyText}</strong><span>Accuracy</span></div>
-    </div>
-    ${extraCount > 0 ? `<div class="weeklyChampionMore">+ ${extraCount} more player${extraCount === 1 ? "" : "s"}</div>` : ""}
+        <div class="weeklyChampionChips">
+          <div class="weeklyChampionChip"><strong>${accText}</strong><span>Accuracy</span></div>
+          <div class="weeklyChampionChip"><strong>${row.__correct}</strong><span>Correct</span></div>
+          <div class="weeklyChampionChip"><strong>${row.__attempted}</strong><span>Attempts</span></div>
+        </div>
+      </div>`;
+    }).join("")}
     <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
   </div>
 `;
@@ -1542,7 +1531,7 @@ el.innerHTML = `
     console.error(err);
   }
 }
-    
+
     async function loadTrivia(){
       const el = document.getElementById("triviaCard");
 
@@ -1552,7 +1541,7 @@ el.innerHTML = `
           return;
         }
 
-        const csv = await fetchCsv(TRIVIA_CSV_URL);
+        const csv = await fetchCsvCached(TRIVIA_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rows = parseCsv(csv);
         const key = getMonthDayKey();
 
@@ -1698,6 +1687,7 @@ el.innerHTML = `
         }
 
         loadTriviaLeaderboard();
+        loadTriviaWeeklyChampion();
       } catch (err) {
         msg.className = "triviaMsg bad";
         msg.textContent = "Sorry, there was a problem submitting your answer.";
@@ -1716,7 +1706,7 @@ el.innerHTML = `
       return;
     }
 
-    const csv = await fetchCsv(TRIVIA_LEADERBOARD_CSV_URL);
+    const csv = await fetchCsvCached(TRIVIA_LEADERBOARD_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const rows = parseCsv(csv);
 
     if (!rows.length) {
@@ -1724,14 +1714,23 @@ el.innerHTML = `
       return;
     }
 
-    const topRows = rows.slice(0, 5);
+    const topRows = rows
+      .map(r => ({ ...r, __acc: toAccuracyPercent(r.Accuracy), __correct: toNumSafe(r.Correct), __attempted: toNumSafe(r.Attempted) }))
+      .sort((a,b) => {
+        const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
+        const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
+        if (accB !== accA) return accB - accA;
+        if (b.__correct !== a.__correct) return b.__correct - a.__correct;
+        if (a.__attempted !== b.__attempted) return a.__attempted - b.__attempted;
+        return String(a.PlayerName || "").localeCompare(String(b.PlayerName || ""));
+      })
+      .slice(0, 5);
 
     el.innerHTML = `
       <div class="leaderboardList">
         ${topRows.map((row, idx) => {
           const rank = idx + 1;
-          const accuracyRaw = parseFloat(row.Accuracy || 0);
-          const accuracyPct = isNaN(accuracyRaw) ? "" : `${Math.round(accuracyRaw)}%`;
+          const accuracyPct = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
           const teamName = String(row.Team || "").trim();
           const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
 
@@ -1742,8 +1741,10 @@ el.innerHTML = `
               </div>
 
               <div class="leaderboardMain">
-                <div class="leaderboardPlayer">${row.PlayerName || ""}</div>
-                ${teamName ? `<div class="leaderboardTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
+                <div class="leaderboardIdentity">
+                  <div class="leaderboardPlayer">${row.PlayerName || ""}</div>
+                  ${teamName ? `<div class="leaderboardTeam" style="--teamColor:${teamColor}">${teamName}</div>` : `<div class="leaderboardTeam" style="--teamColor:#94a3b8">No Team</div>`}
+                </div>
               </div>
 
               <div class="leaderboardStats">
