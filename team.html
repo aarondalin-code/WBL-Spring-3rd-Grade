@@ -64,14 +64,45 @@
     }
 
     body.teamPage .nextGameCard{
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
+      position:relative;
+      isolation:isolate;
+      width:100%;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
+=======
       width:100%;
       border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
       background:rgba(255,255,255,.9);
+>>>>>>> main
       border-radius:14px;
       padding:12px;
       display:grid;
       gap:6px;
       box-shadow:0 10px 26px rgba(15,23,42,.08);
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
+      overflow:hidden;
+    }
+
+    body.teamPage .nextGameCard::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: var(--teamLogo);
+      background-repeat:no-repeat;
+      background-position:right -12px bottom -16px;
+      background-size:120px 120px;
+      opacity:.11;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.teamPage .nextGameCard > *{
+      position:relative;
+      z-index:1;
+=======
+>>>>>>> main
     }
 
     body.teamPage .nextGameLabel{
@@ -125,6 +156,8 @@
       height:100% !important;
       display:grid !important;
       grid-template-rows:auto 1fr auto !important;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 62%, #e5e7eb 38%) !important;
+      background:linear-gradient(180deg, rgba(255,255,255,.94), color-mix(in srgb, var(--teamColor, #1e3fa8) 8%, #ffffff 92%)) !important;
     }
 
     body.teamPage .coachTitleCenter{
@@ -206,8 +239,8 @@ body.teamPage .teamRecordWrap{
   padding:6px 12px;
 
   border-radius:999px;
-  border:1px solid rgba(30,63,168,.18);
-  background:rgba(30,63,168,.06);
+  border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 62%, #e5e7eb 38%);
+  background:color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%);
 
   font-weight:800;
   font-size:13px;
@@ -691,6 +724,11 @@ function setHeaderFromTeamRow(teamRow){
   const rosterCardEl = document.getElementById("rosterCard");
   const rsvpCardEl = document.getElementById("rsvpSection");
   const nextGameEl = document.getElementById("teamHeaderNextGame");
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
+  const teamRecordEl = document.getElementById("teamRecord");
+  const coachCardEl = document.querySelector(".teamHeaderRight .coachCard");
+=======
+>>>>>>> main
 
   const name = safe(teamRow.TeamName) || "Team";
   const logo = safe(teamRow.TeamLogo);
@@ -724,6 +762,23 @@ function setHeaderFromTeamRow(teamRow){
       card.style.borderWidth = "";
     }
   });
+
+  if (nextGameEl){
+    if (color) nextGameEl.style.setProperty("--teamColor", color);
+    else nextGameEl.style.removeProperty("--teamColor");
+    if (logo) nextGameEl.style.setProperty("--teamLogo", `url("${logo}")`);
+    else nextGameEl.style.removeProperty("--teamLogo");
+  }
+
+  if (teamRecordEl){
+    if (color) teamRecordEl.style.setProperty("--teamColor", color);
+    else teamRecordEl.style.removeProperty("--teamColor");
+  }
+
+  if (coachCardEl){
+    if (color) coachCardEl.style.setProperty("--teamColor", color);
+    else coachCardEl.style.removeProperty("--teamColor");
+  }
 
   document.title = `${name} • WBL 3rd Grade 2026`;
 
@@ -1078,11 +1133,20 @@ function formatScheduleTime(timeStr) {
 }
 
 
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
+function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLogo = "") {
+=======
 function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor) {
+>>>>>>> main
   const el = document.getElementById("teamHeaderNextGame");
   if (!el) return;
   if (teamColor) el.style.setProperty("--teamColor", teamColor);
   else el.style.removeProperty("--teamColor");
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
+  if (teamLogo) el.style.setProperty("--teamLogo", `url("${teamLogo}")`);
+  else el.style.removeProperty("--teamLogo");
+=======
+>>>>>>> main
 
   const now = new Date();
   const parseGameDateTime = (g) => {
@@ -1600,7 +1664,11 @@ if (teamScheduleTitle){
           safe(g.TeamB) === teamDisplayName
         );
 renderTeamRecord(teamDisplayName, teamGames);
+<<<<<<< codex/clean-up-index-page-scroll-and-header-tdna06
+renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
+=======
 renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor));
+>>>>>>> main
 renderTeamSchedule(teamDisplayName, teamGames);
         
         if (rsvpData) {
