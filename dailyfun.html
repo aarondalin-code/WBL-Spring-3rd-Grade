@@ -900,7 +900,7 @@ color:#6b7280;
 
 <article class="card">
   <div class="cardBody">
-    <div class="dailySectionTitle">🎂 MLB Birthday Today</div>
+    <div class="dailySectionTitle" id="birthdayTitle">🎂 MLB Birthday Today</div>
     <div id="birthdayCard">Loading birthday spotlight...</div>
   </div>
 </article>
@@ -1026,10 +1026,12 @@ const BIRTHDAYS_CSV_URL =
 const TRIVIA_WEEKLY_CSV_URL =
   window.SHEET?.TRIVIA_WEEKLY_CSV_URL || "";
 
+const TRIVIA_NEAR_REALTIME_TTL_MS = 30 * 1000;
+
     const TRIVIA_API_URL =
       window.SHEET?.TRIVIA_API_URL || QUESTION_SUBMIT_URL;
 
-    const { fetchCsv, fetchCsvCached, parseCsv } = window.CSVUtils;
+    const { fetchCsvCached, parseCsv } = window.CSVUtils;
     const SHEET_CACHE_TTL_MS = 5 * 60 * 1000;
 
 
@@ -1039,23 +1041,42 @@ function normalizeTeamName(value){
     .replace(/[^a-z0-9]/g, "")
     .trim();
 }
+
+let teamColorsPromise = null;
     
 async function loadTeamColors(){
   if (Object.keys(teamColorMap).length) return teamColorMap;
 
-  const csv = await fetchCsvCached(TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-  const rows = parseCsv(csv);
+  if (!teamColorsPromise) {
+    teamColorsPromise = (async () => {
+      const csv = await fetchCsvCached(TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
+      const rows = parseCsv(csv);
 
-  rows.forEach(row => {
-   const team = normalizeTeamName(row.TeamName);
-    const color = String(row.TeamColor || "").trim();
+      rows.forEach(row => {
+        const team = normalizeTeamName(row.TeamName);
+        const color = String(row.TeamColor || "").trim();
 
-    if (team && color){
-      teamColorMap[team] = color;
-    }
-  });
+        if (team && color){
+          teamColorMap[team] = color;
+        }
+      });
 
-  return teamColorMap;
+      return teamColorMap;
+    })();
+  }
+
+  return teamColorsPromise;
+}
+
+function formatTodayLabel(){
+  const now = new Date();
+  return now.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function setBirthdayTitleDate(){
+  const title = document.getElementById("birthdayTitle");
+  if (!title) return;
+  title.textContent = `🎂 MLB Birthday Today (${formatTodayLabel()})`;
 }
 
     
@@ -1464,8 +1485,7 @@ async function loadTriviaWeeklyChampion(){
       return;
     }
 
-    // real-time read for weekly champion card
-    const csv = await fetchCsv(TRIVIA_WEEKLY_CSV_URL);
+    const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS });
     const rows = parseCsv(csv)
       .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
       .map(r => ({
@@ -1807,15 +1827,31 @@ async function loadTriviaWeeklyChampion(){
 
     document.getElementById("kidQuestionForm").addEventListener("submit", submitKidQuestion);
 
-    loadHistory();
-    loadQuote();
-    loadFact();
-    loadFeaturedQuestion();
+    setBirthdayTitleDate();
+
+    // Prioritize interactive and above-the-fold content.
     loadTrivia();
-    loadTriviaLeaderboard();
-    loadMovieOfTheWeek();
-    loadBirthdaySpotlight();
-    loadTriviaWeeklyChampion();
+    Promise.allSettled([
+      loadTeamColors(),
+      loadTriviaLeaderboard(),
+      loadTriviaWeeklyChampion()
+    ]);
+
+    // Defer lower-priority cards to improve perceived load speed.
+    const loadSecondaryCards = () => {
+      loadHistory();
+      loadQuote();
+      loadFact();
+      loadFeaturedQuestion();
+      loadMovieOfTheWeek();
+      loadBirthdaySpotlight();
+    };
+
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(loadSecondaryCards, { timeout: 1200 });
+    } else {
+      setTimeout(loadSecondaryCards, 200);
+    }
   </script>
 
   <script src="./nav.js"></script>
