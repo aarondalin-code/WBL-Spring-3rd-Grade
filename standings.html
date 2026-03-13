@@ -39,7 +39,7 @@
   </div>
 
   <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+    <img src="./logo.png" alt="WBL Logo" class="logoImage" decoding="async" fetchpriority="high" />
     <h1>Standings</h1>
     <div class="tagline">WBL 3rd Grade</div>
   </div>
@@ -163,7 +163,7 @@
 
     return `
       <div class="standingsTeamCell">
-        <img class="standingsTeamLogo" src="${logo}" alt="${name} logo"
+        <img class="standingsTeamLogo" src="${logo}" alt="${name} logo" loading="lazy" decoding="async"
              onerror="this.onerror=null; this.src='${fallback}';">
         <div class="standingsTeamText">
           <a class="standingsTeamLink" ${style} href="${href}">${name}</a>

@@ -91,7 +91,7 @@
     </div>
 
     <div class="brandCenter">
-      <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" decoding="async" fetchpriority="high" />
       <h1><span>Westfield Baseball League</span><span class="titleLevel">3rd Grade</span></h1>
       <div class="tagline">Spring League Central</div>
     </div>
@@ -832,7 +832,7 @@ function renderScheduleCard(g){
     }
 
     /* -------------------- POLL: JSONP (no CORS issues) -------------------- */
-    let POLL = { weekKey:"", question:"", options:[], mode:"realtime" };
+    let POLL = { weekKey:"week", question:"Loading poll…", options:["Please wait"], mode:"realtime" };
 
     function pollVoteKey(){ return `wbl_poll_vote_${POLL.weekKey || "week"}`; }
     function loadMyVote(){ return safe(localStorage.getItem(pollVoteKey())); }
@@ -1110,31 +1110,39 @@ function renderScheduleCard(g){
       setInterval(updateCountdown, 1000);
        
       
-      // Load poll config first
-      try{
-        const ok = await loadPollFromSheet();
-        if (!ok){
-          POLL.weekKey = "week";
-          POLL.question = "Poll unavailable (check poll sheet headers).";
-          POLL.options = ["OK"];
-        }
-      } catch(e){
-        console.warn(e);
-        POLL.weekKey = "week";
-        POLL.question = "Poll unavailable (check poll CSV URL).";
-        POLL.options = ["OK"];
-      }
+      // Render poll UI immediately with defaults, then hydrate config asynchronously.
       renderPollUI();
       wirePollButtons();
 
-      // Preload results if possible (non-blocking)
-      if (window.SHEET?.POLL_API_URL && POLL.weekKey && POLL.options.length){
-        pollFetchResults()
-          .then((counts) => {
-            if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
-          })
-          .catch(()=>{});
-      }
+      const hydratePoll = async () => {
+        try{
+          const ok = await loadPollFromSheet();
+          if (!ok){
+            POLL.weekKey = "week";
+            POLL.question = "Poll unavailable (check poll sheet headers).";
+            POLL.options = ["OK"];
+          }
+        } catch(e){
+          console.warn(e);
+          POLL.weekKey = "week";
+          POLL.question = "Poll unavailable (check poll CSV URL).";
+          POLL.options = ["OK"];
+        }
+
+        renderPollUI();
+        wirePollButtons();
+
+        // Preload results if possible (non-blocking)
+        if (window.SHEET?.POLL_API_URL && POLL.weekKey && POLL.options.length){
+          pollFetchResults()
+            .then((counts) => {
+              if (counts) renderPollResultsFromCounts(padCountsToOptions(counts));
+            })
+            .catch(()=>{});
+        }
+      };
+
+      hydratePoll().catch(()=>{});
 
       // News
       loadKeyDatesNews().catch(()=>{});
@@ -1360,7 +1368,7 @@ const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
 
           
           btn.innerHTML = `
-            <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}"
+            <img class="potwPhoto" src="${p.PhotoURL}" alt="${displayName}" loading="lazy" decoding="async"
                  onerror="this.onerror=null; this.src='${window.DEFAULT_PLAYER_PHOTO || "./logo.png"}';">
             <div class="potwText">
               <div class="potwName">${displayName}</div>

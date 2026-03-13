@@ -40,7 +40,7 @@
   </div>
 
   <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+    <img src="./logo.png" alt="WBL Logo" class="logoImage" decoding="async" fetchpriority="high" />
     <h1>Photo and Video Gallery</h1>
     <div class="tagline">WBL 3rd Grade</div>
   </div>
@@ -250,7 +250,7 @@
         <div class="galleryItem" ${accentStyle}>
           <div class="galleryMedia">
             <a href="${url}" target="_blank" rel="noopener">
-              <img src="${url}" alt="${caption}" loading="lazy"
+              <img src="${url}" alt="${caption}" loading="lazy" decoding="async"
                    onerror="this.onerror=null; this.src='./logo.png';" />
             </a>
           </div>

@@ -38,7 +38,7 @@
   </div>
 
   <div class="brandCenter">
-    <img src="./logo.png" alt="WBL Logo" class="logoImage" />
+    <img src="./logo.png" alt="WBL Logo" class="logoImage" decoding="async" fetchpriority="high" />
     <h1>Schedule and Scores</h1>
     <div class="tagline">WBL 3rd Grade</div>
   </div>
@@ -218,7 +218,7 @@
 <div class="scheduleMatchupGrid">
   <div class="scheduleTeam sideLeft">
     ${teamAnchor(aName)}
-    <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo"
+    <img class="teamLogo" src="${aMeta.logo}" alt="${aName} logo" loading="lazy" decoding="async"
          onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
   </div>
 
@@ -227,7 +227,7 @@
   </div>
 
   <div class="scheduleTeam sideRight">
-    <img class="teamLogo" src="${bMeta.logo}" alt="${bName} logo"
+    <img class="teamLogo" src="${bMeta.logo}" alt="${bName} logo" loading="lazy" decoding="async"
          onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
     ${teamAnchor(bName)}
   </div>

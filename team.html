@@ -440,7 +440,7 @@ body.teamPage .teamRecordPct{
     </div>
 
     <div class="brandCenter">
-      <img src="./logo.png" alt="WBL Logo" class="logoImage">
+      <img src="./logo.png" alt="WBL Logo" class="logoImage" decoding="async" fetchpriority="high">
       <h1 id="pageTitle">Team Roster</h1>
       <div class="tagline">WBL 3rd Grade</div>
     </div>
@@ -454,7 +454,7 @@ body.teamPage .teamRecordPct{
           <!-- Row 1 left: logo + team text -->
 
 <div class="teamHeaderTopLeft">
-  <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" style="display:none;">
+  <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" loading="lazy" decoding="async" style="display:none;">
   <div class="teamTextCol">
     <div class="teamLabel">Team</div>
     <h2 id="teamName"></h2>
@@ -730,7 +730,7 @@ function setHeaderFromTeamRow(teamRow){
       openModal(`
         <div class="profileHeader">
           <div class="profilePhoto">
-            <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${fallback}';">
+            <img src="${photo}" alt="${name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${fallback}';">
           </div>
           <div style="min-width:260px;">
             <h3 id="modalTitle" class="profileName">${name}</h3>
@@ -783,7 +783,7 @@ function setHeaderFromTeamRow(teamRow){
         btn.innerHTML = `
           <div class="playerCardRow">
             <div class="playerThumb">
-              <img src="${photo}" alt="${name}" onerror="this.onerror=null; this.src='${fallback}';">
+              <img src="${photo}" alt="${name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${fallback}';">
             </div>
             <div class="playerText" style="min-width:0;">
               <div class="playerNameLine" style="font-weight:900;">
@@ -1129,7 +1129,7 @@ gameMeta.innerHTML = `
 <div class="rsvpHeaderOfficial">
       
     <div class="rsvpTeamSide">
-      <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo"
+      <img class="rsvpMiniLogo" src="${ourLogo}" alt="${teamDisplayName} logo" loading="lazy" decoding="async"
         onerror="this.onerror=null; this.src='${defaultLogo}';">
       <div class="rsvpTeamName" ${ourColor ? `style="color:${ourColor}"` : ""}>
         ${teamDisplayName}
@@ -1143,7 +1143,7 @@ gameMeta.innerHTML = `
     </div>
 
     <div class="rsvpTeamSide rightSide">
-      <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo"
+      <img class="rsvpMiniLogo" src="${oppLogo}" alt="${opponentName} logo" loading="lazy" decoding="async"
         onerror="this.onerror=null; this.src='${defaultLogo}';">
       <div class="rsvpTeamName" ${oppColor ? `style="color:${oppColor}"` : ""}>
         ${opponentName}
