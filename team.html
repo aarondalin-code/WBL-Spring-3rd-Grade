@@ -1075,11 +1075,7 @@ function computeTeamRecord(teamDisplayName, teamGames){
     if (scoreA === null || scoreB === null) return;
 
     const isTeamA = isTeamAInGame(g, teamDisplayName, window.__ACTIVE_TEAM_SLUG__ || "");
-    const scoreA = toNumSafe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
-    const scoreB = toNumSafe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
-    if (scoreA === null || scoreB === null) return;
-
-    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+   
     const ourScore = isTeamA ? scoreA : scoreB;
     const oppScore = isTeamA ? scoreB : scoreA;
 
@@ -1174,54 +1170,6 @@ function formatScheduleDate(dateStr) {
   });
 }
 
-function gameTeamA(g){
-  return safe((g && (g.TeamA || g.HomeTeam || g.Home || g.Team1)) || "");
-}
-
-function gameTeamB(g){
-  return safe((g && (g.TeamB || g.AwayTeam || g.Away || g.Team2)) || "");
-}
-
-function gameStatus(g){
-  return safe((g && (g.Status || g.GameStatus || g.Result)) || "Scheduled");
-}
-
-function gameDate(g){
-  return safe((g && (g.Date || g.GameDate || g.Day)) || "");
-}
-
-function gameTime(g){
-  return safe((g && (g.Time || g.GameTime || g.StartTime)) || "");
-}
-
-function gameField(g){
-  return safe((g && (g.Field || g.Location || g.Venue)) || "");
-}
-
-
-function gameTeamA(g){
-  return safe(g?.TeamA || g?.HomeTeam || g?.Home || g?.Team1);
-}
-
-function gameTeamB(g){
-  return safe(g?.TeamB || g?.AwayTeam || g?.Away || g?.Team2);
-}
-
-function gameStatus(g){
-  return safe(g?.Status || g?.GameStatus || g?.Result || "Scheduled");
-}
-
-function gameDate(g){
-  return safe(g?.Date || g?.GameDate || g?.Game_Day || g?.Day);
-}
-
-function gameTime(g){
-  return safe(g?.Time || g?.GameTime || g?.StartTime);
-}
-
-function gameField(g){
-  return safe(g?.Field || g?.Location || g?.Venue);
-}
 
 function readGameField(g, aliases, contains = []){
   if (!g || typeof g !== "object") return "";
@@ -1306,11 +1254,6 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     if (teamColor) el.style.setProperty("--teamColor", teamColor);
     else el.style.removeProperty("--teamColor");
 
-
-  [nextEl, lastEl].forEach(el => {
-    if (teamColor) el.style.setProperty("--teamColor", teamColor);
-    else el.style.removeProperty("--teamColor");
-
     if (teamLogo) el.style.setProperty("--teamLogo", `url("${teamLogo}")`);
     else el.style.removeProperty("--teamLogo");
   });
@@ -1343,7 +1286,6 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   const upcoming = sorted.find(x => x.dt.getTime() >= now.getTime());
   const next = upcoming || sorted[sorted.length - 1];
   const completed = sorted.filter(x => norm(gameStatus(x.game)) === "final");
-  const completed = sorted.filter(x => norm(x.game.Status) === "final");
   const last = completed[completed.length - 1] || null;
 
   if (!next) {
@@ -1359,16 +1301,13 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
     const opponentPrefix = gameLocationType(g).toLowerCase() === "away" ? "@" : "vs";
     const statusRaw = gameStatus(g);
-    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
-    const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
-    const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
-    const statusRaw = safe(g.Status) || "Scheduled";
+ 
 
     nextEl.innerHTML = `
       <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
       <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
       <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${formatScheduleTime(gameTime(g)) || "Time TBD"} • ${gameField(g) || "Field TBD"}</div>
-      <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
+      
       <div class="nextGameStatus">${statusRaw}</div>
     `;
   }
@@ -1389,18 +1328,12 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   const opponentPrefix = gameLocationType(g).toLowerCase() === "away" ? "@" : "vs";
   const ourScore = isTeamA ? gameScoreA(g) : gameScoreB(g);
   const oppScore = isTeamA ? gameScoreB(g) : gameScoreA(g);
-  const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
-  const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
-  const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
-  const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
-  const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
   const scoreText = (ourScore !== "" && oppScore !== "") ? `${ourScore}-${oppScore}` : "Score pending";
 
   lastEl.innerHTML = `
     <div class="nextGameLabel">Last Game</div>
     <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
     <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${scoreText}</div>
-    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${scoreText}</div>
     <div class="nextGameStatus">Final</div>
   `;
 }
@@ -1432,9 +1365,7 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
         const isTeamA = isTeamAInGame(g, teamDisplayName, window.__ACTIVE_TEAM_SLUG__ || "");
 const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
 const statusRaw = gameStatus(g);
-        const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
-const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
-const statusRaw = safe(g.Status) || "Scheduled";
+      
 
 const oppMeta = getTeamMetaByName(opponent, window.__TEAM_ROWS__ || []);
 const oppColor = safe(oppMeta.color);
@@ -1447,10 +1378,6 @@ let statusText = statusRaw;
 if (statusRaw.toLowerCase() === "final" && gameScoreA(g) !== "" && gameScoreB(g) !== "") {
   const ourScore = isTeamA ? gameScoreA(g) : gameScoreB(g);
   const oppScore = isTeamA ? gameScoreB(g) : gameScoreA(g);
-if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) !== "" && safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) !== "") {
-  const ourScore = isTeamA ? safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) : safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
-  const oppScore = isTeamA ? safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) : safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
-  statusText = `Final • ${ourScore}-${oppScore}`;
 }
 
         return `
@@ -1888,9 +1815,7 @@ if (teamScheduleTitle){
             norm(gameTeamB(g)) === teamNameNorm ||
             norm(gameTeamSlugA(g)) === slugNorm ||
             norm(gameTeamSlugB(g)) === slugNorm
-          teamGames = gameRows.filter(g =>
-            norm(g.TeamA) === teamNameNorm ||
-            norm(g.TeamB) === teamNameNorm
+      
           );
         } else {
           console.error("Games load failed:", gamesRes.reason);
