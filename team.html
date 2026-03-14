@@ -178,6 +178,26 @@
       align-self:end !important;
     }
 
+    body.teamPage .teamHeaderTopLeft::after,
+    body.teamPage .coachCard::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: var(--teamLogo);
+      background-repeat:no-repeat;
+      background-position:right -12px bottom -16px;
+      background-size:120px 120px;
+      opacity:.07;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.teamPage .teamHeaderTopLeft > *,
+    body.teamPage .coachCard > *{
+      position:relative;
+      z-index:1;
+    }
+
 body.teamPage .teamScheduleList{
   display:grid;
   gap:10px;
