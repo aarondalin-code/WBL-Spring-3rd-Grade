@@ -687,7 +687,11 @@ body.teamPage .teamRecordPct{
     // Helpers
     // -----------------------------
     function safe(v){ return String(v ?? "").trim(); }
+function norm(v){
+  return safe(v).toLowerCase().replace(/\s+/g, " ").trim();
+}
 
+    
     function formatPlayerName(name){
       const parts = safe(name).split(/\s+/).filter(Boolean);
       if (!parts.length) return "";
@@ -1158,7 +1162,6 @@ function renderTeamRecord(teamDisplayName, teamGames){
       return data;
     }
 
-
 function formatScheduleDate(dateStr) {
   if (!safe(dateStr)) return "";
   const d = new Date(dateStr);
@@ -1168,6 +1171,13 @@ function formatScheduleDate(dateStr) {
     month: "short",
     day: "numeric"
   });
+}
+
+function formatScheduleTime(timeStr) {
+  if (!safe(timeStr)) return "";
+  const d = new Date(`2000-01-01 ${timeStr}`);
+  if (isNaN(d)) return safe(timeStr);
+  return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
 
 
@@ -1378,6 +1388,7 @@ let statusText = statusRaw;
 if (statusRaw.toLowerCase() === "final" && gameScoreA(g) !== "" && gameScoreB(g) !== "") {
   const ourScore = isTeamA ? gameScoreA(g) : gameScoreB(g);
   const oppScore = isTeamA ? gameScoreB(g) : gameScoreA(g);
+  statusText = `Final • ${ourScore}-${oppScore}`;
 }
 
         return `
