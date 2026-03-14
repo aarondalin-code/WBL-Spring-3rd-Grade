@@ -40,17 +40,53 @@
       align-items:start !important;
     }
 
+    body.teamPage .teamHeaderCardBox{
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
+      border-radius:14px;
+      background:linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
+      box-shadow:0 10px 26px rgba(15,23,42,.08);
+    }
+
+    body.teamPage .teamHeaderCardBox::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: var(--teamLogo);
+      background-repeat:no-repeat;
+      background-position:right -12px bottom -16px;
+      background-size:120px 120px;
+      opacity:.06;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.teamPage .teamHeaderCardBox > *{
+      position:relative;
+      z-index:1;
+    }
+
     body.teamPage .teamHeaderTopLeft{
       grid-column:1 !important;
-      grid-row:1 !important;
-      display:flex !important;
-      align-items:center !important;
+      grid-row:1 / span 2 !important;
+      align-self:stretch !important;
+      display:grid !important;
+      grid-template-columns:auto minmax(0, 1fr);
       gap:12px !important;
       min-width:0 !important;
+      padding:12px;
+      align-content:start;
     }
 
     body.teamPage .teamHeaderTopLeft .teamTextCol{
       min-width:0 !important;
+    }
+
+    body.teamPage .teamHeaderTopLeft #teamRecord{
+      grid-column:1 / -1;
+      margin-top:2px;
     }
 
 
@@ -59,40 +95,25 @@
       grid-row:1 / span 2 !important;
       align-self:stretch !important;
       display:flex;
-      align-items:stretch;
       min-width:0;
     }
 
+    body.teamPage .teamGameCards{
+      width:100%;
+      height:100%;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:10px;
+      align-items:stretch;
+    }
+
  body.teamPage .nextGameCard{
-  position:relative;
-  isolation:isolate;
   width:100%;
-  border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%),
-    rgba(255,255,255,.94));
-  border-radius:14px;
+  height:100%;
   padding:12px;
   display:grid;
+  grid-template-rows:auto auto 1fr auto;
   gap:6px;
-  box-shadow:0 10px 26px rgba(15,23,42,.08);
-  overflow:hidden;
-}
-body.teamPage .nextGameCard::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image: var(--teamLogo);
-  background-repeat:no-repeat;
-  background-position:right -12px bottom -16px;
-  background-size:120px 120px;
-  opacity:.11;
-  pointer-events:none;
-  z-index:0;
-}
-body.teamPage .nextGameCard > *{
-  position:relative;
-  z-index:1;
 }
 
 
@@ -147,8 +168,6 @@ body.teamPage .nextGameCard > *{
       height:100% !important;
       display:grid !important;
       grid-template-rows:auto 1fr auto !important;
-      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 62%, #e5e7eb 38%) !important;
-      background:linear-gradient(180deg, rgba(255,255,255,.94), color-mix(in srgb, var(--teamColor, #1e3fa8) 8%, #ffffff 92%)) !important;
     }
 
     body.teamPage .coachTitleCenter{
@@ -206,6 +225,10 @@ body.teamPage .teamLabel{
 }
     
 @media (max-width: 640px){
+  body.teamPage .teamGameCards{
+    grid-template-columns:1fr;
+  }
+
   body.teamPage .teamScheduleRow{
     grid-template-columns:1fr;
     gap:6px;
@@ -218,10 +241,6 @@ body.teamPage .teamLabel{
 
 
     
-body.teamPage #teamRecord{
-  margin-top:10px;
-}
-
 body.teamPage .teamRecordWrap{
   display:inline-flex;
   align-items:center;
@@ -546,28 +565,35 @@ body.teamPage .teamRecordPct{
     <div class="teamHeaderBlock" id="teamHeaderBlock">
 
       <!-- Row 1 left: logo + team text -->
-      <div class="teamHeaderTopLeft">
+      <div class="teamHeaderTopLeft teamHeaderCardBox">
         <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" loading="lazy" decoding="async" style="display:none;">
         <div class="teamTextCol">
           <div class="teamLabel">Team</div>
           <h2 id="teamName"></h2>
         </div>
+        <div id="teamRecord"></div>
       </div>
 
-      <div id="teamRecord"></div>
-
       <div class="teamHeaderCenter">
-        <div id="teamHeaderNextGame" class="nextGameCard">
-          <div class="nextGameLabel">Next Game</div>
-          <div class="nextGameOpponent">Loading…</div>
-          <div class="nextGameMeta">Schedule details coming soon.</div>
-          <div class="nextGameStatus">Upcoming</div>
+        <div class="teamGameCards">
+          <div id="teamHeaderNextGame" class="nextGameCard teamHeaderCardBox">
+            <div class="nextGameLabel">Next Game</div>
+            <div class="nextGameOpponent">Loading…</div>
+            <div class="nextGameMeta">Schedule details coming soon.</div>
+            <div class="nextGameStatus">Upcoming</div>
+          </div>
+          <div id="teamHeaderLastGame" class="nextGameCard teamHeaderCardBox">
+            <div class="nextGameLabel">Last Game</div>
+            <div class="nextGameOpponent">Loading…</div>
+            <div class="nextGameMeta">Score details coming soon.</div>
+            <div class="nextGameStatus">Final</div>
+          </div>
         </div>
       </div>
 
       <!-- Right: coach card spans both rows -->
       <div class="teamHeaderRight">
-        <div class="coachCard">
+        <div class="coachCard teamHeaderCardBox">
           <div class="coachTitleCenter">
             <div class="coachLabel">Head Coach</div>
             <div class="coachName" id="coachName">TBD</div>
@@ -720,6 +746,7 @@ function setHeaderFromTeamRow(teamRow){
   const rsvpCardEl = document.getElementById("rsvpSection");
   const nextGameEl = document.getElementById("teamHeaderNextGame");
   const teamRecordEl = document.getElementById("teamRecord");
+  const teamIdentityEl = document.querySelector(".teamHeaderTopLeft");
   const coachCardEl = document.querySelector(".teamHeaderRight .coachCard");
 
 
@@ -768,10 +795,13 @@ function setHeaderFromTeamRow(teamRow){
     else teamRecordEl.style.removeProperty("--teamColor");
   }
 
-  if (coachCardEl){
-    if (color) coachCardEl.style.setProperty("--teamColor", color);
-    else coachCardEl.style.removeProperty("--teamColor");
-  }
+  [teamIdentityEl, coachCardEl].forEach(el => {
+    if (!el) return;
+    if (color) el.style.setProperty("--teamColor", color);
+    else el.style.removeProperty("--teamColor");
+    if (logo) el.style.setProperty("--teamLogo", `url("${logo}")`);
+    else el.style.removeProperty("--teamLogo");
+  });
 
   document.title = `${name} • WBL 3rd Grade 2026`;
 
@@ -836,6 +866,7 @@ function setHeaderFromTeamRow(teamRow){
       const bats = safe(player.Bats);
       const throws = safe(player.Throws);
       const fav = safe(player.FavoriteTeam);
+      const school = safe(player.School);
       const fun = safe(player.FunFact);
       const photo = getPhotoSrc(player);
 
@@ -852,6 +883,7 @@ function setHeaderFromTeamRow(teamRow){
       if (bats) lines.push(line("Bats", bats));
       if (throws) lines.push(line("Throws", throws));
       if (fav) lines.push(line("Favorite MLB Team", fav));
+      if (school) lines.push(line("School", school));
       if (fun) lines.push(line("Fun Fact", fun));
 
       const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
@@ -1021,7 +1053,7 @@ function computeTeamRecord(teamDisplayName, teamGames){
     const scoreB = toNumSafe(g.ScoreB);
     if (scoreA === null || scoreB === null) return;
 
-    const isTeamA = safe(g.TeamA) === teamDisplayName;
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
     const ourScore = isTeamA ? scoreA : scoreB;
     const oppScore = isTeamA ? scoreB : scoreA;
 
@@ -1128,13 +1160,17 @@ function formatScheduleTime(timeStr) {
 
 
 function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLogo = "") {
-  const el = document.getElementById("teamHeaderNextGame");
-  if (!el) return;
-  if (teamColor) el.style.setProperty("--teamColor", teamColor);
-  else el.style.removeProperty("--teamColor");
+  const nextEl = document.getElementById("teamHeaderNextGame");
+  const lastEl = document.getElementById("teamHeaderLastGame");
+  if (!nextEl || !lastEl) return;
 
-  if (teamLogo) el.style.setProperty("--teamLogo", `url("${teamLogo}")`);
-  else el.style.removeProperty("--teamLogo");
+  [nextEl, lastEl].forEach(el => {
+    if (teamColor) el.style.setProperty("--teamColor", teamColor);
+    else el.style.removeProperty("--teamColor");
+
+    if (teamLogo) el.style.setProperty("--teamLogo", `url("${teamLogo}")`);
+    else el.style.removeProperty("--teamLogo");
+  });
 
   const now = new Date();
   const parseGameDateTime = (g) => {
@@ -1163,28 +1199,54 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
 
   const upcoming = sorted.find(x => x.dt.getTime() >= now.getTime());
   const next = upcoming || sorted[sorted.length - 1];
+  const completed = sorted.filter(x => norm(x.game.Status) === "final");
+  const last = completed[completed.length - 1] || null;
 
   if (!next) {
-    el.innerHTML = `
+    nextEl.innerHTML = `
       <div class="nextGameLabel">Next Game</div>
       <div class="nextGameOpponent">Schedule Not Posted</div>
       <div class="nextGameMeta">Check back soon for game details.</div>
       <div class="nextGameStatus">TBD</div>
     `;
+  } else {
+    const g = next.game;
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+    const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+    const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
+    const statusRaw = safe(g.Status) || "Scheduled";
+
+    nextEl.innerHTML = `
+      <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
+      <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
+      <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
+      <div class="nextGameStatus">${statusRaw}</div>
+    `;
+  }
+
+  if (!last) {
+    lastEl.innerHTML = `
+      <div class="nextGameLabel">Last Game</div>
+      <div class="nextGameOpponent">Final Not Posted</div>
+      <div class="nextGameMeta">Completed game score will appear here.</div>
+      <div class="nextGameStatus">TBD</div>
+    `;
     return;
   }
 
-  const g = next.game;
-  const isTeamA = safe(g.TeamA) === teamDisplayName;
+  const g = last.game;
+  const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
   const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
   const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
-  const statusRaw = safe(g.Status) || "Scheduled";
+  const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
+  const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
+  const scoreText = (ourScore !== "" && oppScore !== "") ? `${ourScore}-${oppScore}` : "Score pending";
 
-  el.innerHTML = `
-    <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
+  lastEl.innerHTML = `
+    <div class="nextGameLabel">Last Game</div>
     <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
-    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
-    <div class="nextGameStatus">${statusRaw}</div>
+    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${scoreText}</div>
+    <div class="nextGameStatus">Final</div>
   `;
 }
 
@@ -1212,7 +1274,7 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
     <div class="teamScheduleList">
       ${sortedGames.map(g => {
 
-        const isTeamA = safe(g.TeamA) === teamDisplayName;
+        const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
 const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
 const statusRaw = safe(g.Status) || "Scheduled";
 
@@ -1624,7 +1686,11 @@ if (!familyToken) {
 
         setHeaderFromTeamRow(teamRow);
 
+        const rsvpSectionEl = document.getElementById("rsvpSection");
+        if (rsvpSectionEl) rsvpSectionEl.style.display = "";
+
         const teamDisplayName = safe(teamRow.TeamName);
+        renderTeamRecord(teamDisplayName, []);
 
 const teamScheduleTitle = document.getElementById("teamScheduleTitle");
 
@@ -1636,28 +1702,45 @@ if (teamScheduleTitle){
     : `${teamDisplayName} Schedule`;
 }
 
-        const [rosterCsv, gamesCsv, rsvpData] = await Promise.all([
+        const [rosterRes, gamesRes, rsvpRes] = await Promise.allSettled([
           rosterPromise,
           gamesPromise,
           rsvpPromise
         ]);
 
-        const rosterRows = parseCsv(rosterCsv);
-        const players = rosterRows.filter(p => safe(p.TeamSlug) === slug);
-        buildRosterGrid(players, teamDisplayName);
+        if (rosterRes.status === "fulfilled") {
+          const rosterRows = parseCsv(rosterRes.value);
+          const players = rosterRows.filter(p => safe(p.TeamSlug) === slug);
+          buildRosterGrid(players, teamDisplayName);
+        } else {
+          console.error("Roster load failed:", rosterRes.reason);
+        }
 
-        const gameRows = parseCsv(gamesCsv);
-        const teamGames = gameRows.filter(g =>
-          safe(g.TeamA) === teamDisplayName ||
-          safe(g.TeamB) === teamDisplayName
-        );
-renderTeamRecord(teamDisplayName, teamGames);
-renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
-renderTeamSchedule(teamDisplayName, teamGames);
+        let teamGames = [];
+        if (gamesRes.status === "fulfilled") {
+          const gameRows = parseCsv(gamesRes.value);
+          const teamNameNorm = norm(teamDisplayName);
+          teamGames = gameRows.filter(g =>
+            norm(g.TeamA) === teamNameNorm ||
+            norm(g.TeamB) === teamNameNorm
+          );
+        } else {
+          console.error("Games load failed:", gamesRes.reason);
+          const scheduleMsg = document.getElementById("teamScheduleMsg");
+          if (scheduleMsg) scheduleMsg.textContent = "Unable to load schedule right now.";
+        }
+
+        renderTeamRecord(teamDisplayName, teamGames);
+        renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
+        renderTeamSchedule(teamDisplayName, teamGames);
         
+        const rsvpData = rsvpRes.status === "fulfilled" ? rsvpRes.value : null;
         if (rsvpData) {
           renderRsvpBoard(rsvpData, teamDisplayName);
         } else {
+          if (rsvpRes.status === "rejected") {
+            console.error("RSVP load failed:", rsvpRes.reason);
+          }
           const msg = document.getElementById("rsvpMsg");
           const section = document.getElementById("rsvpSection");
           if (section) section.style.display = "";
