@@ -836,6 +836,7 @@ function setHeaderFromTeamRow(teamRow){
       const bats = safe(player.Bats);
       const throws = safe(player.Throws);
       const fav = safe(player.FavoriteTeam);
+      const school = safe(player.School);
       const fun = safe(player.FunFact);
       const photo = getPhotoSrc(player);
 
@@ -852,6 +853,7 @@ function setHeaderFromTeamRow(teamRow){
       if (bats) lines.push(line("Bats", bats));
       if (throws) lines.push(line("Throws", throws));
       if (fav) lines.push(line("Favorite MLB Team", fav));
+      if (school) lines.push(line("School", school));
       if (fun) lines.push(line("Fun Fact", fun));
 
       const fallback = window.DEFAULT_PLAYER_PHOTO || "./player-placeholder.png";
