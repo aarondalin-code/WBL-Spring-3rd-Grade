@@ -3669,4 +3669,20 @@ body.homeIndex .homeHeroBtns .btnPrimary{
     -webkit-backdrop-filter: none !important;
   }
 
+  /* Chrome on mobile can still composite the Index watermark/header above the nav overlay.
+     Add a dedicated full-screen scrim for Index while open, and hide background watermark. */
+  html.navOpen body.homeIndex::before{
+    opacity: 0 !important;
+  }
+
+  html.navOpen body.homeIndex::after{
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: #050914;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 2147483644;
+  }
+
 }
