@@ -40,6 +40,34 @@
       align-items:start !important;
     }
 
+    body.teamPage .teamHeaderCardBox{
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
+      border-radius:14px;
+      background:linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
+      box-shadow:0 10px 26px rgba(15,23,42,.08);
+    }
+
+    body.teamPage .teamHeaderCardBox::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: var(--teamLogo);
+      background-repeat:no-repeat;
+      background-position:right -12px bottom -16px;
+      background-size:120px 120px;
+      opacity:.06;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.teamPage .teamHeaderCardBox > *{
+      position:relative;
+      z-index:1;
+    }
+
     body.teamPage .teamHeaderTopLeft{
       grid-column:1 !important;
       grid-row:1 / span 2 !important;
@@ -49,13 +77,6 @@
       gap:12px !important;
       min-width:0 !important;
       padding:12px;
-      position:relative;
-      isolation:isolate;
-      overflow:hidden;
-      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
-      border-radius:14px;
-      background:linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
-      box-shadow:0 10px 26px rgba(15,23,42,.08);
       align-content:start;
     }
 
@@ -87,39 +108,13 @@
     }
 
  body.teamPage .nextGameCard{
-  position:relative;
-  isolation:isolate;
   width:100%;
   height:100%;
-  border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%),
-    rgba(255,255,255,.94));
-  border-radius:14px;
   padding:12px;
   display:grid;
   grid-template-rows:auto auto 1fr auto;
   gap:6px;
-  box-shadow:0 10px 26px rgba(15,23,42,.08);
-  overflow:hidden;
 }
-body.teamPage .nextGameCard::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image: var(--teamLogo);
-  background-repeat:no-repeat;
-  background-position:right -12px bottom -16px;
-  background-size:120px 120px;
-  opacity:.07;
-  pointer-events:none;
-  z-index:0;
-}
-body.teamPage .nextGameCard > *{
-  position:relative;
-  z-index:1;
-}
-
 
     body.teamPage .nextGameLabel{
       font-size:.7rem;
@@ -172,12 +167,6 @@ body.teamPage .nextGameCard > *{
       height:100% !important;
       display:grid !important;
       grid-template-rows:auto 1fr auto !important;
-      position:relative;
-      isolation:isolate;
-      overflow:hidden;
-      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
-      background:linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
-      box-shadow:0 10px 26px rgba(15,23,42,.08);
     }
 
     body.teamPage .coachTitleCenter{
@@ -595,7 +584,7 @@ body.teamPage .teamRecordPct{
     <div class="teamHeaderBlock" id="teamHeaderBlock">
 
       <!-- Row 1 left: logo + team text -->
-      <div class="teamHeaderTopLeft">
+      <div class="teamHeaderTopLeft teamHeaderCardBox">
         <img id="teamLogo" class="teamHeaderLogo" src="" alt="Team Logo" loading="lazy" decoding="async" style="display:none;">
         <div class="teamTextCol">
           <div class="teamLabel">Team</div>
@@ -606,13 +595,13 @@ body.teamPage .teamRecordPct{
 
       <div class="teamHeaderCenter">
         <div class="teamGameCards">
-          <div id="teamHeaderNextGame" class="nextGameCard">
+          <div id="teamHeaderNextGame" class="nextGameCard teamHeaderCardBox">
             <div class="nextGameLabel">Next Game</div>
             <div class="nextGameOpponent">Loading…</div>
             <div class="nextGameMeta">Schedule details coming soon.</div>
             <div class="nextGameStatus">Upcoming</div>
           </div>
-          <div id="teamHeaderLastGame" class="nextGameCard">
+          <div id="teamHeaderLastGame" class="nextGameCard teamHeaderCardBox">
             <div class="nextGameLabel">Last Game</div>
             <div class="nextGameOpponent">Loading…</div>
             <div class="nextGameMeta">Score details coming soon.</div>
@@ -623,7 +612,7 @@ body.teamPage .teamRecordPct{
 
       <!-- Right: coach card spans both rows -->
       <div class="teamHeaderRight">
-        <div class="coachCard">
+        <div class="coachCard teamHeaderCardBox">
           <div class="coachTitleCenter">
             <div class="coachLabel">Head Coach</div>
             <div class="coachName" id="coachName">TBD</div>
@@ -1077,13 +1066,13 @@ function computeTeamRecord(teamDisplayName, teamGames){
   let w = 0, l = 0, t = 0;
 
   (teamGames || []).forEach(g => {
-    if (safe(g.Status).toLowerCase() !== "final") return;
+    if (gameStatus(g).toLowerCase() !== "final") return;
 
-    const scoreA = toNumSafe(g.ScoreA);
-    const scoreB = toNumSafe(g.ScoreB);
+    const scoreA = toNumSafe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
+    const scoreB = toNumSafe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
     if (scoreA === null || scoreB === null) return;
 
-    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+    const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
     const ourScore = isTeamA ? scoreA : scoreB;
     const oppScore = isTeamA ? scoreB : scoreA;
 
@@ -1188,6 +1177,31 @@ function formatScheduleTime(timeStr) {
 }
 
 
+function gameTeamA(g){
+  return safe(g?.TeamA || g?.HomeTeam || g?.Home || g?.Team1);
+}
+
+function gameTeamB(g){
+  return safe(g?.TeamB || g?.AwayTeam || g?.Away || g?.Team2);
+}
+
+function gameStatus(g){
+  return safe(g?.Status || g?.GameStatus || g?.Result || "Scheduled");
+}
+
+function gameDate(g){
+  return safe(g?.Date || g?.GameDate || g?.Game_Day || g?.Day);
+}
+
+function gameTime(g){
+  return safe(g?.Time || g?.GameTime || g?.StartTime);
+}
+
+function gameField(g){
+  return safe(g?.Field || g?.Location || g?.Venue);
+}
+
+
 
 function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLogo = "") {
   const nextEl = document.getElementById("teamHeaderNextGame");
@@ -1204,12 +1218,12 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
 
   const now = new Date();
   const parseGameDateTime = (g) => {
-    const dateRaw = safe(g.Date);
+    const dateRaw = gameDate(g);
     if (!dateRaw) return null;
     const dateOnly = new Date(dateRaw);
     if (isNaN(dateOnly)) return null;
 
-    const timeRaw = safe(g.Time);
+    const timeRaw = gameTime(g);
     if (!timeRaw) {
       dateOnly.setHours(23, 59, 59, 999);
       return dateOnly;
@@ -1241,15 +1255,15 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     `;
   } else {
     const g = next.game;
-    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
-    const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
-    const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
-    const statusRaw = safe(g.Status) || "Scheduled";
+    const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
+    const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
+    const opponentPrefix = safe(g.Location || g.HomeAway).toLowerCase() === "away" ? "@" : "vs";
+    const statusRaw = gameStatus(g);
 
     nextEl.innerHTML = `
       <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
       <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
-      <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
+      <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${formatScheduleTime(gameTime(g)) || "Time TBD"} • ${gameField(g) || "Field TBD"}</div>
       <div class="nextGameStatus">${statusRaw}</div>
     `;
   }
@@ -1265,17 +1279,17 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   }
 
   const g = last.game;
-  const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
-  const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
-  const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
-  const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
-  const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
+  const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
+  const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
+  const opponentPrefix = safe(g.Location || g.HomeAway).toLowerCase() === "away" ? "@" : "vs";
+  const ourScore = isTeamA ? safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) : safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
+  const oppScore = isTeamA ? safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) : safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
   const scoreText = (ourScore !== "" && oppScore !== "") ? `${ourScore}-${oppScore}` : "Score pending";
 
   lastEl.innerHTML = `
     <div class="nextGameLabel">Last Game</div>
     <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
-    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${scoreText}</div>
+    <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${scoreText}</div>
     <div class="nextGameStatus">Final</div>
   `;
 }
@@ -1290,8 +1304,8 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
   msgEl.textContent = "";
 
   const sortedGames = [...(teamGames || [])].sort((a, b) => {
-    const aTime = new Date(`${safe(a.Date)} ${safe(a.Time)}`).getTime() || 0;
-    const bTime = new Date(`${safe(b.Date)} ${safe(b.Time)}`).getTime() || 0;
+    const aTime = new Date(`${gameDate(a)} ${gameTime(a)}`).getTime() || 0;
+    const bTime = new Date(`${gameDate(b)} ${gameTime(b)}`).getTime() || 0;
     return aTime - bTime;
   });
 
@@ -1304,9 +1318,9 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
     <div class="teamScheduleList">
       ${sortedGames.map(g => {
 
-        const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
-const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
-const statusRaw = safe(g.Status) || "Scheduled";
+        const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
+const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
+const statusRaw = gameStatus(g);
 
 const oppMeta = getTeamMetaByName(opponent, window.__TEAM_ROWS__ || []);
 const oppColor = safe(oppMeta.color);
@@ -1316,23 +1330,23 @@ const opponentHtml =
     : `vs <strong>${opponent || "TBD"}</strong>`;
 
 let statusText = statusRaw;
-if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "") {
-  const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
-  const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
+if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) !== "" && safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) !== "") {
+  const ourScore = isTeamA ? safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) : safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
+  const oppScore = isTeamA ? safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) : safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
   statusText = `Final • ${ourScore}-${oppScore}`;
 }
 
         return `
           <div class="teamScheduleRow">
             <div class="teamScheduleWhen">
-              <div>${formatScheduleDate(g.Date)}</div>
-              <div class="muted small">${formatScheduleTime(g.Time)}</div>
+              <div>${formatScheduleDate(gameDate(g))}</div>
+              <div class="muted small">${formatScheduleTime(gameTime(g))}</div>
             </div>
 
             <div class="teamScheduleMain">
               <div class="teamScheduleOpp">${opponentHtml}</div>              
               <div class="teamScheduleMeta muted small">
-                ${safe(g.Field) || "Field TBD"}
+                ${gameField(g) || "Field TBD"}
               </div>
             </div>
 
@@ -1716,6 +1730,9 @@ if (!familyToken) {
 
         setHeaderFromTeamRow(teamRow);
 
+        const rsvpSectionEl = document.getElementById("rsvpSection");
+        if (rsvpSectionEl) rsvpSectionEl.style.display = "";
+
         const teamDisplayName = safe(teamRow.TeamName);
 
 const teamScheduleTitle = document.getElementById("teamScheduleTitle");
@@ -1741,8 +1758,8 @@ if (teamScheduleTitle){
         const gameRows = parseCsv(gamesCsv);
         const teamNameNorm = norm(teamDisplayName);
         const teamGames = gameRows.filter(g => {
-          const teamA = norm(g.TeamA);
-          const teamB = norm(g.TeamB);
+          const teamA = norm(gameTeamA(g));
+          const teamB = norm(gameTeamB(g));
           return teamA === teamNameNorm || teamB === teamNameNorm;
         });
 renderTeamRecord(teamDisplayName, teamGames);
