@@ -116,7 +116,6 @@
   gap:6px;
 }
 
-
     body.teamPage .nextGameLabel{
       font-size:.7rem;
       font-weight:900;
@@ -177,6 +176,26 @@
     body.teamPage .coachLinks{
       grid-row:3 !important;
       align-self:end !important;
+    }
+
+    body.teamPage .teamHeaderTopLeft::after,
+    body.teamPage .coachCard::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: var(--teamLogo);
+      background-repeat:no-repeat;
+      background-position:right -12px bottom -16px;
+      background-size:120px 120px;
+      opacity:.07;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.teamPage .teamHeaderTopLeft > *,
+    body.teamPage .coachCard > *{
+      position:relative;
+      z-index:1;
     }
 
 body.teamPage .teamScheduleList{
@@ -1049,13 +1068,13 @@ function computeTeamRecord(teamDisplayName, teamGames){
   let w = 0, l = 0, t = 0;
 
   (teamGames || []).forEach(g => {
-    if (safe(g.Status).toLowerCase() !== "final") return;
+    if (gameStatus(g).toLowerCase() !== "final") return;
 
-    const scoreA = toNumSafe(g.ScoreA);
-    const scoreB = toNumSafe(g.ScoreB);
+    const scoreA = toNumSafe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
+    const scoreB = toNumSafe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
     if (scoreA === null || scoreB === null) return;
 
-    const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
     const ourScore = isTeamA ? scoreA : scoreB;
     const oppScore = isTeamA ? scoreB : scoreA;
 
@@ -1175,6 +1194,31 @@ function gameField(g){
 }
 
 
+function gameTeamA(g){
+  return safe(g?.TeamA || g?.HomeTeam || g?.Home || g?.Team1);
+}
+
+function gameTeamB(g){
+  return safe(g?.TeamB || g?.AwayTeam || g?.Away || g?.Team2);
+}
+
+function gameStatus(g){
+  return safe(g?.Status || g?.GameStatus || g?.Result || "Scheduled");
+}
+
+function gameDate(g){
+  return safe(g?.Date || g?.GameDate || g?.Game_Day || g?.Day);
+}
+
+function gameTime(g){
+  return safe(g?.Time || g?.GameTime || g?.StartTime);
+}
+
+function gameField(g){
+  return safe(g?.Field || g?.Location || g?.Venue);
+}
+
+
 
 function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLogo = "") {
   const nextEl = document.getElementById("teamHeaderNextGame");
@@ -1216,7 +1260,7 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
 
   const upcoming = sorted.find(x => x.dt.getTime() >= now.getTime());
   const next = upcoming || sorted[sorted.length - 1];
-  const completed = sorted.filter(x => norm(gameStatus(x.game)) === "final");
+  const completed = sorted.filter(x => norm(x.game.Status) === "final");
   const last = completed[completed.length - 1] || null;
 
   if (!next) {
@@ -1228,15 +1272,15 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     `;
   } else {
     const g = next.game;
-    const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
-    const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
-    const opponentPrefix = gameField(g).toLowerCase() === "away" ? "@" : "vs";
-    const statusRaw = gameStatus(g);
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+    const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+    const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
+    const statusRaw = safe(g.Status) || "Scheduled";
 
     nextEl.innerHTML = `
       <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
       <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
-      <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${formatScheduleTime(gameTime(g)) || "Time TBD"} • ${gameField(g) || "Field TBD"}</div>
+      <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
       <div class="nextGameStatus">${statusRaw}</div>
     `;
   }
@@ -1252,17 +1296,17 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   }
 
   const g = last.game;
-  const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
-  const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
-  const opponentPrefix = gameField(g).toLowerCase() === "away" ? "@" : "vs";
-  const ourScore = isTeamA ? safe(g.ScoreA || g.HomeScore || g.ScoreHome) : safe(g.ScoreB || g.AwayScore || g.ScoreAway);
-  const oppScore = isTeamA ? safe(g.ScoreB || g.AwayScore || g.ScoreAway) : safe(g.ScoreA || g.HomeScore || g.ScoreHome);
+  const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+  const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+  const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
+  const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
+  const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
   const scoreText = (ourScore !== "" && oppScore !== "") ? `${ourScore}-${oppScore}` : "Score pending";
 
   lastEl.innerHTML = `
     <div class="nextGameLabel">Last Game</div>
     <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
-    <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${scoreText}</div>
+    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${scoreText}</div>
     <div class="nextGameStatus">Final</div>
   `;
 }
@@ -1291,9 +1335,9 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
     <div class="teamScheduleList">
       ${sortedGames.map(g => {
 
-        const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
-const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
-const statusRaw = gameStatus(g);
+        const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+const statusRaw = safe(g.Status) || "Scheduled";
 
 const oppMeta = getTeamMetaByName(opponent, window.__TEAM_ROWS__ || []);
 const oppColor = safe(oppMeta.color);
@@ -1303,9 +1347,9 @@ const opponentHtml =
     : `vs <strong>${opponent || "TBD"}</strong>`;
 
 let statusText = statusRaw;
-if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA || g.HomeScore || g.ScoreHome) !== "" && safe(g.ScoreB || g.AwayScore || g.ScoreAway) !== "") {
-  const ourScore = isTeamA ? safe(g.ScoreA || g.HomeScore || g.ScoreHome) : safe(g.ScoreB || g.AwayScore || g.ScoreAway);
-  const oppScore = isTeamA ? safe(g.ScoreB || g.AwayScore || g.ScoreAway) : safe(g.ScoreA || g.HomeScore || g.ScoreHome);
+if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) !== "" && safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) !== "") {
+  const ourScore = isTeamA ? safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) : safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
+  const oppScore = isTeamA ? safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) : safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
   statusText = `Final • ${ourScore}-${oppScore}`;
 }
 
@@ -1753,7 +1797,15 @@ if (teamScheduleTitle){
         
         const rsvpData = rsvpRes.status === "fulfilled" ? rsvpRes.value : null;
         if (rsvpData) {
-          renderRsvpBoard(rsvpData, teamDisplayName);
+          try {
+            renderRsvpBoard(rsvpData, teamDisplayName);
+          } catch (e) {
+            console.error("RSVP render failed:", e);
+            const section = document.getElementById("rsvpSection");
+            const msg = document.getElementById("rsvpMsg");
+            if (section) section.style.display = "";
+            if (msg) msg.textContent = "Unable to load RSVP section right now.";
+          }
         } else {
           if (rsvpRes.status === "rejected") {
             console.error("RSVP load failed:", rsvpRes.reason);

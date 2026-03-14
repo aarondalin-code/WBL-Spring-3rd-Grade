@@ -469,7 +469,7 @@ async function loadGameDayTicker(){
   `&temperature_unit=fahrenheit` +
   `&wind_speed_unit=mph` +
   `&timezone=America%2FNew_York` +
-  `&forecast_days=3`;
+  `&forecast_days=7`;
 
     const [weatherData, note] = await Promise.all([
       fetchWeatherDataCached(weatherUrl),
