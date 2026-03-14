@@ -1072,7 +1072,7 @@ function computeTeamRecord(teamDisplayName, teamGames){
     const scoreB = toNumSafe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
     if (scoreA === null || scoreB === null) return;
 
-    const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
     const ourScore = isTeamA ? scoreA : scoreB;
     const oppScore = isTeamA ? scoreB : scoreA;
 
@@ -1255,15 +1255,15 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     `;
   } else {
     const g = next.game;
-    const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
-    const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
-    const opponentPrefix = safe(g.Location || g.HomeAway).toLowerCase() === "away" ? "@" : "vs";
-    const statusRaw = gameStatus(g);
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+    const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+    const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
+    const statusRaw = safe(g.Status) || "Scheduled";
 
     nextEl.innerHTML = `
       <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
       <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
-      <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${formatScheduleTime(gameTime(g)) || "Time TBD"} • ${gameField(g) || "Field TBD"}</div>
+      <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
       <div class="nextGameStatus">${statusRaw}</div>
     `;
   }
@@ -1279,17 +1279,17 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   }
 
   const g = last.game;
-  const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
-  const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
-  const opponentPrefix = safe(g.Location || g.HomeAway).toLowerCase() === "away" ? "@" : "vs";
-  const ourScore = isTeamA ? safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) : safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
-  const oppScore = isTeamA ? safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) : safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
+  const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+  const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+  const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
+  const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
+  const oppScore = isTeamA ? safe(g.ScoreB) : safe(g.ScoreA);
   const scoreText = (ourScore !== "" && oppScore !== "") ? `${ourScore}-${oppScore}` : "Score pending";
 
   lastEl.innerHTML = `
     <div class="nextGameLabel">Last Game</div>
     <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
-    <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${scoreText}</div>
+    <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${scoreText}</div>
     <div class="nextGameStatus">Final</div>
   `;
 }
@@ -1318,9 +1318,9 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
     <div class="teamScheduleList">
       ${sortedGames.map(g => {
 
-        const isTeamA = norm(gameTeamA(g)) === norm(teamDisplayName);
-const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
-const statusRaw = gameStatus(g);
+        const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
+const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
+const statusRaw = safe(g.Status) || "Scheduled";
 
 const oppMeta = getTeamMetaByName(opponent, window.__TEAM_ROWS__ || []);
 const oppColor = safe(oppMeta.color);
@@ -1734,6 +1734,7 @@ if (!familyToken) {
         if (rsvpSectionEl) rsvpSectionEl.style.display = "";
 
         const teamDisplayName = safe(teamRow.TeamName);
+        renderTeamRecord(teamDisplayName, []);
 
 const teamScheduleTitle = document.getElementById("teamScheduleTitle");
 
@@ -1745,39 +1746,39 @@ if (teamScheduleTitle){
     : `${teamDisplayName} Schedule`;
 }
 
-        const [rosterCsv, gamesCsv, rsvpData] = await Promise.all([
+        const [rosterRes, gamesRes, rsvpRes] = await Promise.allSettled([
           rosterPromise,
           gamesPromise,
           rsvpPromise
         ]);
 
-        const rosterRows = parseCsv(rosterCsv);
-        const players = rosterRows.filter(p => safe(p.TeamSlug) === slug);
-        buildRosterGrid(players, teamDisplayName);
-
-        const gameRows = parseCsv(gamesCsv);
-        const teamNameNorm = norm(teamDisplayName);
-        const teamGames = gameRows.filter(g => {
-          const teamA = norm(gameTeamA(g));
-          const teamB = norm(gameTeamB(g));
-          return teamA === teamNameNorm || teamB === teamNameNorm;
-        });
-renderTeamRecord(teamDisplayName, teamGames);
-
-        try {
-          renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
-        } catch (e) {
-          console.error("Header game card render failed:", e);
+        if (rosterRes.status === "fulfilled") {
+          const rosterRows = parseCsv(rosterRes.value);
+          const players = rosterRows.filter(p => safe(p.TeamSlug) === slug);
+          buildRosterGrid(players, teamDisplayName);
+        } else {
+          console.error("Roster load failed:", rosterRes.reason);
         }
 
-        try {
-          renderTeamSchedule(teamDisplayName, teamGames);
-        } catch (e) {
-          console.error("Team schedule render failed:", e);
-          const msg = document.getElementById("teamScheduleMsg");
-          if (msg) msg.textContent = "Unable to load schedule right now.";
+        let teamGames = [];
+        if (gamesRes.status === "fulfilled") {
+          const gameRows = parseCsv(gamesRes.value);
+          const teamNameNorm = norm(teamDisplayName);
+          teamGames = gameRows.filter(g =>
+            norm(g.TeamA) === teamNameNorm ||
+            norm(g.TeamB) === teamNameNorm
+          );
+        } else {
+          console.error("Games load failed:", gamesRes.reason);
+          const scheduleMsg = document.getElementById("teamScheduleMsg");
+          if (scheduleMsg) scheduleMsg.textContent = "Unable to load schedule right now.";
         }
+
+        renderTeamRecord(teamDisplayName, teamGames);
+        renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
+        renderTeamSchedule(teamDisplayName, teamGames);
         
+        const rsvpData = rsvpRes.status === "fulfilled" ? rsvpRes.value : null;
         if (rsvpData) {
           try {
             renderRsvpBoard(rsvpData, teamDisplayName);
@@ -1789,6 +1790,9 @@ renderTeamRecord(teamDisplayName, teamGames);
             if (msg) msg.textContent = "Unable to load RSVP section right now.";
           }
         } else {
+          if (rsvpRes.status === "rejected") {
+            console.error("RSVP load failed:", rsvpRes.reason);
+          }
           const msg = document.getElementById("rsvpMsg");
           const section = document.getElementById("rsvpSection");
           if (section) section.style.display = "";
