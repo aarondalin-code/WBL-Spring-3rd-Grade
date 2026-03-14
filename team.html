@@ -49,9 +49,12 @@
       gap:12px !important;
       min-width:0 !important;
       padding:12px;
-      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 62%, #e5e7eb 38%) !important;
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
       border-radius:14px;
-      background:linear-gradient(180deg, rgba(255,255,255,.94), color-mix(in srgb, var(--teamColor, #1e3fa8) 8%, #ffffff 92%)) !important;
+      background:linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
       box-shadow:0 10px 26px rgba(15,23,42,.08);
       align-content:start;
     }
@@ -108,7 +111,7 @@ body.teamPage .nextGameCard::after{
   background-repeat:no-repeat;
   background-position:right -12px bottom -16px;
   background-size:120px 120px;
-  opacity:.11;
+  opacity:.07;
   pointer-events:none;
   z-index:0;
 }
@@ -169,8 +172,12 @@ body.teamPage .nextGameCard > *{
       height:100% !important;
       display:grid !important;
       grid-template-rows:auto 1fr auto !important;
-      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 62%, #e5e7eb 38%) !important;
-      background:linear-gradient(180deg, rgba(255,255,255,.94), color-mix(in srgb, var(--teamColor, #1e3fa8) 8%, #ffffff 92%)) !important;
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      border:2px solid color-mix(in srgb, var(--teamColor, #1e3fa8) 58%, #ffffff 42%);
+      background:linear-gradient(180deg, color-mix(in srgb, var(--teamColor, #1e3fa8) 10%, #ffffff 90%), rgba(255,255,255,.94));
+      box-shadow:0 10px 26px rgba(15,23,42,.08);
     }
 
     body.teamPage .coachTitleCenter{
@@ -180,6 +187,26 @@ body.teamPage .nextGameCard > *{
     body.teamPage .coachLinks{
       grid-row:3 !important;
       align-self:end !important;
+    }
+
+    body.teamPage .teamHeaderTopLeft::after,
+    body.teamPage .coachCard::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: var(--teamLogo);
+      background-repeat:no-repeat;
+      background-position:right -12px bottom -16px;
+      background-size:120px 120px;
+      opacity:.07;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.teamPage .teamHeaderTopLeft > *,
+    body.teamPage .coachCard > *{
+      position:relative;
+      z-index:1;
     }
 
 body.teamPage .teamScheduleList{
@@ -749,6 +776,7 @@ function setHeaderFromTeamRow(teamRow){
   const rsvpCardEl = document.getElementById("rsvpSection");
   const nextGameEl = document.getElementById("teamHeaderNextGame");
   const teamRecordEl = document.getElementById("teamRecord");
+  const teamIdentityEl = document.querySelector(".teamHeaderTopLeft");
   const coachCardEl = document.querySelector(".teamHeaderRight .coachCard");
 
 
@@ -797,10 +825,13 @@ function setHeaderFromTeamRow(teamRow){
     else teamRecordEl.style.removeProperty("--teamColor");
   }
 
-  if (coachCardEl){
-    if (color) coachCardEl.style.setProperty("--teamColor", color);
-    else coachCardEl.style.removeProperty("--teamColor");
-  }
+  [teamIdentityEl, coachCardEl].forEach(el => {
+    if (!el) return;
+    if (color) el.style.setProperty("--teamColor", color);
+    else el.style.removeProperty("--teamColor");
+    if (logo) el.style.setProperty("--teamLogo", `url("${logo}")`);
+    else el.style.removeProperty("--teamLogo");
+  });
 
   document.title = `${name} • WBL 3rd Grade 2026`;
 
@@ -1052,7 +1083,7 @@ function computeTeamRecord(teamDisplayName, teamGames){
     const scoreB = toNumSafe(g.ScoreB);
     if (scoreA === null || scoreB === null) return;
 
-    const isTeamA = safe(g.TeamA) === teamDisplayName;
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
     const ourScore = isTeamA ? scoreA : scoreB;
     const oppScore = isTeamA ? scoreB : scoreA;
 
@@ -1210,7 +1241,7 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     `;
   } else {
     const g = next.game;
-    const isTeamA = safe(g.TeamA) === teamDisplayName;
+    const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
     const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
     const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
     const statusRaw = safe(g.Status) || "Scheduled";
@@ -1234,7 +1265,7 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   }
 
   const g = last.game;
-  const isTeamA = safe(g.TeamA) === teamDisplayName;
+  const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
   const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
   const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
   const ourScore = isTeamA ? safe(g.ScoreA) : safe(g.ScoreB);
@@ -1273,7 +1304,7 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
     <div class="teamScheduleList">
       ${sortedGames.map(g => {
 
-        const isTeamA = safe(g.TeamA) === teamDisplayName;
+        const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
 const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
 const statusRaw = safe(g.Status) || "Scheduled";
 
@@ -1708,16 +1739,38 @@ if (teamScheduleTitle){
         buildRosterGrid(players, teamDisplayName);
 
         const gameRows = parseCsv(gamesCsv);
-        const teamGames = gameRows.filter(g =>
-          safe(g.TeamA) === teamDisplayName ||
-          safe(g.TeamB) === teamDisplayName
-        );
+        const teamNameNorm = norm(teamDisplayName);
+        const teamGames = gameRows.filter(g => {
+          const teamA = norm(g.TeamA);
+          const teamB = norm(g.TeamB);
+          return teamA === teamNameNorm || teamB === teamNameNorm;
+        });
 renderTeamRecord(teamDisplayName, teamGames);
-renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
-renderTeamSchedule(teamDisplayName, teamGames);
+
+        try {
+          renderTeamHeaderNextGame(teamDisplayName, teamGames, safe(teamRow.TeamColor), safe(teamRow.TeamLogo));
+        } catch (e) {
+          console.error("Header game card render failed:", e);
+        }
+
+        try {
+          renderTeamSchedule(teamDisplayName, teamGames);
+        } catch (e) {
+          console.error("Team schedule render failed:", e);
+          const msg = document.getElementById("teamScheduleMsg");
+          if (msg) msg.textContent = "Unable to load schedule right now.";
+        }
         
         if (rsvpData) {
-          renderRsvpBoard(rsvpData, teamDisplayName);
+          try {
+            renderRsvpBoard(rsvpData, teamDisplayName);
+          } catch (e) {
+            console.error("RSVP render failed:", e);
+            const section = document.getElementById("rsvpSection");
+            const msg = document.getElementById("rsvpMsg");
+            if (section) section.style.display = "";
+            if (msg) msg.textContent = "Unable to load RSVP section right now.";
+          }
         } else {
           const msg = document.getElementById("rsvpMsg");
           const section = document.getElementById("rsvpSection");
