@@ -764,6 +764,7 @@ function setHeaderFromTeamRow(teamRow){
   const rosterCardEl = document.getElementById("rosterCard");
   const rsvpCardEl = document.getElementById("rsvpSection");
   const nextGameEl = document.getElementById("teamHeaderNextGame");
+  const lastGameEl = document.getElementById("teamHeaderLastGame");
   const teamRecordEl = document.getElementById("teamRecord");
   const teamIdentityEl = document.querySelector(".teamHeaderTopLeft");
   const coachCardEl = document.querySelector(".teamHeaderRight .coachCard");
@@ -802,12 +803,13 @@ function setHeaderFromTeamRow(teamRow){
     }
   });
 
-  if (nextGameEl){
-    if (color) nextGameEl.style.setProperty("--teamColor", color);
-    else nextGameEl.style.removeProperty("--teamColor");
-    if (logo) nextGameEl.style.setProperty("--teamLogo", `url("${logo}")`);
-    else nextGameEl.style.removeProperty("--teamLogo");
-  }
+  [nextGameEl, lastGameEl].forEach(el => {
+    if (!el) return;
+    if (color) el.style.setProperty("--teamColor", color);
+    else el.style.removeProperty("--teamColor");
+    if (logo) el.style.setProperty("--teamLogo", `url("${logo}")`);
+    else el.style.removeProperty("--teamLogo");
+  });
 
   if (teamRecordEl){
     if (color) teamRecordEl.style.setProperty("--teamColor", color);
@@ -1167,13 +1169,28 @@ function formatScheduleDate(dateStr) {
   });
 }
 
-function formatScheduleTime(timeStr) {
-  if (!safe(timeStr)) return "";
-  const d = new Date(timeStr);
-  if (!isNaN(d) && d.getFullYear() < 1905) {
-    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  }
-  return safe(timeStr);
+function gameTeamA(g){
+  return safe((g && (g.TeamA || g.HomeTeam || g.Home || g.Team1)) || "");
+}
+
+function gameTeamB(g){
+  return safe((g && (g.TeamB || g.AwayTeam || g.Away || g.Team2)) || "");
+}
+
+function gameStatus(g){
+  return safe((g && (g.Status || g.GameStatus || g.Result)) || "Scheduled");
+}
+
+function gameDate(g){
+  return safe((g && (g.Date || g.GameDate || g.Day)) || "");
+}
+
+function gameTime(g){
+  return safe((g && (g.Time || g.GameTime || g.StartTime)) || "");
+}
+
+function gameField(g){
+  return safe((g && (g.Field || g.Location || g.Venue)) || "");
 }
 
 
