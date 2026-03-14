@@ -1070,6 +1070,11 @@ function computeTeamRecord(teamDisplayName, teamGames){
   (teamGames || []).forEach(g => {
     if (gameStatus(g).toLowerCase() !== "final") return;
 
+    const scoreA = toNumSafe(gameScoreA(g));
+    const scoreB = toNumSafe(gameScoreB(g));
+    if (scoreA === null || scoreB === null) return;
+
+    const isTeamA = isTeamAInGame(g, teamDisplayName, window.__ACTIVE_TEAM_SLUG__ || "");
     const scoreA = toNumSafe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
     const scoreB = toNumSafe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
     if (scoreA === null || scoreB === null) return;
@@ -1218,12 +1223,89 @@ function gameField(g){
   return safe(g?.Field || g?.Location || g?.Venue);
 }
 
+function readGameField(g, aliases, contains = []){
+  if (!g || typeof g !== "object") return "";
+
+  const normalizeKey = (k) => norm(String(k).replace(/^﻿/, "")).replace(/[^a-z0-9]/g, "");
+  const aliasSet = new Set((aliases || []).map(a => normalizeKey(a)));
+  const containsNorm = (contains || []).map(c => normalizeKey(c));
+
+  for (const [k,v] of Object.entries(g)) {
+    const keyNorm = normalizeKey(k);
+    if (aliasSet.has(keyNorm)) return safe(v);
+  }
+
+  if (containsNorm.length) {
+    for (const [k,v] of Object.entries(g)) {
+      const keyNorm = normalizeKey(k);
+      if (containsNorm.some(token => token && keyNorm.includes(token))) return safe(v);
+    }
+  }
+
+  return "";
+}
+
+function gameTeamA(g){
+  return readGameField(g, ["TeamA","Team A","HomeTeam","Home Team","Home","Team1","Team 1"], ["hometeam","teama","team1"]);
+}
+
+function gameTeamB(g){
+  return readGameField(g, ["TeamB","Team B","AwayTeam","Away Team","Away","Team2","Team 2"], ["awayteam","teamb","team2"]);
+}
+
+function gameTeamSlugA(g){
+  return readGameField(g, ["TeamASlug","Team A Slug","HomeTeamSlug","Home Team Slug","Team1Slug"], ["teamaslug","hometeamslug","team1slug"]);
+}
+
+function gameTeamSlugB(g){
+  return readGameField(g, ["TeamBSlug","Team B Slug","AwayTeamSlug","Away Team Slug","Team2Slug"], ["teambslug","awayteamslug","team2slug"]);
+}
+
+function isTeamAInGame(g, teamDisplayName, teamSlug = ""){
+  const byName = norm(gameTeamA(g)) === norm(teamDisplayName);
+  if (byName) return true;
+  if (!safe(teamSlug)) return false;
+  return norm(gameTeamSlugA(g)) === norm(teamSlug);
+}
+
+function gameStatus(g){
+  return readGameField(g, ["Status","GameStatus","Game Status","Result"]) || "Scheduled";
+}
+
+function gameDate(g){
+  return readGameField(g, ["Date","GameDate","Game Date","Game_Day","Day"]);
+}
+
+function gameTime(g){
+  return readGameField(g, ["Time","GameTime","Game Time","StartTime","Start Time"]);
+}
+
+function gameField(g){
+  return readGameField(g, ["Field","Location","Venue"]);
+}
+
+function gameLocationType(g){
+  return readGameField(g, ["LocationType","Location","HomeAway","Home/Away"]);
+}
+
+function gameScoreA(g){
+  return readGameField(g, ["ScoreA","Score A","HomeScore","Home Score","ScoreHome"]);
+}
+
+function gameScoreB(g){
+  return readGameField(g, ["ScoreB","Score B","AwayScore","Away Score","ScoreAway"]);
+}
 
 
 function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLogo = "") {
   const nextEl = document.getElementById("teamHeaderNextGame");
   const lastEl = document.getElementById("teamHeaderLastGame");
   if (!nextEl || !lastEl) return;
+
+  [nextEl, lastEl].forEach(el => {
+    if (teamColor) el.style.setProperty("--teamColor", teamColor);
+    else el.style.removeProperty("--teamColor");
+
 
   [nextEl, lastEl].forEach(el => {
     if (teamColor) el.style.setProperty("--teamColor", teamColor);
@@ -1260,6 +1342,7 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
 
   const upcoming = sorted.find(x => x.dt.getTime() >= now.getTime());
   const next = upcoming || sorted[sorted.length - 1];
+  const completed = sorted.filter(x => norm(gameStatus(x.game)) === "final");
   const completed = sorted.filter(x => norm(x.game.Status) === "final");
   const last = completed[completed.length - 1] || null;
 
@@ -1272,6 +1355,10 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     `;
   } else {
     const g = next.game;
+    const isTeamA = isTeamAInGame(g, teamDisplayName, window.__ACTIVE_TEAM_SLUG__ || "");
+    const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
+    const opponentPrefix = gameLocationType(g).toLowerCase() === "away" ? "@" : "vs";
+    const statusRaw = gameStatus(g);
     const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
     const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
     const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
@@ -1280,6 +1367,7 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
     nextEl.innerHTML = `
       <div class="nextGameLabel">${upcoming ? "Next Game" : "Most Recent Game"}</div>
       <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
+      <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${formatScheduleTime(gameTime(g)) || "Time TBD"} • ${gameField(g) || "Field TBD"}</div>
       <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${formatScheduleTime(g.Time) || "Time TBD"} • ${safe(g.Field) || "Field TBD"}</div>
       <div class="nextGameStatus">${statusRaw}</div>
     `;
@@ -1296,6 +1384,11 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   }
 
   const g = last.game;
+  const isTeamA = isTeamAInGame(g, teamDisplayName, window.__ACTIVE_TEAM_SLUG__ || "");
+  const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
+  const opponentPrefix = gameLocationType(g).toLowerCase() === "away" ? "@" : "vs";
+  const ourScore = isTeamA ? gameScoreA(g) : gameScoreB(g);
+  const oppScore = isTeamA ? gameScoreB(g) : gameScoreA(g);
   const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
   const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
   const opponentPrefix = safe(g.Location).toLowerCase() === "away" ? "@" : "vs";
@@ -1306,6 +1399,7 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   lastEl.innerHTML = `
     <div class="nextGameLabel">Last Game</div>
     <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
+    <div class="nextGameMeta">${formatScheduleDate(gameDate(g))} • ${scoreText}</div>
     <div class="nextGameMeta">${formatScheduleDate(g.Date)} • ${scoreText}</div>
     <div class="nextGameStatus">Final</div>
   `;
@@ -1335,6 +1429,9 @@ function renderTeamSchedule(teamDisplayName, teamGames) {
     <div class="teamScheduleList">
       ${sortedGames.map(g => {
 
+        const isTeamA = isTeamAInGame(g, teamDisplayName, window.__ACTIVE_TEAM_SLUG__ || "");
+const opponent = isTeamA ? gameTeamB(g) : gameTeamA(g);
+const statusRaw = gameStatus(g);
         const isTeamA = norm(g.TeamA) === norm(teamDisplayName);
 const opponent = isTeamA ? safe(g.TeamB) : safe(g.TeamA);
 const statusRaw = safe(g.Status) || "Scheduled";
@@ -1347,6 +1444,9 @@ const opponentHtml =
     : `vs <strong>${opponent || "TBD"}</strong>`;
 
 let statusText = statusRaw;
+if (statusRaw.toLowerCase() === "final" && gameScoreA(g) !== "" && gameScoreB(g) !== "") {
+  const ourScore = isTeamA ? gameScoreA(g) : gameScoreB(g);
+  const oppScore = isTeamA ? gameScoreB(g) : gameScoreA(g);
 if (statusRaw.toLowerCase() === "final" && safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) !== "" && safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) !== "") {
   const ourScore = isTeamA ? safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome) : safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway);
   const oppScore = isTeamA ? safe(g.ScoreB ?? g.AwayScore ?? g.ScoreAway) : safe(g.ScoreA ?? g.HomeScore ?? g.ScoreHome);
@@ -1726,6 +1826,7 @@ if (!familyToken) {
 
       try {
         const familyToken = safe(getParam("t"));
+        window.__ACTIVE_TEAM_SLUG__ = slug;
 
         const teamsPromise = fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const rosterPromise = fetchCsvCached(window.SHEET?.ROSTER_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
@@ -1781,6 +1882,12 @@ if (teamScheduleTitle){
         if (gamesRes.status === "fulfilled") {
           const gameRows = parseCsv(gamesRes.value);
           const teamNameNorm = norm(teamDisplayName);
+          const slugNorm = norm(slug);
+          teamGames = gameRows.filter(g =>
+            norm(gameTeamA(g)) === teamNameNorm ||
+            norm(gameTeamB(g)) === teamNameNorm ||
+            norm(gameTeamSlugA(g)) === slugNorm ||
+            norm(gameTeamSlugB(g)) === slugNorm
           teamGames = gameRows.filter(g =>
             norm(g.TeamA) === teamNameNorm ||
             norm(g.TeamB) === teamNameNorm
