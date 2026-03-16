@@ -1510,9 +1510,9 @@ function parseRowDateForWeeklyTrivia(row){
   return null;
 }
 
-function isRowInCurrentTriviaWeek(row, weekRange, { requireDate = false } = {}){
+function isRowInCurrentTriviaWeek(row, weekRange){
   const d = parseRowDateForWeeklyTrivia(row);
-  if (!d) return !requireDate;
+  if (!d) return true; // preserve backward compatibility when no date column exists
   return d >= weekRange.start && d <= weekRange.end;
 }
 
@@ -1529,7 +1529,7 @@ async function loadTriviaWeeklyChampion(){
     const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS });
     const weekRange = getCurrentWeekRangeSundaySaturday();
     const rows = parseCsv(csv)
-      .filter(r => isRowInCurrentTriviaWeek(r, weekRange, { requireDate: true }))
+      .filter(r => isRowInCurrentTriviaWeek(r, weekRange))
       .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
       .map(r => ({
         ...r,
@@ -1767,7 +1767,7 @@ async function loadTriviaWeeklyChampion(){
 
     const csv = await fetchCsvCached(TRIVIA_LEADERBOARD_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
     const weekRange = getCurrentWeekRangeSundaySaturday();
-    const rows = parseCsv(csv).filter(r => isRowInCurrentTriviaWeek(r, weekRange, { requireDate: true }));
+    const rows = parseCsv(csv).filter(r => isRowInCurrentTriviaWeek(r, weekRange));
 
     if (!rows.length) {
       el.textContent = "No trivia scores yet for this week.";
