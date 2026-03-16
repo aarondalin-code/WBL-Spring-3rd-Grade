@@ -1562,7 +1562,10 @@ async function loadTriviaWeeklyChampion(){
 
       existing.__attempted += 1;
 
-      const isCorrect = String(r.IsCorrect || "").trim().toUpperCase() === "TRUE";
+const rawIsCorrect = String(r.IsCorrect || "").trim().toUpperCase();
+const isCorrect = rawIsCorrect === "TRUE" || rawIsCorrect === "1";
+
+      
       if (isCorrect) existing.__correct += 1;
 
       grouped.set(key, existing);
