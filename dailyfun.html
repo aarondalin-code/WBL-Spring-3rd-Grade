@@ -919,6 +919,7 @@ color:#6b7280;
           </div>
         </article>
 
+    
         <article class="card">
           <div class="cardBody">
             <div class="dailySectionTitle">Baseball Fact of the Day</div>
@@ -933,6 +934,14 @@ color:#6b7280;
           </div>
         </article>
 
+<article class="card">
+  <div class="cardBody">
+    <div class="dailySectionTitle">Hall of Famer of the Day</div>
+    <div id="hallOfFameCard">Loading today’s Hall of Famer...</div>
+  </div>
+</article>
+
+        
         <article class="card dailyAskCard">
           <div class="cardBody">
             <div class="dailySectionTitle">Ask a Baseball Question</div>
@@ -1229,6 +1238,54 @@ async function loadHistory(){
     console.error(err);
   }
 }
+   
+    async function loadHallOfFame(){
+  const el = document.getElementById("hallOfFameCard");
+
+  try {
+
+    const csv = await fetchCsvCached(window.SHEET.HALL_OF_FAME_CSV_URL);
+    const rows = parseCsv(csv);
+
+    if (!rows.length) {
+      el.textContent = "No Hall of Fame data.";
+      return;
+    }
+
+    const today = new Date();
+    const index =
+      Math.floor(today.getTime() / 86400000) % rows.length;
+
+    const player = rows[index];
+
+    el.innerHTML = `
+      <div class="hofCard">
+        <img src="${player.ImageURL}" style="width:100%;border-radius:8px;margin-bottom:10px">
+        <h4>${player.Name}</h4>
+        <div>${player.Position} • ${player.Years}</div>
+        <p><b>Team:</b> ${player.PrimaryTeam}</p>
+
+        <ul>
+          <li>${player.Fact1}</li>
+          <li>${player.Fact2}</li>
+        </ul>
+
+        <p><b>Key Stats</b></p>
+        <ul>
+          <li>${player.Stat1}</li>
+          <li>${player.Stat2}</li>
+        </ul>
+      </div>
+    `;
+  }
+  catch(err){
+    console.error(err);
+    el.textContent = "Unable to load Hall of Famer.";
+  }
+}
+    
+  
+    
     async function loadQuote(){
       const el = document.getElementById("quoteCard");
 
