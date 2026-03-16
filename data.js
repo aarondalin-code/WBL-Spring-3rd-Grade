@@ -21,6 +21,7 @@ window.SHEET = {
   BASEBALL_QUOTES_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1596942991&single=true&output=csv",
   WEATHER_TICKER_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=597876225&single=true&output=csv",
   TRIVIA_TODAY_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1081379014&single=true&output=csv",
+  TRIVIA_RESPONSES_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1182651309&single=true&output=csv",
   TRIVIA_WEEKLY_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1799726467&single=true&output=csv",
   RSVP_API_URL: "https://script.google.com/macros/s/AKfycby-SxFkXuqW_kXAsNcsUUhSI3TXkk6N-ZzI8gSvV3aATa4p3Awy4_Q4VC5szn6B3Gff/exec",
   KIDS_QUESTIONS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=518767165&single=true&output=csv",
