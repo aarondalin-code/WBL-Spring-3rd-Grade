@@ -616,11 +616,13 @@ track.classList.remove("homeTickerLoading");
    function renderPlayerModal(player){
   const name = formatPlayerName(player.PlayerName || player.Name || "Player");
   const team = safe(player.Team || player.TeamName || "");
+  const teamSlug = safe(player.TeamSlug || "");
+  const teamLabel = team || formatTeamSlugLabel(teamSlug);
   const photo = safe(player.PhotoURL) || (window.DEFAULT_PLAYER_PHOTO || "./logo.png");
   const blurb = safe(player.Blurb || player.Why || player.Reason || player.Notes || "");
   const coach = safe(player.CoachName);
 
-  const meta = getMeta(team);
+  const meta = getMeta(team, teamSlug);
   const teamStyle = meta.color ? `style="margin-top:4px; color:${meta.color}; font-weight:900;"` : `style="margin-top:4px;"`;
 
   openModal(`
@@ -630,7 +632,7 @@ track.classList.remove("homeTickerLoading");
       </div>
       <div>
         <h3 id="modalTitle" class="profileName">${name}</h3>
-        ${team ? `<div class="muted" ${teamStyle}>${team}</div>` : ""}
+        ${teamLabel ? `<div class="muted" ${teamStyle}>${teamLabel}</div>` : ""}
         <div class="card" style="margin-top:12px;">
           <div class="cardBody">
             <div class="muted small">Coach’s Note${coach ? ` • ${coach}` : ""}</div>
@@ -706,16 +708,31 @@ function updateCountdown(){
 }
 
     /* -------------------- Teams meta -------------------- */
-    const teamMeta = new Map(); // normalized TeamName -> { slug, logo, color }
+    const teamMeta = new Map(); // normalized TeamName -> { slug, logo, color, name }
+    const teamMetaBySlug = new Map(); // TeamSlug -> { slug, logo, color, name }
 
-    function getMeta(teamName){
+    function getMeta(teamName, teamSlug = ""){
+      if (safe(teamSlug) && teamMetaBySlug.has(safe(teamSlug))) {
+        return teamMetaBySlug.get(safe(teamSlug));
+      }
       const m = teamMeta.get(norm(teamName));
-      return m || { slug:"", logo:(window.DEFAULT_TEAM_LOGO || "./logo.png"), color:"" };
+      return m || { slug:"", logo:(window.DEFAULT_TEAM_LOGO || "./logo.png"), color:"", name: safe(teamName) };
     }
 
-    function teamHref(teamName){
-      const m = getMeta(teamName);
+    function teamHref(teamName, teamSlug = ""){
+      const m = getMeta(teamName, teamSlug);
       return m.slug ? `./team.html?team=${encodeURIComponent(m.slug)}` : "./teams.html";
+    }
+
+
+    function formatTeamSlugLabel(teamSlug){
+      const raw = safe(teamSlug);
+      if (!raw) return "";
+      return raw
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\b\w/g, c => c.toUpperCase());
     }
 
     function teamAnchor(teamName){
@@ -728,17 +745,19 @@ function updateCountdown(){
 function renderScheduleCard(g){
   const aName = safe(g.TeamA);
   const bName = safe(g.TeamB);
-  const aMeta = getMeta(aName);
-  const bMeta = getMeta(bName);
+  const aSlug = safe(g.TeamASlug || g.TeamSlugA);
+  const bSlug = safe(g.TeamBSlug || g.TeamSlugB);
+  const aMeta = getMeta(aName, aSlug);
+  const bMeta = getMeta(bName, bSlug);
 
   const final = isFinal(g.Status);
   const hasScores = safe(g.ScoreA) !== "" && safe(g.ScoreB) !== "";
   const scoreText = (final && hasScores) ? `${safe(g.ScoreA)}–${safe(g.ScoreB)}` : "@";
 
-  function miniTeamLink(teamName){
+  function miniTeamLink(teamName, teamSlug = ""){
     const name = safe(teamName) || "TBD";
-    const m = getMeta(name);
-    const href = teamHref(name);
+    const m = getMeta(name, teamSlug);
+    const href = teamHref(name, teamSlug);
     const style = m.color ? `style="color:${m.color}"` : "";
     return `<a class="miniTeamName" ${style} href="${href}">${name}</a>`;
   }
@@ -754,7 +773,7 @@ function renderScheduleCard(g){
         <div class="miniTeamSide miniTeamLeft">
           <img class="teamLogoMini" src="${aMeta.logo}" alt="${aName} logo"
                onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-          ${miniTeamLink(aName)}
+          ${miniTeamLink(aName, aSlug)}
         </div>
 
         <div class="miniMid">
@@ -764,7 +783,7 @@ function renderScheduleCard(g){
         <div class="miniTeamSide miniTeamRight">
           <img class="teamLogoMini" src="${bMeta.logo}" alt="${bName} logo"
                onerror="this.onerror=null; this.src='${window.DEFAULT_TEAM_LOGO || "./logo.png"}';">
-          ${miniTeamLink(bName)}
+          ${miniTeamLink(bName, bSlug)}
         </div>
       </div>
 
@@ -1155,11 +1174,14 @@ function renderScheduleCard(g){
           for (const r of teamRows){
             const name = safe(r.TeamName);
             if (!name) continue;
-            teamMeta.set(norm(name), {
+            const meta = {
               slug: safe(r.TeamSlug),
               logo: safe(r.TeamLogo) || (window.DEFAULT_TEAM_LOGO || "./logo.png"),
-              color: safe(r.TeamColor) || ""
-            });
+              color: safe(r.TeamColor) || "",
+              name
+            };
+            teamMeta.set(norm(name), meta);
+            if (meta.slug) teamMetaBySlug.set(meta.slug, meta);
           }
         } catch(e){
           console.warn("Teams feed unavailable.", e);
@@ -1321,6 +1343,7 @@ function renderScheduleCard(g){
 
         const mapped = potw.map(r => {
           const team = safe(r.TeamName || r.Team);
+          const teamSlug = safe(r.TeamSlug || "");
           const playerID = safe(r.PlayerID);
 
           const sheetName = safe(r.PlayerName || r.Name);
@@ -1337,12 +1360,14 @@ function renderScheduleCard(g){
           const week = safe(r.Week);
           const weekDate = safe(r.WeekDate);
 
-          return { Team:team, PlayerID:playerID, PlayerName:name, PhotoURL:photo, Blurb:blurb, CoachName:coach, Week:week, WeekDate:weekDate };
-        }).filter(p => p.Team && p.PlayerID);
+          const resolvedTeamName = team || getMeta("", teamSlug).name || formatTeamSlugLabel(teamSlug) || "";
+          return { Team:resolvedTeamName, TeamSlug:teamSlug, PlayerID:playerID, PlayerName:name, PhotoURL:photo, Blurb:blurb, CoachName:coach, Week:week, WeekDate:weekDate };
+        }).filter(p => (p.Team || p.TeamSlug) && p.PlayerID);
 
         const byTeam = new Map();
         for (const p of mapped){
-          if (!byTeam.has(p.Team)) byTeam.set(p.Team, p);
+          const teamKey = p.TeamSlug || p.Team;
+          if (!byTeam.has(teamKey)) byTeam.set(teamKey, p);
         }
         const onePerTeam = Array.from(byTeam.values());
 
@@ -1363,7 +1388,7 @@ function renderScheduleCard(g){
           btn.className = "potwCardBtn";
 
           const displayName = formatPlayerName(p.PlayerName) || "Player of the Week";
-          const meta = getMeta(p.Team);
+          const meta = getMeta(p.Team, p.TeamSlug);
           const teamStyle = meta.color ? `style="color:${meta.color}"` : "";
           if (meta.color) btn.style.setProperty("--teamColor", meta.color);
 
@@ -1400,5 +1425,3 @@ initHome().catch(err => console.error(err));
   <script src="./nav.js"></script>
 </body>
 </html>
-
-
