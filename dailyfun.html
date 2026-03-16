@@ -1017,6 +1017,11 @@ let teamColorMap = {};
       window.SHEET?.TRIVIA_LEADERBOARD_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1411514113&single=true&output=csv";
 
+const TRIVIA_RESPONSES_CSV_URL =
+  window.SHEET?.TRIVIA_RESPONSES_CSV_URL || "";
+
+
+    
 const MOVIES_CSV_URL =
   window.SHEET?.BASEBALL_MOVIES_CSV_URL || "";
 
@@ -1521,24 +1526,54 @@ async function loadTriviaWeeklyChampion(){
 
   try {
     await loadTeamColors();
-    if (!TRIVIA_WEEKLY_CSV_URL) {
+
+    if (!TRIVIA_RESPONSES_CSV_URL) {
       el.textContent = "Weekly champion feed is not connected yet.";
       return;
     }
 
-    const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS });
+    const csv = await fetchCsvCached(TRIVIA_RESPONSES_CSV_URL, {
+      ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS
+    });
+
     const weekRange = getCurrentWeekRangeSundaySaturday();
 
-    const rows = parseCsv(csv)
-      .filter(r => isRowInCurrentTriviaWeek(r, weekRange, { requireDate: true }))
-      .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
+    const grouped = new Map();
+
+    parseCsv(csv).forEach(r => {
+      const playerName = String(r.PlayerName || "").trim();
+      if (!playerName || playerName === "No entries yet") return;
+
+      const submittedAt = new Date(String(r.SubmittedAt || "").trim());
+      if (Number.isNaN(submittedAt.getTime())) return;
+
+      if (submittedAt < weekRange.start || submittedAt > weekRange.end) return;
+
+      const key = playerName.toLowerCase();
+      const teamName = String(r.Team || "").trim();
+
+      const existing = grouped.get(key) || {
+        PlayerName: playerName,
+        Team: teamName,
+        __correct: 0,
+        __attempted: 0,
+        __acc: 0
+      };
+
+      existing.__attempted += 1;
+
+      const isCorrect = String(r.IsCorrect || "").trim().toUpperCase() === "TRUE";
+      if (isCorrect) existing.__correct += 1;
+
+      grouped.set(key, existing);
+    });
+
+    const rows = Array.from(grouped.values())
       .map(r => ({
         ...r,
-        __acc: toAccuracyPercent(r.Accuracy),
-        __correct: toNumSafe(r.Correct),
-        __attempted: toNumSafe(r.Attempted)
+        __acc: r.__attempted > 0 ? (r.__correct / r.__attempted) * 100 : 0
       }))
-      .sort((a,b) => {
+      .sort((a, b) => {
         const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
         const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
         if (accB !== accA) return accB - accA;
@@ -1553,8 +1588,7 @@ async function loadTriviaWeeklyChampion(){
     }
 
     const displayRows = rows.slice(0, 5);
-    const { start, end } = getCurrentWeekRangeSundaySaturday();
-
+    const { start, end } = weekRange;
     const options = { month: "short", day: "numeric" };
     const weekLabel =
       start.toLocaleDateString(undefined, options) +
