@@ -1475,6 +1475,47 @@ function toNumSafe(val){
   return Number.isFinite(n) ? n : 0;
 }
 
+function getCurrentWeekRangeSundaySaturday(baseDate = new Date()){
+  const start = new Date(baseDate);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay()); // Sunday
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6); // Saturday
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+}
+
+function parseRowDateForWeeklyTrivia(row){
+  const candidates = [
+    row.WeekStart,
+    row.WeekOf,
+    row['Week Of'],
+    row.Date,
+    row.Timestamp,
+    row.SubmittedAt,
+    row.AnsweredAt,
+    row.UpdatedAt,
+    row.LastUpdated
+  ];
+
+  for (const raw of candidates){
+    const str = String(raw || '').trim();
+    if (!str) continue;
+    const d = new Date(str);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+
+  return null;
+}
+
+function isRowInCurrentTriviaWeek(row, weekRange, { requireDate = false } = {}){
+  const d = parseRowDateForWeeklyTrivia(row);
+  if (!d) return !requireDate;
+  return d >= weekRange.start && d <= weekRange.end;
+}
+
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
 
@@ -1486,7 +1527,9 @@ async function loadTriviaWeeklyChampion(){
     }
 
     const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS });
+    const weekRange = getCurrentWeekRangeSundaySaturday();
     const rows = parseCsv(csv)
+      .filter(r => isRowInCurrentTriviaWeek(r, weekRange, { requireDate: true }))
       .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
       .map(r => ({
         ...r,
@@ -1504,17 +1547,13 @@ async function loadTriviaWeeklyChampion(){
       });
 
     if (!rows.length) {
-      el.textContent = "No weekly trivia data yet.";
+      el.textContent = "No weekly trivia data yet for this week (check SubmittedAt values).";
       return;
     }
 
     const displayRows = rows.slice(0, 5);
 
-    const now = new Date();
-    const start = new Date(now);
-    start.setDate(now.getDate() - now.getDay());
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
+    const { start, end } = getCurrentWeekRangeSundaySaturday();
 
     const options = { month: "short", day: "numeric" };
     const weekLabel =
@@ -1727,10 +1766,11 @@ async function loadTriviaWeeklyChampion(){
     }
 
     const csv = await fetchCsvCached(TRIVIA_LEADERBOARD_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-    const rows = parseCsv(csv);
+    const weekRange = getCurrentWeekRangeSundaySaturday();
+    const rows = parseCsv(csv).filter(r => isRowInCurrentTriviaWeek(r, weekRange, { requireDate: true }));
 
     if (!rows.length) {
-      el.textContent = "No trivia scores yet.";
+      el.textContent = "No trivia scores yet for this week.";
       return;
     }
 
