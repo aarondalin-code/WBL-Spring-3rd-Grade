@@ -1513,6 +1513,7 @@ function parseRowDateForWeeklyTrivia(row){
 function isRowInCurrentTriviaWeek(row, weekRange, { requireDate = false } = {}){
   const d = parseRowDateForWeeklyTrivia(row);
   if (!d) return !requireDate;
+  return d >= weekRange.start && d <= weekRange.end;
 }
 
 async function loadTriviaWeeklyChampion(){
@@ -1527,6 +1528,7 @@ async function loadTriviaWeeklyChampion(){
 
     const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS });
     const weekRange = getCurrentWeekRangeSundaySaturday();
+
     const rows = parseCsv(csv)
       .filter(r => isRowInCurrentTriviaWeek(r, weekRange, { requireDate: true }))
       .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
@@ -1542,16 +1544,15 @@ async function loadTriviaWeeklyChampion(){
         if (accB !== accA) return accB - accA;
         if (b.__correct !== a.__correct) return b.__correct - a.__correct;
         if (a.__attempted !== b.__attempted) return a.__attempted - b.__attempted;
-        return String(a.PlayerName || "").localeCompare(String(b.PlayerName || ""));    
+        return String(a.PlayerName || "").localeCompare(String(b.PlayerName || ""));
       });
 
     if (!rows.length) {
-      el.textContent = "No weekly trivia data yet for this week (check SubmittedAt values).";
+      el.textContent = "No weekly trivia data yet for this week.";
       return;
     }
 
     const displayRows = rows.slice(0, 5);
-
     const { start, end } = getCurrentWeekRangeSundaySaturday();
 
     const options = { month: "short", day: "numeric" };
@@ -1561,29 +1562,30 @@ async function loadTriviaWeeklyChampion(){
       end.toLocaleDateString(undefined, options);
 
     el.innerHTML = `
-  <div class="weeklyChampionWrap">
-    <div class="weeklyChampionBadge">Weekly Top 5</div>
-    ${displayRows.map((row, idx) => {
-      const accText = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
-      const teamName = String(row.Team || "").trim();
-      const teamColor = teamColorMap[normalizeTeamName(teamName)] || '#2563eb';
-      return `
-      <div class="weeklyChampionHero">
-        <div class="weeklyChampionAvatar">${idx + 1}</div>
-        <div class="weeklyChampionMain">
-          <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-          ${teamName ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
-        </div>
-        <div class="weeklyChampionChips">
-          <div class="weeklyChampionChip"><strong>${accText}</strong><span>Accuracy</span></div>
-          <div class="weeklyChampionChip"><strong>${row.__correct}</strong><span>Correct</span></div>
-          <div class="weeklyChampionChip"><strong>${row.__attempted}</strong><span>Attempts</span></div>
-        </div>
-      </div>`;
-    }).join("")}
-    <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
-  </div>
-`;
+      <div class="weeklyChampionWrap">
+        <div class="weeklyChampionBadge">Weekly Top 5</div>
+        ${displayRows.map((row, idx) => {
+          const accText = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
+          const teamName = String(row.Team || "").trim();
+          const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
+          return `
+            <div class="weeklyChampionHero">
+              <div class="weeklyChampionAvatar">${idx + 1}</div>
+              <div class="weeklyChampionMain">
+                <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
+                ${teamName ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
+              </div>
+              <div class="weeklyChampionChips">
+                <div class="weeklyChampionChip"><strong>${accText}</strong><span>Accuracy</span></div>
+                <div class="weeklyChampionChip"><strong>${row.__correct}</strong><span>Correct</span></div>
+                <div class="weeklyChampionChip"><strong>${row.__attempted}</strong><span>Attempts</span></div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+        <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
+      </div>
+    `;
   } catch (err) {
     el.textContent = "Unable to load weekly champion right now.";
     console.error(err);
@@ -1753,7 +1755,7 @@ async function loadTriviaWeeklyChampion(){
       }
     }
 
-   async function loadTriviaLeaderboard(){
+async function loadTriviaLeaderboard(){
   const el = document.getElementById("triviaLeaderboard");
 
   try {
@@ -1765,16 +1767,21 @@ async function loadTriviaWeeklyChampion(){
     }
 
     const csv = await fetchCsvCached(TRIVIA_LEADERBOARD_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-    const weekRange = getCurrentWeekRangeSundaySaturday();
-    const rows = parseCsv(csv).filter(r => isRowInCurrentTriviaWeek(r, weekRange, { requireDate: true }));
-   
+    const rows = parseCsv(csv)
+      .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet");
+
     if (!rows.length) {
-      el.textContent = "No trivia scores yet for this week.";
+      el.textContent = "No trivia scores yet this season.";
       return;
     }
 
     const topRows = rows
-      .map(r => ({ ...r, __acc: toAccuracyPercent(r.Accuracy), __correct: toNumSafe(r.Correct), __attempted: toNumSafe(r.Attempted) }))
+      .map(r => ({
+        ...r,
+        __acc: toAccuracyPercent(r.Accuracy),
+        __correct: toNumSafe(r.Correct),
+        __attempted: toNumSafe(r.Attempted)
+      }))
       .sort((a,b) => {
         const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
         const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
