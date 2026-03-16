@@ -1547,7 +1547,7 @@ async function loadTriviaWeeklyChampion(){
       });
 
     if (!rows.length) {
-      el.textContent = "No weekly trivia data yet.";
+      el.textContent = "No weekly trivia data yet for this week (check SubmittedAt values).";
       return;
     }
 
