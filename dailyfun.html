@@ -1433,7 +1433,10 @@ async function loadMovieOfTheWeek(){
 
     const weekIndex = Math.floor(dayOfYear(new Date()) / 7) % rows.length;
     const movie = rows[weekIndex];
-    const embedUrl = getYouTubeEmbedUrl(movie.TrailerURL || "");
+    const rawEmbedUrl = getYouTubeEmbedUrl(movie.TrailerURL || "");
+const embedUrl = rawEmbedUrl
+  ? `${rawEmbedUrl}${rawEmbedUrl.includes("?") ? "&" : "?"}rel=0&modestbranding=1`
+  : "";
 
     el.innerHTML = `
       <div class="movieTitle">${movie.Title || ""}${movie.Year ? " (" + movie.Year + ")" : ""}</div>
