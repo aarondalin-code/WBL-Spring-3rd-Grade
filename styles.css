@@ -3677,3 +3677,41 @@ body.homeIndex .homeHeroBtns .btnPrimary{
 
 
 }
+
+
+.hofCard{
+  text-align:center;
+  font-size:14px;
+}
+
+.hofName{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.hofMeta{
+  font-size:13px;
+  color:#666;
+  margin-bottom:6px;
+}
+
+.hofInduction{
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:12px;
+}
+
+.hofSectionTitle{
+  font-weight:700;
+  margin-top:10px;
+  margin-bottom:4px;
+}
+
+.hofFacts,
+.hofStats{
+  text-align:left;
+  margin:0 auto 10px auto;
+  padding-left:18px;
+  max-width:260px;
+}
