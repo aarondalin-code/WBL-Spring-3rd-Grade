@@ -995,6 +995,42 @@ color:#6b7280;
   <script>
 
 let teamColorMap = {};    
+
+let teamColorMap = {};
+
+const MLB_TEAM_COLORS = {
+  Yankees: "#132448",
+  Red Sox: "#BD3039",
+  Dodgers: "#005A9C",
+  Cubs: "#0E3386",
+  Cardinals: "#C41E3A",
+  Giants: "#FD5A1E",
+  Mets: "#002D72",
+  Braves: "#CE1141",
+  Phillies: "#E81828",
+  Padres: "#2F241D",
+  Mariners: "#0C2C56",
+  Rangers: "#003278",
+  Astros: "#EB6E1F",
+  Angels: "#BA0021",
+  Athletics: "#003831",
+  Royals: "#004687",
+  Tigers: "#0C2340",
+  White Sox: "#27251F",
+  Twins: "#002B5C",
+  Brewers: "#12284B",
+  Pirates: "#FDB827",
+  Reds: "#C6011F",
+  Guardians: "#0C2340",
+  Blue Jays: "#134A8E",
+  Diamondbacks: "#A71930",
+  Rockies: "#333366",
+  Rays: "#092C5C",
+  Marlins: "#00A3E0",
+  Nationals: "#AB0003"
+};
+
+    
     const HISTORY_CSV_URL =
       window.SHEET?.BASEBALL_HISTORY_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=214692870&single=true&output=csv";
@@ -1261,7 +1297,14 @@ async function loadHistory(){
     const player = rows[index];
 
 const teamName = String(player.PrimaryTeam || "").trim();
-const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
+const normalized = normalizeTeamName(teamName);
+
+const teamColor =
+  teamColorMap[normalized] ||
+  MLB_TEAM_COLORS[teamName] ||
+  "#2563eb";
+
+    
 
 el.innerHTML = `
   <div class="hofCard" style="--hofAccent:${teamColor}">
