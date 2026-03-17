@@ -28,6 +28,38 @@
       display:flex;
       flex-direction:column;
       gap: 10px;
+      align-items:center;
+      text-align:center;
+    }
+
+    .teamActions{
+      display:flex;
+      gap:8px;
+      width:100%;
+      justify-content:center;
+      flex-wrap:nowrap;
+    }
+
+    .teamActionBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:.84rem;
+      padding:8px 10px;
+      border-radius:10px;
+      text-decoration:none;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+      color:#0f172a;
+      flex:1 1 0;
+      max-width:180px;
+    }
+
+    .teamActionBtn.primary{
+      color:#fff;
+      background:var(--teamColor,#1e3fa8);
+      border-color:transparent;
     }
 
     .teamActions{
@@ -59,7 +91,9 @@
     .practiceHead{
       display:flex;
       align-items:center;
+      justify-content:center;
       gap: 10px;
+      width:100%;
     }
 
     .practiceLogo{
@@ -113,8 +147,19 @@
       font-size: 0.9rem;
     }
 
+        .practiceSectionLabel{
+      width:100%;
+      margin-top:2px;
+      font-size:.78rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      font-weight:900;
+      color:#64748b;
+      text-align:center;
+    }
+
     @media (max-width: 520px){
-      .practiceFilters select{ min-width: 140px; }
+      .teamActions{ flex-wrap:wrap; }
     }
   </style>
 </head>
