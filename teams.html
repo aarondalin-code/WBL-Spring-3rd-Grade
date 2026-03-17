@@ -18,16 +18,42 @@
   <style>
 
 
-    .practiceGrid{
+    .unifiedTeamsGrid{
       display:grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 14px;
     }
 
-    .practiceCard .cardBody{
+    .unifiedTeamCard .cardBody{
       display:flex;
       flex-direction:column;
       gap: 10px;
+    }
+
+    .teamActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .teamActionBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:.84rem;
+      padding:8px 10px;
+      border-radius:10px;
+      text-decoration:none;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+      color:#0f172a;
+    }
+
+    .teamActionBtn.primary{
+      color:#fff;
+      background:var(--teamColor,#1e3fa8);
+      border-color:transparent;
     }
 
     .practiceHead{
@@ -131,55 +157,18 @@
 </header>
 
 <main class="wrap">
-  <!-- KEEP YOUR EXISTING TEAM BOXES EXACTLY (unchanged markup) -->
   <section class="docSection">
     <h2>Teams</h2>
-    <p class="muted">Tap a team to view its roster.</p>
+    <p class="muted">One card per team with roster + practice details.</p>
 
     <div class="card">
       <div class="cardBody">
-        <div id="teamsGrid" class="teamsGrid"></div>
+        <div id="unifiedTeamsGrid" class="unifiedTeamsGrid"></div>
+        <p id="teamsMsg" class="muted small" style="margin-top:12px;"></p>
 
         <p class="muted small" style="margin-top:12px;">
-          This page pulls team info from your Google Sheet “Teams” CSV.
+          This page pulls from your Google Sheet “Teams” + “Practices” CSV feeds.
         </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- NEW PRACTICE SECTION: separate box BELOW teams -->
-  <section class="docSection">
-    <h2>Practice Schedule</h2>
-    <p class="muted">Filter by practice day or field.</p>
-
-    <div class="card">
-      <div class="cardBody">
-
-        <div class="scheduleFilters">
-  <select id="practiceDayFilter">
-    <option value="">All Days</option>
-  </select>
-
-  <select id="practiceFieldFilter">
-    <option value="">All Fields</option>
-  </select>
-
-  <select id="practiceSort">
-    <option value="day">Sort: Day</option>
-    <option value="name">Sort: Team</option>
-    <option value="field">Sort: Field</option>
-  </select>
-
-  <button id="practiceClear" class="btnSecondary" type="button">Clear</button>
-</div>
-
-        <div id="practiceGrid" class="practiceGrid"></div>
-        <p id="practiceMsg" class="muted small" style="margin-top:12px;"></p>
-
-        <p class="muted small" style="margin-top:12px;">
-          This section pulls from your Google Sheet “Practices” CSV (PRACTICES_CSV_URL in data.js).
-        </p>
-
       </div>
     </div>
   </section>
@@ -204,91 +193,14 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  // -----------------------------
-  // EXISTING TEAM RENDER (unchanged)
-  // -----------------------------
-  function renderTeams(teamRows) {
-    const grid = document.getElementById("teamsGrid");
-    grid.innerHTML = "";
-
-    // Schema B columns expected:
-    // Seed (optional), TeamName, TeamSlug, TeamLogo
-    const teams = teamRows
-      .map(r => ({
-        seed: numOrNull(r.Seed),                // optional
-        name: safe(r.TeamName),
-        slug: safe(r.TeamSlug),
-        logo: safe(r.TeamLogo),
-        color: safe(r.TeamColor),
-      }))
-      .filter(t => t.name && t.slug);
-
-    // Sort: Seed if present; otherwise alphabetical
-    const hasAnySeed = teams.some(t => t.seed !== null);
-    teams.sort((a, b) => {
-      if (hasAnySeed) {
-        const as = a.seed ?? 9999;
-        const bs = b.seed ?? 9999;
-        if (as !== bs) return as - bs;
-      }
-      return a.name.localeCompare(b.name);
-    });
-
-for (const t of teams) {
-  const logoUrl = t.logo || "";
-  const nameStyle = t.color ? `style="color:${t.color}"` : "";
-  const a = document.createElement("a");
-  a.className = "teamTile";
-  a.href = `./team.html?team=${encodeURIComponent(t.slug)}`;
-  a.innerHTML = `
-    <span class="teamAccent" aria-hidden="true"></span>
-    <div class="teamTileRow">
-      <div class="teamTileLogoWrap">
-        <img class="teamTileLogo" src="${logoUrl}" alt="${t.name} logo" onerror="this.style.display='none';">
-      </div>
-      <div class="teamTileText">
-        <div class="teamName" ${nameStyle}>${t.name}</div>
-        <div class="teamCta">View roster →</div>
-      </div>
-    </div>
-  `;
-  grid.appendChild(a);
-}
-
-    // Helpful empty state
-    if (!teams.length) {
-      grid.innerHTML = `<p class="muted">No teams found. Check your Teams CSV headers (TeamName, TeamSlug, TeamLogo).</p>`;
-    }
-  }
-
-  // -----------------------------
-  // PRACTICE SECTION
-  // -----------------------------
-  const practiceGrid = document.getElementById("practiceGrid");
-  const practiceMsg  = document.getElementById("practiceMsg");
-  const dayFilter    = document.getElementById("practiceDayFilter");
-  const fieldFilter  = document.getElementById("practiceFieldFilter");
-  const sortSelect   = document.getElementById("practiceSort");
-  const clearBtn     = document.getElementById("practiceClear");
+  const unifiedGrid = document.getElementById("unifiedTeamsGrid");
+  const teamsMsg = document.getElementById("teamsMsg");
 
   // team meta for color/logo/slug join
   const teamMetaBySlug = new Map(); // slug -> {name, slug, logo, color}
   const teamMetaByName = new Map(); // name -> { ... }
 
   let practiceRows = [];
-
-  function dayRank(day){
-    const d = norm(day);
-    if (!d) return 999;
-    if (d.startsWith("mon")) return 1;
-    if (d.startsWith("tue")) return 2;
-    if (d.startsWith("wed")) return 3;
-    if (d.startsWith("thu")) return 4;
-    if (d.startsWith("fri")) return 5;
-    if (d.startsWith("sat")) return 6;
-    if (d.startsWith("sun")) return 7;
-    return 999;
-  }
 
 function getTeamMetaForPractice(p){
   const slug = norm(p.TeamSlug);
@@ -319,123 +231,69 @@ function practiceLinesHTML(p){
   `;
 }
 
-  function populatePracticeFilters(){
-    const daySet = new Set();
-    const fieldSet = new Set();
+  function renderUnifiedTeamCards(teamRows){
+    unifiedGrid.innerHTML = "";
+    teamsMsg.textContent = "";
 
-    practiceRows.forEach(p => {
-      const d = safe(p.PracticeDay);
-      const f = safe(p.PracticeField);
-      if (d) daySet.add(d);
-      if (f) fieldSet.add(f);
-    });
+    const teams = teamRows
+      .map(r => ({
+        seed: numOrNull(r.Seed),
+        name: safe(r.TeamName),
+        slug: safe(r.TeamSlug),
+        logo: safe(r.TeamLogo),
+        color: safe(r.TeamColor)
+      }))
+      .filter(t => t.name && t.slug)
+      .sort((a,b) => {
+        const as = a.seed ?? 9999;
+        const bs = b.seed ?? 9999;
+        if (as !== bs) return as - bs;
+        return a.name.localeCompare(b.name);
+      });
 
-    while (dayFilter.options.length > 1) dayFilter.remove(1);
-    while (fieldFilter.options.length > 1) fieldFilter.remove(1);
-
-    [...daySet].sort((a,b)=> dayRank(a) - dayRank(b) || a.localeCompare(b)).forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d;
-      dayFilter.appendChild(opt);
-    });
-
-    [...fieldSet].sort((a,b)=> a.localeCompare(b)).forEach(f => {
-      const opt = document.createElement("option");
-      opt.value = f;
-      opt.textContent = f;
-      fieldFilter.appendChild(opt);
-    });
-  }
-
-  function practiceMatchesFilters(p){
-    const d = safe(p.PracticeDay);
-    const f = safe(p.PracticeField);
-    if (dayFilter.value && norm(d) !== norm(dayFilter.value)) return false;
-    if (fieldFilter.value && norm(f) !== norm(fieldFilter.value)) return false;
-    return true;
-  }
-
-  function sortPractices(list){
-    const mode = safe(sortSelect.value) || "day";
-    return [...list].sort((a,b)=>{
-      const am = getTeamMetaForPractice(a);
-      const bm = getTeamMetaForPractice(b);
-
-      if (mode === "name"){
-        return safe(am.name).localeCompare(safe(bm.name));
-      }
-
-      if (mode === "field"){
-        const af = safe(a.PracticeField);
-        const bf = safe(b.PracticeField);
-        if (af !== bf) return af.localeCompare(bf);
-        const ad = dayRank(a.PracticeDay);
-        const bd = dayRank(b.PracticeDay);
-        if (ad !== bd) return ad - bd;
-        return safe(am.name).localeCompare(safe(bm.name));
-      }
-
-      // default: day
-      const ad = dayRank(a.PracticeDay);
-      const bd = dayRank(b.PracticeDay);
-      if (ad !== bd) return ad - bd;
-      const at = safe(a.PracticeTime);
-      const bt = safe(b.PracticeTime);
-      if (at !== bt) return at.localeCompare(bt);
-      return safe(am.name).localeCompare(safe(bm.name));
-    });
-  }
-
-  function renderPractices(){
-    practiceGrid.innerHTML = "";
-    practiceMsg.textContent = "";
-
-    if (!window.SHEET?.PRACTICES_CSV_URL){
-      practiceMsg.textContent = "Practice schedule not set up yet. Add PRACTICES_CSV_URL to data.js.";
+    if (!teams.length) {
+      teamsMsg.textContent = "No teams found. Check Teams CSV headers (TeamName, TeamSlug, TeamLogo).";
       return;
     }
 
-    const filtered = practiceRows.filter(practiceMatchesFilters);
-    const shown = sortPractices(filtered);
+    teams.forEach(t => {
+      const relatedPractices = practiceRows
+        .filter(p => norm(p.TeamSlug) === norm(t.slug) || norm(p.TeamName) === norm(t.name));
 
-    if (!shown.length){
-      practiceMsg.textContent = "No practice entries match your filters.";
-      return;
-    }
+      const nameStyle = t.color ? `style="color:${t.color}"` : "";
+      const teamColorVar = t.color || "#1e3fa8";
+      const practiceHtml = relatedPractices.length
+        ? relatedPractices.map(pr => `<div class="practiceLines" style="margin-top:8px;">${practiceLinesHTML(pr)}</div>`).join("")
+        : `<div class="practiceLines"><div class="muted small">Practice info coming soon.</div></div>`;
 
-    shown.forEach(p => {
-      const meta = getTeamMetaForPractice(p);
-      const href = meta.slug ? `./team.html?team=${encodeURIComponent(meta.slug)}` : "#";
-      const nameStyle = meta.color ? `style="color:${meta.color}"` : "";
-
-      const card = document.createElement("div");
-      card.className = "card practiceCard";
+      const card = document.createElement("article");
+      card.className = "card unifiedTeamCard";
       card.innerHTML = `
-        <div class="cardBody">
+        <div class="cardBody" style="--teamColor:${teamColorVar};">
           <div class="practiceHead">
- <img class="practiceLogo" src="${meta.logo}" alt="${safe(meta.name)} logo" onerror="this.style.display='none';">
-            
-            <a class="practiceTeamName" ${nameStyle} href="${href}">${safe(meta.name)}</a>
+            <img class="practiceLogo" src="${t.logo || ''}" alt="${t.name} logo" onerror="this.style.display='none';">
+            <a class="practiceTeamName" ${nameStyle} href="./team.html?team=${encodeURIComponent(t.slug)}">${t.name}</a>
           </div>
 
-          <div class="practiceLines">
-            ${practiceLinesHTML(p)}
+          <div class="teamActions">
+            <a class="teamActionBtn primary" href="./team.html?team=${encodeURIComponent(t.slug)}">View Roster</a>
+            <a class="teamActionBtn" href="./team.html?team=${encodeURIComponent(t.slug)}#teamScheduleSection">Team Schedule</a>
           </div>
+
+          ${practiceHtml}
         </div>
       `;
-      practiceGrid.appendChild(card);
+      unifiedGrid.appendChild(card);
     });
 
-    practiceMsg.textContent = `${shown.length} practice entr${shown.length===1 ? "y" : "ies"} shown.`;
+    teamsMsg.textContent = `${teams.length} team card${teams.length===1 ? '' : 's'} shown.`;
   }
 
   (async function init(){
     try {
-      // Teams CSV (existing)
+      // Teams CSV
       const csv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
       const rows = parseCsv(csv);
-      renderTeams(rows);
 
       // Build team meta (for practice join)
       teamMetaBySlug.clear();
@@ -455,7 +313,7 @@ const meta = {
         teamMetaByName.set(norm(name), meta);
       });
 
-      // Practices CSV (new)
+      // Practices CSV
       if (window.SHEET?.PRACTICES_CSV_URL){
         const pcsv = await fetchCsvCached(window.SHEET.PRACTICES_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
         const prows = parseCsv(pcsv);
@@ -471,24 +329,12 @@ const meta = {
         practiceRows = [];
       }
 
-      populatePracticeFilters();
-
-      dayFilter.addEventListener("change", renderPractices);
-      fieldFilter.addEventListener("change", renderPractices);
-      sortSelect.addEventListener("change", renderPractices);
-      clearBtn.addEventListener("click", () => {
-        dayFilter.value = "";
-        fieldFilter.value = "";
-        sortSelect.value = "day";
-        renderPractices();
-      });
-
-      renderPractices();
+      renderUnifiedTeamCards(rows);
 
     } catch (err) {
       console.error(err);
       alert("Teams page error: check TEAMS_CSV_URL in data.js and make sure the Teams tab is published to CSV.");
-      practiceMsg.textContent = "Practice section error: " + (err?.message || String(err));
+      teamsMsg.textContent = "Teams page error: " + (err?.message || String(err));
     }
   })();
 </script>
