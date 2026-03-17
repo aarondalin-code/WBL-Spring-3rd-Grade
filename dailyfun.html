@@ -1260,36 +1260,36 @@ async function loadHistory(){
     const index = Math.floor(today.getTime() / 86400000) % rows.length;
     const player = rows[index];
 
-    const teamName = String(player.PrimaryTeam || "").trim();
-    const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
+const teamName = String(player.PrimaryTeam || "").trim();
+const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
 
-    el.innerHTML = `
-      <div class="hofCard" style="--hofAccent:${teamColor}">
-        <div class="hofTopBar"></div>
+el.innerHTML = `
+  <div class="hofCard" style="--hofAccent:${teamColor}">
+    <div class="hofTopBar"></div>
 
-        <div class="hofName">${player.Name || ""}</div>
+    <div class="hofName">${player.Name || ""}</div>
 
-        <div class="hofMeta">
-          ${player.PrimaryTeam || ""} • ${player.Position || ""} • ${player.Years || ""}
-        </div>
+    <div class="hofMeta">
+      ${player.PrimaryTeam || ""} • ${player.Position || ""} • ${player.Years || ""}
+    </div>
 
-        <div class="hofInduction">
-          Hall of Fame: ${player.InductionYear || ""}
-        </div>
+    <div class="hofInduction">
+      Hall of Fame: ${player.InductionYear || ""}
+    </div>
 
-        <div class="hofSectionTitle">Did You Know?</div>
-        <ul class="hofFacts">
-          <li>${player.Fact1 || ""}</li>
-          <li>${player.Fact2 || ""}</li>
-        </ul>
+    <div class="hofSectionTitle">Did You Know?</div>
+    <ul class="hofFacts">
+      <li>${player.Fact1 || ""}</li>
+      <li>${player.Fact2 || ""}</li>
+    </ul>
 
-        <div class="hofSectionTitle">Key Stats</div>
-        <div class="hofStats">
-          <div class="hofStatChip">${player.Stat1 || ""}</div>
-          <div class="hofStatChip">${player.Stat2 || ""}</div>
-        </div>
-      </div>
-    `;
+    <div class="hofSectionTitle">Key Stats</div>
+    <div class="hofStats">
+      <div class="hofStatChip">${player.Stat1 || ""}</div>
+      <div class="hofStatChip">${player.Stat2 || ""}</div>
+    </div>
+  </div>
+`;
   } catch(err) {
     console.error(err);
     el.textContent = "Unable to load Hall of Famer.";
