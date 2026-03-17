@@ -1338,8 +1338,16 @@ function renderTeamHeaderNextGame(teamDisplayName, teamGames, teamColor, teamLog
   const opponentPrefix = gameLocationType(g).toLowerCase() === "away" ? "@" : "vs";
   const ourScore = isTeamA ? gameScoreA(g) : gameScoreB(g);
   const oppScore = isTeamA ? gameScoreB(g) : gameScoreA(g);
-  const scoreText = (ourScore !== "" && oppScore !== "") ? `${ourScore}-${oppScore}` : "Score pending";
-
+ let scoreText = "Score pending";
+if (ourScore !== "" && oppScore !== "") {
+  const ourNum = Number(ourScore);
+  const oppNum = Number(oppScore);
+  const resultPrefix =
+    Number.isFinite(ourNum) && Number.isFinite(oppNum)
+      ? (ourNum > oppNum ? "W " : ourNum < oppNum ? "L " : "T ")
+      : "";
+  scoreText = `${resultPrefix}${ourScore}-${oppScore}`;
+}
   lastEl.innerHTML = `
     <div class="nextGameLabel">Last Game</div>
     <div class="nextGameOpponent">${opponentPrefix} ${opponent || "TBD"}</div>
@@ -1388,7 +1396,14 @@ let statusText = statusRaw;
 if (statusRaw.toLowerCase() === "final" && gameScoreA(g) !== "" && gameScoreB(g) !== "") {
   const ourScore = isTeamA ? gameScoreA(g) : gameScoreB(g);
   const oppScore = isTeamA ? gameScoreB(g) : gameScoreA(g);
-  statusText = `Final • ${ourScore}-${oppScore}`;
+const ourNum = Number(ourScore);
+const oppNum = Number(oppScore);
+const resultPrefix =
+  Number.isFinite(ourNum) && Number.isFinite(oppNum)
+    ? (ourNum > oppNum ? "W " : ourNum < oppNum ? "L " : "T ")
+    : "";
+
+statusText = `Final • ${resultPrefix}${ourScore}-${oppScore}`;
 }
 
         return `
