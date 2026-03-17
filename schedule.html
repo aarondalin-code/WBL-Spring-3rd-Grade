@@ -50,24 +50,20 @@
       <div class="cardBody">
 
         <!-- Filters -->
-        <div class="scheduleFilters">
-          <select id="teamFilter">
-            <option value="">All Teams</option>
-          </select>
+       <div class="scheduleFilters compactScheduleFilters" role="tablist" aria-label="Schedule filter">
+  <select id="teamFilter">
+    <option value="">All Teams</option>
+  </select>
+  <select id="dateFilter">
+    <option value="">All Dates</option>
+  </select>
 
-          <select id="dateFilter">
-            <option value="">All Dates</option>
-          </select>
+  <button id="toggleAll" class="toggleBtn active" type="button">All</button>
+  <button id="toggleUpcoming" class="toggleBtn" type="button">Upcoming</button>
+  <button id="toggleCompleted" class="toggleBtn" type="button">Completed</button>
 
-          <button id="clearFilters" class="btnSecondary" type="button">Clear</button>
-        </div>
-
-        <!-- Toggle -->
-        <div class="scheduleToggle" role="tablist" aria-label="Schedule filter">
-          <button id="toggleAll" class="toggleBtn active" type="button">All</button>
-          <button id="toggleUpcoming" class="toggleBtn" type="button">Upcoming</button>
-          <button id="toggleCompleted" class="toggleBtn" type="button">Completed</button>
-        </div>
+  <button id="clearFilters" class="btnSecondary" type="button">Clear</button>
+</div>
 
         <!-- Render target -->
         <div id="scheduleContainer"></div>
