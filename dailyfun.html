@@ -1294,13 +1294,17 @@ async function loadHistory(){
     const player = rows[index];
 
 const teamName = String(player.PrimaryTeam || "").trim();
+
 const normalized = normalizeTeamName(teamName);
+
+const normalizedMlbColors = Object.fromEntries(
+  Object.entries(MLB_TEAM_COLORS).map(([name, color]) => [normalizeTeamName(name), color])
+);
 
 const teamColor =
   teamColorMap[normalized] ||
-  MLB_TEAM_COLORS[teamName] ||
+  normalizedMlbColors[normalized] ||
   "#2563eb";
-
     
 
 el.innerHTML = `
