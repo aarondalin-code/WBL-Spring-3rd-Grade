@@ -3715,3 +3715,85 @@ body.homeIndex .homeHeroBtns .btnPrimary{
   padding-left:18px;
   max-width:260px;
 }
+
+.hofCard{
+  --hofAccent:#2563eb;
+  background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+  border:1px solid rgba(15,23,42,0.08);
+  border-radius:18px;
+  padding:14px 14px 12px;
+  box-shadow:0 8px 24px rgba(15,23,42,0.06);
+  position:relative;
+}
+
+.hofTopBar{
+  height:6px;
+  width:72px;
+  border-radius:999px;
+  background:var(--hofAccent);
+  margin:0 auto 12px;
+}
+
+.hofName{
+  font-size:1.2rem;
+  font-weight:800;
+  line-height:1.2;
+  text-align:center;
+  color:#0f172a;
+  margin-bottom:4px;
+}
+
+.hofMeta{
+  text-align:center;
+  font-size:0.9rem;
+  color:#475569;
+  margin-bottom:6px;
+}
+
+.hofInduction{
+  text-align:center;
+  font-size:0.86rem;
+  font-weight:700;
+  color:var(--hofAccent);
+  margin-bottom:12px;
+}
+
+.hofSectionTitle{
+  font-size:0.8rem;
+  font-weight:800;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  color:#334155;
+  margin:12px 0 6px;
+}
+
+.hofFacts{
+  margin:0 0 10px 0;
+  padding-left:18px;
+  color:#0f172a;
+}
+
+.hofFacts li{
+  margin-bottom:6px;
+  line-height:1.35;
+}
+
+.hofStats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:6px;
+}
+
+.hofStatChip{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 10px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--hofAccent) 12%, white);
+  border:1px solid color-mix(in srgb, var(--hofAccent) 22%, white);
+  color:#0f172a;
+  font-size:0.84rem;
+  font-weight:700;
+  line-height:1.2;
+}
