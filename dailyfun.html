@@ -1265,28 +1265,23 @@ const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
 
 el.innerHTML = `
   <div class="hofCard" style="--hofAccent:${teamColor}">
-    <div class="hofTopBar"></div>
+    <div class="hofPlayerLine">${player.Name || ""} • ${player.PrimaryTeam || ""}</div>
+    <div class="hofMeta">${player.Position || ""} • ${player.Years || ""} • Hall of Fame ${player.InductionYear || ""}</div>
 
-    <div class="hofName">${player.Name || ""}</div>
-
-    <div class="hofMeta">
-      ${player.PrimaryTeam || ""} • ${player.Position || ""} • ${player.Years || ""}
+    <div class="hofQuestionBlock">
+      <div class="hofSectionLabel">Did You Know?</div>
+      <ul class="hofList">
+        <li>${player.Fact1 || ""}</li>
+        <li>${player.Fact2 || ""}</li>
+      </ul>
     </div>
 
-    <div class="hofInduction">
-      Hall of Fame: ${player.InductionYear || ""}
-    </div>
-
-    <div class="hofSectionTitle">Did You Know?</div>
-    <ul class="hofFacts">
-      <li>${player.Fact1 || ""}</li>
-      <li>${player.Fact2 || ""}</li>
-    </ul>
-
-    <div class="hofSectionTitle">Key Stats</div>
-    <div class="hofStats">
-      <div class="hofStatChip">${player.Stat1 || ""}</div>
-      <div class="hofStatChip">${player.Stat2 || ""}</div>
+    <div class="hofStatsBlock">
+      <div class="hofSectionLabel">Key Stats</div>
+      <div class="hofStatsList">
+        <div class="hofStatItem">${player.Stat1 || ""}</div>
+        <div class="hofStatItem">${player.Stat2 || ""}</div>
+      </div>
     </div>
   </div>
 `;
