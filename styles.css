@@ -3790,8 +3790,8 @@ body.homeIndex .homeHeroBtns .btnPrimary{
   align-items:center;
   padding:8px 10px;
   border-radius:999px;
-  background:color-mix(in srgb, var(--hofAccent) 12%, white);
-  border:1px solid color-mix(in srgb, var(--hofAccent) 22%, white);
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
   color:#0f172a;
   font-size:0.84rem;
   font-weight:700;
