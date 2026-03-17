@@ -919,6 +919,7 @@ color:#6b7280;
           </div>
         </article>
 
+    
         <article class="card">
           <div class="cardBody">
             <div class="dailySectionTitle">Baseball Fact of the Day</div>
@@ -933,6 +934,14 @@ color:#6b7280;
           </div>
         </article>
 
+<article class="card">
+  <div class="cardBody">
+    <div class="dailySectionTitle">Hall of Famer of the Day</div>
+    <div id="hallOfFameCard">Loading today’s Hall of Famer...</div>
+  </div>
+</article>
+
+        
         <article class="card dailyAskCard">
           <div class="cardBody">
             <div class="dailySectionTitle">Ask a Baseball Question</div>
@@ -1017,6 +1026,11 @@ let teamColorMap = {};
       window.SHEET?.TRIVIA_LEADERBOARD_CSV_URL ||
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2NIyT2nQ0ymcFxNTG9qv-YsoQMSs01UPMYdYGVqcprvj5r5y6eA-Fcot73iVVjzM1QU6mUuvk82Kf/pub?gid=1411514113&single=true&output=csv";
 
+const TRIVIA_RESPONSES_CSV_URL =
+  window.SHEET?.TRIVIA_RESPONSES_CSV_URL || "";
+
+
+    
 const MOVIES_CSV_URL =
   window.SHEET?.BASEBALL_MOVIES_CSV_URL || "";
 
@@ -1224,6 +1238,60 @@ async function loadHistory(){
     console.error(err);
   }
 }
+   
+    async function loadHallOfFame(){
+  const el = document.getElementById("hallOfFameCard");
+
+  try {
+    await loadTeamColors();
+
+    const csv = await fetchCsvCached(window.SHEET.HALL_OF_FAME_CSV_URL, {
+      ttlMs: SHEET_CACHE_TTL_MS
+    });
+
+    const rows = parseCsv(csv);
+
+    if (!rows.length) {
+      el.textContent = "No Hall of Fame data.";
+      return;
+    }
+
+    const today = new Date();
+    const index = Math.floor(today.getTime() / 86400000) % rows.length;
+    const player = rows[index];
+
+const teamName = String(player.PrimaryTeam || "").trim();
+const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
+
+el.innerHTML = `
+  <div class="hofCard" style="--hofAccent:${teamColor}">
+    <div class="hofPlayerLine">${player.Name || ""} • ${player.PrimaryTeam || ""}</div>
+    <div class="hofMeta">${player.Position || ""} • ${player.Years || ""} • Hall of Fame ${player.InductionYear || ""}</div>
+
+    <div class="hofQuestionBlock">
+      <div class="hofSectionLabel">Did You Know?</div>
+      <ul class="hofList">
+        <li>${player.Fact1 || ""}</li>
+        <li>${player.Fact2 || ""}</li>
+      </ul>
+    </div>
+
+    <div class="hofStatsBlock">
+      <div class="hofSectionLabel">Key Stats</div>
+      <div class="hofStatsList">
+        <div class="hofStatItem">${player.Stat1 || ""}</div>
+        <div class="hofStatItem">${player.Stat2 || ""}</div>
+      </div>
+    </div>
+  </div>
+`;
+  } catch(err) {
+    console.error(err);
+    el.textContent = "Unable to load Hall of Famer.";
+  }
+}
+  
+    
     async function loadQuote(){
       const el = document.getElementById("quoteCard");
 
@@ -1365,7 +1433,10 @@ async function loadMovieOfTheWeek(){
 
     const weekIndex = Math.floor(dayOfYear(new Date()) / 7) % rows.length;
     const movie = rows[weekIndex];
-    const embedUrl = getYouTubeEmbedUrl(movie.TrailerURL || "");
+    const rawEmbedUrl = getYouTubeEmbedUrl(movie.TrailerURL || "");
+const embedUrl = rawEmbedUrl
+  ? `${rawEmbedUrl}${rawEmbedUrl.includes("?") ? "&" : "?"}rel=0&modestbranding=1`
+  : "";
 
     el.innerHTML = `
       <div class="movieTitle">${movie.Title || ""}${movie.Year ? " (" + movie.Year + ")" : ""}</div>
@@ -1475,26 +1546,103 @@ function toNumSafe(val){
   return Number.isFinite(n) ? n : 0;
 }
 
+function getCurrentWeekRangeSundaySaturday(baseDate = new Date()){
+  const start = new Date(baseDate);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay()); // Sunday
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6); // Saturday
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+}
+
+function parseRowDateForWeeklyTrivia(row){
+  const candidates = [
+    row.WeekStart,
+    row.WeekOf,
+    row['Week Of'],
+    row.Date,
+    row.Timestamp,
+    row.SubmittedAt,
+    row.AnsweredAt,
+    row.UpdatedAt,
+    row.LastUpdated
+  ];
+
+  for (const raw of candidates){
+    const str = String(raw || '').trim();
+    if (!str) continue;
+    const d = new Date(str);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+
+  return null;
+}
+
+function isRowInCurrentTriviaWeek(row, weekRange, { requireDate = false } = {}){
+  const d = parseRowDateForWeeklyTrivia(row);
+  if (!d) return !requireDate;
+  return d >= weekRange.start && d <= weekRange.end;
+}
+
 async function loadTriviaWeeklyChampion(){
   const el = document.getElementById("triviaWeeklyChampion");
 
   try {
     await loadTeamColors();
-    if (!TRIVIA_WEEKLY_CSV_URL) {
+
+    if (!TRIVIA_RESPONSES_CSV_URL) {
       el.textContent = "Weekly champion feed is not connected yet.";
       return;
     }
 
-    const csv = await fetchCsvCached(TRIVIA_WEEKLY_CSV_URL, { ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS });
-    const rows = parseCsv(csv)
-      .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet")
+    const csv = await fetchCsvCached(TRIVIA_RESPONSES_CSV_URL, {
+      ttlMs: TRIVIA_NEAR_REALTIME_TTL_MS
+    });
+
+    const weekRange = getCurrentWeekRangeSundaySaturday();
+
+    const grouped = new Map();
+
+    parseCsv(csv).forEach(r => {
+      const playerName = String(r.PlayerName || "").trim();
+      if (!playerName || playerName === "No entries yet") return;
+
+      const submittedAt = new Date(String(r.SubmittedAt || "").trim());
+      if (Number.isNaN(submittedAt.getTime())) return;
+
+      if (submittedAt < weekRange.start || submittedAt > weekRange.end) return;
+
+      const key = playerName.toLowerCase();
+      const teamName = String(r.Team || "").trim();
+
+      const existing = grouped.get(key) || {
+        PlayerName: playerName,
+        Team: teamName,
+        __correct: 0,
+        __attempted: 0,
+        __acc: 0
+      };
+
+      existing.__attempted += 1;
+
+const rawIsCorrect = String(r.IsCorrect || "").trim().toUpperCase();
+const isCorrect = rawIsCorrect === "TRUE" || rawIsCorrect === "1";
+
+      
+      if (isCorrect) existing.__correct += 1;
+
+      grouped.set(key, existing);
+    });
+
+    const rows = Array.from(grouped.values())
       .map(r => ({
         ...r,
-        __acc: toAccuracyPercent(r.Accuracy),
-        __correct: toNumSafe(r.Correct),
-        __attempted: toNumSafe(r.Attempted)
+        __acc: r.__attempted > 0 ? (r.__correct / r.__attempted) * 100 : 0
       }))
-      .sort((a,b) => {
+      .sort((a, b) => {
         const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
         const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
         if (accB !== accA) return accB - accA;
@@ -1504,18 +1652,12 @@ async function loadTriviaWeeklyChampion(){
       });
 
     if (!rows.length) {
-      el.textContent = "No weekly trivia data yet.";
+      el.textContent = "No weekly trivia data yet for this week.";
       return;
     }
 
     const displayRows = rows.slice(0, 5);
-
-    const now = new Date();
-    const start = new Date(now);
-    start.setDate(now.getDate() - now.getDay());
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-
+    const { start, end } = weekRange;
     const options = { month: "short", day: "numeric" };
     const weekLabel =
       start.toLocaleDateString(undefined, options) +
@@ -1523,29 +1665,30 @@ async function loadTriviaWeeklyChampion(){
       end.toLocaleDateString(undefined, options);
 
     el.innerHTML = `
-  <div class="weeklyChampionWrap">
-    <div class="weeklyChampionBadge">Weekly Top 5</div>
-    ${displayRows.map((row, idx) => {
-      const accText = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
-      const teamName = String(row.Team || "").trim();
-      const teamColor = teamColorMap[normalizeTeamName(teamName)] || '#2563eb';
-      return `
-      <div class="weeklyChampionHero">
-        <div class="weeklyChampionAvatar">${idx + 1}</div>
-        <div class="weeklyChampionMain">
-          <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
-          ${teamName ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
-        </div>
-        <div class="weeklyChampionChips">
-          <div class="weeklyChampionChip"><strong>${accText}</strong><span>Accuracy</span></div>
-          <div class="weeklyChampionChip"><strong>${row.__correct}</strong><span>Correct</span></div>
-          <div class="weeklyChampionChip"><strong>${row.__attempted}</strong><span>Attempts</span></div>
-        </div>
-      </div>`;
-    }).join("")}
-    <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
-  </div>
-`;
+      <div class="weeklyChampionWrap">
+        <div class="weeklyChampionBadge">Weekly Top 5</div>
+        ${displayRows.map((row, idx) => {
+          const accText = Number.isFinite(row.__acc) ? `${Math.round(row.__acc)}%` : "—";
+          const teamName = String(row.Team || "").trim();
+          const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
+          return `
+            <div class="weeklyChampionHero">
+              <div class="weeklyChampionAvatar">${idx + 1}</div>
+              <div class="weeklyChampionMain">
+                <div class="weeklyChampionPlayer">${row.PlayerName || ""}</div>
+                ${teamName ? `<div class="weeklyChampionTeam" style="--teamColor:${teamColor}">${teamName}</div>` : ""}
+              </div>
+              <div class="weeklyChampionChips">
+                <div class="weeklyChampionChip"><strong>${accText}</strong><span>Accuracy</span></div>
+                <div class="weeklyChampionChip"><strong>${row.__correct}</strong><span>Correct</span></div>
+                <div class="weeklyChampionChip"><strong>${row.__attempted}</strong><span>Attempts</span></div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+        <div class="weeklyChampionWeek">Week of ${weekLabel}</div>
+      </div>
+    `;
   } catch (err) {
     el.textContent = "Unable to load weekly champion right now.";
     console.error(err);
@@ -1715,7 +1858,7 @@ async function loadTriviaWeeklyChampion(){
       }
     }
 
-   async function loadTriviaLeaderboard(){
+async function loadTriviaLeaderboard(){
   const el = document.getElementById("triviaLeaderboard");
 
   try {
@@ -1727,15 +1870,21 @@ async function loadTriviaWeeklyChampion(){
     }
 
     const csv = await fetchCsvCached(TRIVIA_LEADERBOARD_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
-    const rows = parseCsv(csv);
+    const rows = parseCsv(csv)
+      .filter(r => String(r.PlayerName || "").trim() && String(r.PlayerName || "").trim() !== "No entries yet");
 
     if (!rows.length) {
-      el.textContent = "No trivia scores yet.";
+      el.textContent = "No trivia scores yet this season.";
       return;
     }
 
     const topRows = rows
-      .map(r => ({ ...r, __acc: toAccuracyPercent(r.Accuracy), __correct: toNumSafe(r.Correct), __attempted: toNumSafe(r.Attempted) }))
+      .map(r => ({
+        ...r,
+        __acc: toAccuracyPercent(r.Accuracy),
+        __correct: toNumSafe(r.Correct),
+        __attempted: toNumSafe(r.Attempted)
+      }))
       .sort((a,b) => {
         const accA = Number.isFinite(a.__acc) ? a.__acc : -1;
         const accB = Number.isFinite(b.__acc) ? b.__acc : -1;
@@ -1843,6 +1992,7 @@ async function loadTriviaWeeklyChampion(){
       loadQuote();
       loadFact();
       loadFeaturedQuestion();
+      loadHallOfFame();
       loadMovieOfTheWeek();
       loadBirthdaySpotlight();
     };

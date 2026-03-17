@@ -62,6 +62,32 @@
       border-color:transparent;
     }
 
+    .teamActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .teamActionBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:.84rem;
+      padding:8px 10px;
+      border-radius:10px;
+      text-decoration:none;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+      color:#0f172a;
+    }
+
+    .teamActionBtn.primary{
+      color:#fff;
+      background:var(--teamColor,#1e3fa8);
+      border-color:transparent;
+    }
+
     .practiceHead{
       display:flex;
       align-items:center;
@@ -298,8 +324,6 @@ function practiceLinesHTML(p){
             <a class="teamActionBtn primary" href="./team.html?team=${encodeURIComponent(t.slug)}">View Roster</a>
             <a class="teamActionBtn" href="./team.html?team=${encodeURIComponent(t.slug)}#teamScheduleSection">Team Schedule</a>
           </div>
-
-          <div class="practiceSectionLabel">Practice Details</div>
 
           ${practiceHtml}
         </div>
