@@ -117,7 +117,7 @@
               <a class="btnPrimary" href="./uploads.html">Upload Photos/Videos</a>
             </div>
 
-            <div id="homeBannerNote" class="muted small" style="margin-top:12px; display:none;"></div>
+        
           </div>
         </div>
       </div>
@@ -1212,7 +1212,7 @@ function renderScheduleCard(g){
       lastSat.setHours(0,0,0,0);
 
       const thisWeekTitle = document.getElementById("thisWeekTitle");
-      const bannerNote = document.getElementById("homeBannerNote");
+      
 
       const openingSat = new Date(LEAGUE_START_DATE.getFullYear(), LEAGUE_START_DATE.getMonth(), LEAGUE_START_DATE.getDate());
       openingSat.setHours(0,0,0,0);
@@ -1221,11 +1221,9 @@ function renderScheduleCard(g){
 
       if (now.getTime() < openingSat.getTime()){
         thisWeekTitle.textContent = `Opening Day (${fmtShort(thisSat)})`;
-        bannerNote.textContent = `Showing Opening Day games on ${fmtShort(thisSat)}.`;
-        bannerNote.style.display = "";
+       
       } else {
         thisWeekTitle.textContent = `This Week (${fmtShort(thisSat)})`;
-        bannerNote.style.display = "none";
       }
 
       const thisWeek = [];
