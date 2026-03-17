@@ -96,7 +96,7 @@
 <script>
   const tbody = document.querySelector("#standingsTable tbody");
   const msgEl = document.getElementById("standingsMsg");
-  const updatedEl = document.getElementById("standingsUpdated");
+  
 
   const PLAYOFF_CUTOFF = 6;
 
@@ -338,7 +338,7 @@
 
   async function init() {
     msgEl.textContent = "";
-    updatedEl.textContent = "";
+  
 
     // Load Teams CSV
     const teamsCsv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
@@ -459,7 +459,7 @@
     const sorted = applySort(baseRows);
     renderRows(sorted);
 
-    updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
+  
     msgEl.textContent = counted
       ? `Standings based on ${counted} final game(s).`
       : `No final games yet — standings will populate once games are marked Final.`;
