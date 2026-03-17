@@ -11,7 +11,6 @@
 */
 
 (function () {
-  const updatedEl = document.getElementById("playoffsUpdated");
   const seedNoteEl = document.getElementById("seedNote");
   const msgEl = document.getElementById("playoffsMsg");
 
@@ -386,7 +385,7 @@
 
   async function init(){
     msgEl.textContent = "";
-    updatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
+    
 
     // Teams
     const teamsCsv = await fetchCsvCached(window.SHEET?.TEAMS_CSV_URL, { ttlMs: SHEET_CACHE_TTL_MS });
