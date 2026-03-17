@@ -3759,3 +3759,34 @@ body.homeIndex .homeHeroBtns .btnPrimary{
   padding: 6px 8px;
   font-size: 13px;
 }
+
+.compactScheduleFilters{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+
+  max-width:780px;
+  margin:0 auto 12px auto;
+  padding:8px 10px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.04);
+}
+
+.compactScheduleFilters select,
+.compactScheduleFilters button{
+  margin:0;
+}
+
+.compactScheduleFilters select{
+  min-width:140px;
+}
+
+.compactScheduleFilters .toggleBtn{
+  padding:6px 10px;
+}
+
+.compactScheduleFilters .btnSecondary{
+  padding:6px 10px;
+}
