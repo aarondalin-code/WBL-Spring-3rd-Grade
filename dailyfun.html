@@ -1243,8 +1243,12 @@ async function loadHistory(){
   const el = document.getElementById("hallOfFameCard");
 
   try {
+    await loadTeamColors();
 
-    const csv = await fetchCsvCached(window.SHEET.HALL_OF_FAME_CSV_URL);
+    const csv = await fetchCsvCached(window.SHEET.HALL_OF_FAME_CSV_URL, {
+      ttlMs: SHEET_CACHE_TTL_MS
+    });
+
     const rows = parseCsv(csv);
 
     if (!rows.length) {
@@ -1253,37 +1257,44 @@ async function loadHistory(){
     }
 
     const today = new Date();
-    const index =
-      Math.floor(today.getTime() / 86400000) % rows.length;
-
+    const index = Math.floor(today.getTime() / 86400000) % rows.length;
     const player = rows[index];
 
- el.innerHTML = `
-  <div class="hofCard">
-    <div class="hofName">${player.Name}</div>
+    const teamName = String(player.PrimaryTeam || "").trim();
+    const teamColor = teamColorMap[normalizeTeamName(teamName)] || "#2563eb";
 
-    <div class="hofMeta">
-      ${player.PrimaryTeam} • ${player.Position} • ${player.Years}
-    </div>
+    el.innerHTML = `
+      <div class="hofCard" style="--hofAccent:${teamColor}">
+        <div class="hofTopBar"></div>
 
-    <div class="hofInduction">
-      Hall of Fame: ${player.InductionYear}
-    </div>
+        <div class="hofName">${player.Name || ""}</div>
 
-    <div class="hofSectionTitle">Did You Know?</div>
-    <ul class="hofFacts">
-      <li>${player.Fact1}</li>
-      <li>${player.Fact2}</li>
-    </ul>
+        <div class="hofMeta">
+          ${player.PrimaryTeam || ""} • ${player.Position || ""} • ${player.Years || ""}
+        </div>
 
-    <div class="hofSectionTitle">Key Stats</div>
-    <ul class="hofStats">
-      <li>${player.Stat1}</li>
-      <li>${player.Stat2}</li>
-    </ul>
-  </div>
-`;
-    
+        <div class="hofInduction">
+          Hall of Fame: ${player.InductionYear || ""}
+        </div>
+
+        <div class="hofSectionTitle">Did You Know?</div>
+        <ul class="hofFacts">
+          <li>${player.Fact1 || ""}</li>
+          <li>${player.Fact2 || ""}</li>
+        </ul>
+
+        <div class="hofSectionTitle">Key Stats</div>
+        <div class="hofStats">
+          <div class="hofStatChip">${player.Stat1 || ""}</div>
+          <div class="hofStatChip">${player.Stat2 || ""}</div>
+        </div>
+      </div>
+    `;
+  } catch(err) {
+    console.error(err);
+    el.textContent = "Unable to load Hall of Famer.";
+  }
+}
   
     
     async function loadQuote(){
