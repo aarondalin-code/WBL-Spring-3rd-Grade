@@ -320,12 +320,14 @@ function practiceLinesHTML(p){
             <a class="practiceTeamName" ${nameStyle} href="./team.html?team=${encodeURIComponent(t.slug)}">${t.name}</a>
           </div>
 
-          <div class="teamActions">
-            <a class="teamActionBtn primary" href="./team.html?team=${encodeURIComponent(t.slug)}">View Roster</a>
-            <a class="teamActionBtn" href="./team.html?team=${encodeURIComponent(t.slug)}#teamScheduleSection">Team Schedule</a>
-          </div>
-
-          ${practiceHtml}
+   <div class="teamActions">
+  <a class="teamActionBtn primary"
+    href="./team.html?team=${encodeURIComponent(t.slug)}">View Roster</a>
+  <a class="teamActionBtn primary"
+    href="./team.html?team=${encodeURIComponent(t.slug)}#teamScheduleSection">Team Schedule</a>
+</div>
+<div class="practiceSectionLabel">Practice Schedule</div>
+${practiceHtml}
         </div>
       `;
       unifiedGrid.appendChild(card);
