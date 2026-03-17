@@ -54,14 +54,6 @@
 <main class="wrap">
   <section class="docSection">
 
-    <div class="standingsHeaderCard">
-      <div class="standingsHeaderTitle">Playoffs</div>
-      <div class="standingsHeaderSub muted">
-        Brackets auto-fill from regular season standings and playoff results.
-      </div>
-      <div class="standingsHeaderMeta muted small" id="playoffsUpdated"></div>
-      <div class="muted small" id="seedNote" style="margin-top:6px;"></div>
-    </div>
 
     <!-- Championship Bracket -->
     <div class="card" style="margin-top:14px;">
@@ -71,9 +63,11 @@
         <!-- IMPORTANT: playoffs.js will render into this -->
         <div id="championshipBracket"></div>
 
-        <p class="muted small" style="margin-top:10px;">
-          Seeds 1–2 receive first-round byes. Games auto-update when Status = <strong>Final</strong> and scores are entered.
-        </p>
+      <p class="muted small" style="margin-top:10px;">
+  Seeds 1–2 receive first-round byes. Games auto-update when Status =
+  <strong>Final</strong> and scores are entered.
+</p>
+<p class="muted small" id="seedNote" style="margin-top:6px;"></p>      
       </div>
     </div>
 
