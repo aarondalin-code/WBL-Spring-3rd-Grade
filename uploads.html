@@ -15,23 +15,93 @@
 </script>
 
   <style>
-    .infoCallout{
-      border: 1px solid rgba(30,63,168,.28);
-      background: rgba(30,63,168,.06);
-      border-radius: 14px;
-      padding: 12px 14px;
-      margin-top: 12px;
-      text-align: left;
-    }
-    .infoCalloutTitle{
-      font-weight: 900;
-      color: var(--wbl-blue);
-      margin: 0;
-    }
-    .infoCalloutText{
-      margin: 6px 0 0;
-    }
-  </style>
+.uploadsIntro{
+  margin: 0 0 12px;
+}
+
+.uploadsCard{
+  margin-top: 12px;
+}
+
+.uploadsShell{
+  display: grid;
+  gap: 16px;
+}
+
+.uploadCtaWrap{
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+.uploadBtnPrimary{
+  display: inline-block;
+  padding: 14px 22px;
+  font-weight: 900;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.uploadFallbackBox{
+  text-align: left;
+  background: #f8fafc;
+  border: 1px solid rgba(15,23,42,.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.uploadsInfoGrid{
+  display: grid;
+  gap: 14px;
+}
+
+.infoPanel{
+  border: 1px solid rgba(30,63,168,.18);
+  background: rgba(30,63,168,.05);
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.infoPanelTitle{
+  margin: 0 0 8px;
+  font-size: .95rem;
+  font-weight: 900;
+  color: var(--wbl-blue);
+}
+
+.infoPanelText{
+  margin: 0;
+}
+
+.infoPanelText p{
+  margin: 0 0 10px;
+}
+
+.infoPanelText p:last-child{
+  margin-bottom: 0;
+}
+
+.tipsList{
+  margin: 6px 0 0 18px;
+  padding: 0;
+}
+
+.tipsList li{
+  margin-bottom: 6px;
+}
+
+.uploadsFooterNote{
+  margin-top: 12px;
+}
+
+@media (min-width: 760px){
+  .uploadsInfoGrid{
+    grid-template-columns: 1.3fr .9fr;
+    align-items: start;
+  }
+}
+</style>
+ 
 </head>
 
 <body class="watermarkPage uploadsPage hasHamburger">
@@ -65,69 +135,82 @@
 </header>
 
 <main class="wrap">
-  <section class="docSection">
-    <p class="muted">
-      Coaches and families: please upload your best photos and short clips. We’ll feature highlights in the Gallery each week.
-    </p>
+ <section class="docSection">
+  <p class="muted uploadsIntro">
+    Coaches and families: please upload your best photos and short clips. We’ll feature
+    highlights in the Gallery each week.
+  </p>
 
-    <div class="card" style="margin-top:12px;">
-      <div class="cardBody" style="text-align:center;">
-        <a id="uploadBtn"
-           href="#"
-           target="_blank"
-           rel="noopener"
-           style="display:none; padding:14px 22px; font-weight:900; border-radius:999px; text-decoration:none;">
-          Upload Media
-        </a>
+  <div class="card uploadsCard">
+    <div class="cardBody">
+      <div class="uploadsShell">
 
-        <div id="uploadFallback" style="text-align:left;">
+        <div class="uploadCtaWrap">
+          <a id="uploadBtn"
+             href="#"
+             target="_blank"
+             rel="noopener"
+             class="uploadBtnPrimary"
+             style="display:none;">
+            Upload Media
+          </a>
+        </div>
+
+        <div id="uploadFallback" class="uploadFallbackBox" style="display:block;">
           <p><strong>Upload link not configured yet.</strong></p>
           <p class="muted small" style="margin-top:6px;">
             Add <code>window.UPLOADS_FORM_URL</code> to <code>data.js</code> to enable uploads.
           </p>
         </div>
 
-<!-- Upload Guidance Box -->
-<div class="infoCallout">
-  <p class="infoCalloutTitle">How to Upload (Simple & Easy)</p>
+        <div class="uploadsInfoGrid">
+          <div class="infoPanel">
+            <p class="infoPanelTitle">How to Upload</p>
+            <div class="infoPanelText muted small">
+              <p>
+                <strong>📸 Photos:</strong><br>
+                Just click <strong>Upload Media</strong> and select a photo from your phone.
+                No permission settings are required — it will appear in the Gallery automatically once reviewed.
+              </p>
 
-  <div class="infoCalloutText muted small">
+              <p>
+                <strong>🎥 Videos:</strong><br>
+                For best playback on our website, please upload your video to
+                <strong>YouTube (Unlisted)</strong> or <strong>Vimeo</strong> and paste the link in the form.
+              </p>
 
-    <strong>📸 Photos:</strong><br>
-    Just click <strong>Upload Media</strong> and select a photo from your phone.
-    No permission settings are required — it will appear in the Gallery automatically once reviewed.
-    <br><br>
+              <p>
+                Videos uploaded directly as .mov or .mp4 files may not play inside the Gallery
+                and will instead show as an “Open Video” link.
+              </p>
 
-    <strong>🎥 Videos (Important):</strong><br>
-    For best playback on our website, please upload your video to
-    <strong>YouTube (Unlisted)</strong> or <strong>Vimeo</strong> and paste the link in the form.
-    <br><br>
-    Videos uploaded directly as .mov or .mp4 files may not play inside the Gallery
-    and will instead show as an “Open Video” link.
-    <br><br>
+              <p>
+                If you paste a Google Drive link, make sure it is shared as
+                <strong>“Anyone with the link can view.”</strong>
+              </p>
+            </div>
+          </div>
 
-    If you paste a Google Drive link, make sure it is shared as
-    <strong>“Anyone with the link can view.”</strong>
-  </div>
-</div>
-
-        <div class="muted small" style="margin-top:12px; text-align:left;">
-          <strong>Tips:</strong>
-          <ul style="margin-top:6px;">
-            <li>Please include team name and date in the description.</li>
-            <li>Avoid posting close-ups of kids from other teams without permission.</li>
-            <li>Shorter videos load faster and are easier to feature.</li>
-          </ul>
+          <div class="infoPanel">
+            <p class="infoPanelTitle">Tips</p>
+            <div class="infoPanelText muted small">
+              <ul class="tipsList">
+                <li>Please include team name and date in the description.</li>
+                <li>Avoid posting close-ups of kids from other teams without permission.</li>
+                <li>Shorter videos load faster and are easier to feature.</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
       </div>
     </div>
+  </div>
 
-    <p class="muted small" style="margin-top:12px;">
-      Uploaded items will appear on the <a href="./gallery.html">Gallery</a> page after they’re reviewed.
-    </p>
-  </section>
-</main>
+  <p class="muted small uploadsFooterNote">
+    Uploaded items will appear on the <a href="./gallery.html">Gallery</a> page after they’re reviewed.
+  </p>
+</section></main>
 
 <script src="./data.js"></script>
 <script>
