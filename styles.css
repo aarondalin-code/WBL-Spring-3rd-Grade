@@ -3737,3 +3737,25 @@ body.homeIndex .homeHeroBtns .btnPrimary{
   font-weight: 600;
   line-height: 1.35;
 }
+
+.compactFilters {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  max-width: 420px;
+  margin: 0 auto 12px auto;
+
+  padding: 8px 10px;
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.compactFilters select,
+.compactFilters button {
+  padding: 6px 8px;
+  font-size: 13px;
+}
