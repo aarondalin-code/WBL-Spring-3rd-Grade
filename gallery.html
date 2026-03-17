@@ -64,10 +64,6 @@
 
           <button id="clearFilters" class="btnSecondary" type="button">Clear</button>
         </div>
-
-        <div class="galleryMetaRow">
-          <div class="muted small" id="resultCount"></div>
-        </div>
       </div>
     </div>
 
@@ -207,7 +203,6 @@
       return;
     }
 
-    countEl.textContent = `${items.length} item(s)`;
     msgEl.textContent = "";
 
     const html = items.map(it => {
