@@ -1258,30 +1258,31 @@ async function loadHistory(){
 
     const player = rows[index];
 
-    el.innerHTML = `
-      <div class="hofCard">
-        <h4>${player.Name}</h4>
-        <div>${player.Position} • ${player.Years}</div>
-        <p><b>Team:</b> ${player.PrimaryTeam}</p>
+ el.innerHTML = `
+  <div class="hofCard">
+    <div class="hofName">${player.Name}</div>
 
-        <ul>
-          <li>${player.Fact1}</li>
-          <li>${player.Fact2}</li>
-        </ul>
+    <div class="hofMeta">
+      ${player.PrimaryTeam} • ${player.Position} • ${player.Years}
+    </div>
 
-        <p><b>Key Stats</b></p>
-        <ul>
-          <li>${player.Stat1}</li>
-          <li>${player.Stat2}</li>
-        </ul>
-      </div>
-    `;
-  }
-  catch(err){
-    console.error(err);
-    el.textContent = "Unable to load Hall of Famer.";
-  }
-}
+    <div class="hofInduction">
+      Hall of Fame: ${player.InductionYear}
+    </div>
+
+    <div class="hofSectionTitle">Did You Know?</div>
+    <ul class="hofFacts">
+      <li>${player.Fact1}</li>
+      <li>${player.Fact2}</li>
+    </ul>
+
+    <div class="hofSectionTitle">Key Stats</div>
+    <ul class="hofStats">
+      <li>${player.Stat1}</li>
+      <li>${player.Stat2}</li>
+    </ul>
+  </div>
+`;
     
   
     
